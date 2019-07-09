@@ -18,7 +18,6 @@ func main() {
 	initCliFlags()
 	initCliCommands()
 
-	fmt.Println(os.Args)
 	err := app.Run(os.Args)
 	if err != nil {
 		fmt.Printf("ERROR: %s\n", err)

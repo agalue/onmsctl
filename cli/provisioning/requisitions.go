@@ -127,8 +127,8 @@ func applyRequisition(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	requisition := Requisition{}
-	yaml.Unmarshal(data, &requisition)
+	requisition := &Requisition{}
+	yaml.Unmarshal(data, requisition)
 	err = requisition.IsValid()
 	if err != nil {
 		return err

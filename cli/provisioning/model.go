@@ -197,7 +197,8 @@ func (r Requisition) IsValid() error {
 		return fmt.Errorf("Requisition name cannot be null")
 	}
 	foreignIDs := make(map[string]int)
-	for _, n := range r.Nodes {
+	for i := range r.Nodes {
+		n := &r.Nodes[i]
 		foreignIDs[n.ForeignID]++
 		err := n.IsValid()
 		if err != nil {
