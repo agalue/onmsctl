@@ -43,7 +43,7 @@ var InterfacesCliCommand = cli.Command{
 					Name: "snmpPrimary, p",
 					Value: &EnumValue{
 						Enum:    []string{"P", "N", "S"},
-						Default: "S",
+						Default: "N",
 					},
 					Usage: "Primary Interface Flag: P (primary), S (secondary), N (Not Elegible)",
 				},

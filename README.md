@@ -10,7 +10,7 @@ The current alternative is `provision.pl` which relies on having `Perl` installe
 
 ## Compilation
 
-1. Make sure to have [GO](https://golang.org/dl/) installed on your system.
+1. Make sure to have [GoLang](https://golang.org/dl/) installed on your system.
 
 2. Make sure to have Go Modules enabled
 
@@ -39,6 +39,15 @@ GOOS=windows GOARCH=amd64 go build -o onmsctl.exe onmsctl.go
 ```
 
 For your own operating system, there is no need to specify parameters, as `go build` will be sufficient. Also, you can build targets for any operating system from any operating system, and the generated binary will work on itself, there is no need to install anything on the target device, besides copying the generated binary file.
+
+Alternatively, in case you don't want to install GO on your system, but you have [Docker](https://www.docker.com) installed, you can use it to compile it:
+
+```bash
+➜ docker run -it --rm -e GO111MODULE=on -e GOOS=windows -e GOARCH=amd64 -v $(pwd):/app golang:1.12 bash
+root@3854e5d2d67c:/go# cd /app
+root@3854e5d2d67c:/app# go build -o onmsctl.exe
+root@3854e5d2d67c:/app# exit
+```
 
 ## Usage
 
@@ -112,7 +121,7 @@ nodeLabel: www.opennms.com
 foreignID: www.opennms.com
 interfaces:
 - ipAddress: 34.194.50.139
-  snmpPrimary: S
+  snmpPrimary: N
   status: 1
 categories:
 - name: WebSites
