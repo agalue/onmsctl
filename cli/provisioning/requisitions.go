@@ -203,8 +203,7 @@ func getLastImport(timestamp int64) string {
 	if timestamp == 0 {
 		return "Never"
 	}
-	location, _ := time.LoadLocation("EST")
 	sec := timestamp / 1000
 	nsec := (timestamp % 1000) * 1000
-	return time.Unix(sec, nsec).In(location).String()
+	return time.Unix(sec, nsec).In(time.Local).String()
 }

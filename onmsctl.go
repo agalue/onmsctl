@@ -10,13 +10,13 @@ import (
 	"github.com/urfave/cli"
 )
 
-var app = cli.NewApp()
-
 func main() {
 	common.ReadConfig(&rest.Instance)
-	initCliInfo()
-	initCliFlags()
-	initCliCommands()
+
+	var app = cli.NewApp()
+	initCliInfo(app)
+	initCliFlags(app)
+	initCliCommands(app)
 
 	err := app.Run(os.Args)
 	if err != nil {
@@ -25,7 +25,7 @@ func main() {
 	}
 }
 
-func initCliInfo() {
+func initCliInfo(app *cli.App) {
 	app.Name = "onmsctl"
 	app.Usage = "A CLI to manage OpenNMS"
 	app.Author = "Alejandro Galue"
@@ -33,7 +33,7 @@ func initCliInfo() {
 	app.Version = "1.0.0"
 }
 
-func initCliFlags() {
+func initCliFlags(app *cli.App) {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "url",
@@ -53,7 +53,7 @@ func initCliFlags() {
 	}
 }
 
-func initCliCommands() {
+func initCliCommands(app *cli.App) {
 	app.Commands = []cli.Command{
 		provisioning.CliCommand,
 	}
