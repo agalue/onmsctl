@@ -104,7 +104,7 @@ func (i *Interface) IsValid() error {
 		return fmt.Errorf("Invalid Status: %d", i.Status)
 	}
 	if i.SnmpPrimary == "" { // Set a reasonable default when the primary flag is not initialized
-		i.SnmpPrimary = "S"
+		i.SnmpPrimary = "N"
 	}
 	if i.SnmpPrimary != "P" && i.SnmpPrimary != "S" && i.SnmpPrimary != "N" {
 		return fmt.Errorf("Invalid SnmpPrimary: %s", i.SnmpPrimary)
