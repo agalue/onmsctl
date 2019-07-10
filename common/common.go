@@ -33,10 +33,11 @@ func ReadInput(c *cli.Context, dataIndex int) ([]byte, error) {
 	var data []byte
 	ymlFile := c.String("file")
 	if ymlFile == "" {
-		if !c.Args().Present() {
+		arg := c.Args().Get(dataIndex)
+		if arg == "" {
 			return nil, fmt.Errorf("YAML content cannot be empty")
 		}
-		data = []byte(c.Args().Get(dataIndex))
+		data = []byte(arg)
 	} else if ymlFile == "-" { // TODO Does this work on Windows ?
 		fi, err := os.Stdin.Stat()
 		if err != nil {

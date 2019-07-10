@@ -1,7 +1,6 @@
 package provisioning
 
 import (
-  "fmt"
 	"testing"
 
 	"gotest.tools/assert"
@@ -23,8 +22,8 @@ func TestRequisitionObject(t *testing.T) {
 	}
 	var err error
 
-  err = req.IsValid()
-  assert.NilError(t, err)
-  assert.Equal(t, req.Nodes[0].NodeLabel, req.Nodes[0].ForeignID)
-  assert.Equal(t, req.Nodes[0].Interfaces[0].IPAddress, "34.194.50.139")
+	err = req.IsValid()
+	assert.NilError(t, err)
+	assert.Equal(t, req.Nodes[0].NodeLabel, req.Nodes[0].ForeignID)
+	assert.Equal(t, req.Nodes[0].Interfaces[0].IPAddress, "34.194.50.139")
 }

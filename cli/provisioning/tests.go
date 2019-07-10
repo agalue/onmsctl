@@ -27,12 +27,6 @@ var testNode = Node{
 	},
 }
 
-func sendData(res http.ResponseWriter, data interface{}) {
-	bytes, _ := json.Marshal(data)
-	res.WriteHeader(http.StatusOK)
-	res.Write(bytes)
-}
-
 // CreateCli creates a CLI Application object
 func CreateCli(cmd cli.Command) *cli.App {
 	var app = cli.NewApp()
@@ -71,6 +65,12 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 			assert.NilError(t, err)
 			err = json.Unmarshal(bytes, &r)
 			assert.NilError(t, err)
+			if r.Name == "WebSites" {
+				node := r.Nodes[0]
+				assert.Equal(t, "opennms.com", node.ForeignID)
+				assert.Equal(t, "opennms.com", node.NodeLabel)
+				assert.Equal(t, "34.194.50.139", node.Interfaces[0].IPAddress)
+			}
 
 		case "/rest/requisitions/Local/import":
 			assert.Equal(t, http.MethodPut, req.Method)
@@ -100,8 +100,13 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 			bytes, err := ioutil.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &node)
-			assert.Equal(t, "n2", node.ForeignID)
-			assert.Equal(t, "n2", node.NodeLabel)
+			if node.ForeignID == "n2" {
+				assert.Equal(t, "n2", node.NodeLabel)
+			}
+			if node.ForeignID == "opennms.com" {
+				assert.Equal(t, "opennms.com", node.NodeLabel)
+				assert.Equal(t, "34.194.50.139", node.Interfaces[0].IPAddress)
+			}
 
 		case "/rest/requisitions/Test/nodes/n2":
 			assert.Equal(t, http.MethodDelete, req.Method)
@@ -113,6 +118,10 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &intf)
 			assert.Equal(t, "10.0.0.10", intf.IPAddress)
+
+		case "/rest/requisitions/Test/nodes/n1/interfaces/10.0.0.1":
+			assert.Equal(t, http.MethodGet, req.Method)
+			sendData(res, testNode.Interfaces[0])
 
 		case "/rest/requisitions/Test/nodes/n1/interfaces/10.0.0.10":
 			assert.Equal(t, http.MethodDelete, req.Method)
@@ -147,4 +156,10 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 
 	rest.Instance.URL = server.URL
 	return server
+}
+
+func sendData(res http.ResponseWriter, data interface{}) {
+	bytes, _ := json.Marshal(data)
+	res.WriteHeader(http.StatusOK)
+	res.Write(bytes)
 }

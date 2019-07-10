@@ -22,6 +22,25 @@ func TestListInterfaces(t *testing.T) {
 	assert.NilError(t, err)
 }
 
+func TestGetInterface(t *testing.T) {
+	var err error
+	app := CreateCli(InterfacesCliCommand)
+	testServer := CreateTestServer(t)
+	defer testServer.Close()
+
+	err = app.Run([]string{app.Name, "intf", "get"})
+	assert.Error(t, err, "Requisition name, foreign ID, IP address required")
+
+	err = app.Run([]string{app.Name, "intf", "get", "Test"})
+	assert.Error(t, err, "Foreign ID required")
+
+	err = app.Run([]string{app.Name, "intf", "get", "Test", "n1"})
+	assert.Error(t, err, "IP Address required")
+
+	err = app.Run([]string{app.Name, "intf", "get", "Test", "n1", "10.0.0.1"})
+	assert.NilError(t, err)
+}
+
 func TestAddInterface(t *testing.T) {
 	var err error
 	app := CreateCli(InterfacesCliCommand)
