@@ -55,7 +55,7 @@ var RequisitionsCliCommand = cli.Command{
 			Flags: []cli.Flag{
 				cli.GenericFlag{
 					Name: "rescanExisting, r",
-					Value: &EnumValue{
+					Value: &common.EnumValue{
 						Enum:    []string{"true", "false", "dbonly"},
 						Default: "true",
 					},
@@ -148,7 +148,7 @@ func importRequisition(c *cli.Context) error {
 	}
 	rescanExisting := c.String("rescanExisting")
 	fmt.Printf("Importing requisition %s (rescanExisting? %s)...\n", foreignSource, rescanExisting)
-	return rest.Instance.Put("/rest/requisitions/" + foreignSource + "/import?rescanExisting=" + rescanExisting)
+	return rest.Instance.Put("/rest/requisitions/"+foreignSource+"/import?rescanExisting="+rescanExisting, nil)
 }
 
 func deleteRequisition(c *cli.Context) error {
@@ -166,7 +166,7 @@ func deleteRequisition(c *cli.Context) error {
 		return err
 	}
 	// Import requisition to remove nodes from the database
-	err = rest.Instance.Put("/rest/requisitions/" + foreignSource + "/import?rescanExisting=false")
+	err = rest.Instance.Put("/rest/requisitions/"+foreignSource+"/import?rescanExisting=false", nil)
 	if err != nil {
 		return err
 	}

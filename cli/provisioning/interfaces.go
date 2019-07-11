@@ -41,7 +41,7 @@ var InterfacesCliCommand = cli.Command{
 				},
 				cli.GenericFlag{
 					Name: "snmpPrimary, p",
-					Value: &EnumValue{
+					Value: &common.EnumValue{
 						Enum:    []string{"P", "N", "S"},
 						Default: "N",
 					},

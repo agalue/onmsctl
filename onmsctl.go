@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/OpenNMS/onmsctl/cli/provisioning"
+	"github.com/OpenNMS/onmsctl/cli/snmp"
 	"github.com/OpenNMS/onmsctl/cli/info"
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/rest"
@@ -57,6 +58,7 @@ func initCliFlags(app *cli.App) {
 func initCliCommands(app *cli.App) {
 	app.Commands = []cli.Command{
 		provisioning.CliCommand,
+		snmp.CliCommand,
 		info.CliCommand,
 	}
 }

@@ -27,7 +27,7 @@ func (cli Client) Get(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	setAuthentication(cli, request)
+	setCommonHeaders(cli, request)
 	response, err := http.DefaultClient.Do(request)
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func (cli Client) Post(path string, jsonBytes []byte) error {
 	if err != nil {
 		return err
 	}
-	setAuthentication(cli, request)
+	setCommonHeaders(cli, request)
 	request.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	response, err := client.Do(request)
@@ -61,8 +61,7 @@ func (cli Client) Delete(path string) error {
 	if err != nil {
 		return err
 	}
-	setAuthentication(cli, request)
-	request.Header.Set("Content-Type", "application/json")
+	setCommonHeaders(cli, request)
 	client := &http.Client{}
 	response, err := client.Do(request)
 	if err != nil {
@@ -72,12 +71,13 @@ func (cli Client) Delete(path string) error {
 }
 
 // Put sends an HTTP PUT request
-func (cli Client) Put(path string) error {
-	request, err := http.NewRequest(http.MethodPut, cli.URL+path, nil)
+func (cli Client) Put(path string, jsonBytes []byte) error {
+	request, err := http.NewRequest(http.MethodPut, cli.URL+path, bytes.NewBuffer(jsonBytes))
 	if err != nil {
 		return err
 	}
-	setAuthentication(cli, request)
+	setCommonHeaders(cli, request)
+	request.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	response, err := client.Do(request)
 	if err != nil {
@@ -86,7 +86,7 @@ func (cli Client) Put(path string) error {
 	return httpIsValid(response)
 }
 
-func setAuthentication(cli Client, request *http.Request) {
+func setCommonHeaders(cli Client, request *http.Request) {
 	request.Header.Set("Accept", "application/json")
 	request.SetBasicAuth(cli.Username, cli.Password)
 }
