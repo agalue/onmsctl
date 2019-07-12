@@ -42,7 +42,7 @@ func listCategories(c *cli.Context) error {
 		return err
 	}
 	writer := common.NewTableWriter()
-	fmt.Fprintln(writer, "Service Name")
+	fmt.Fprintln(writer, "Category Name")
 	for _, cat := range node.Categories {
 		fmt.Fprintf(writer, "%s\n", cat.Name)
 	}

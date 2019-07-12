@@ -160,10 +160,10 @@ func (n *Node) IsValid() error {
 
 // Requisition a requisition or set of nodes
 type Requisition struct {
-	DateStamp  common.Time `json:"date-stamp" yaml:"dateStamp"`
-	LastImport common.Time `json:"last-import" yaml:"lastImport"`
-	Name       string      `json:"foreign-source" yaml:"name"`
-	Nodes      []Node      `json:"node,omitempty" yaml:"nodes,omitempty"`
+	DateStamp  *common.Time `json:"date-stamp" yaml:"dateStamp"`
+	LastImport *common.Time `json:"last-import" yaml:"lastImport"`
+	Name       string       `json:"foreign-source" yaml:"name"`
+	Nodes      []Node       `json:"node,omitempty" yaml:"nodes,omitempty"`
 }
 
 // IsValid returns an error if the requisition definition is invalid
@@ -196,10 +196,10 @@ type RequisitionsList struct {
 
 // RequisitionStats statistics about the requisition
 type RequisitionStats struct {
-	Name       string      `json:"name" yaml:"name"`
-	Count      int         `json:"count" yaml:"count"`
-	ForeignIDs []string    `json:"foreign-id" yaml:"foreignID"`
-	LastImport common.Time `json:"last-imported" yaml:"lastImport"`
+	Name       string       `json:"name" yaml:"name"`
+	Count      int          `json:"count" yaml:"count"`
+	ForeignIDs []string     `json:"foreign-id" yaml:"foreignID"`
+	LastImport *common.Time `json:"last-imported" yaml:"lastImport"`
 }
 
 // RequisitionsStats statistics about all the requisitions
@@ -236,11 +236,11 @@ type Policy struct {
 
 // ForeignSourceDef a foreign source definition
 type ForeignSourceDef struct {
-	Name         string      `json:"name" yaml:"name"`
-	DateStamp    common.Time `json:"date-stamp" yaml:"dateStamp"`
-	ScanInterval string      `json:"scan-interval" yaml:"scanInterval"`
-	Detectors    []Detector  `json:"detectors,omitempty" yaml:"detectors,omitempty"`
-	Policies     []Policy    `json:"policies,omitempty" yaml:"policies,omitempty"`
+	Name         string       `json:"name" yaml:"name"`
+	DateStamp    *common.Time `json:"date-stamp" yaml:"dateStamp"`
+	ScanInterval string       `json:"scan-interval" yaml:"scanInterval"`
+	Detectors    []Detector   `json:"detectors,omitempty" yaml:"detectors,omitempty"`
+	Policies     []Policy     `json:"policies,omitempty" yaml:"policies,omitempty"`
 }
 
 // Plugin a definiton class for a detector or a policy

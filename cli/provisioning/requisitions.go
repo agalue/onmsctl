@@ -199,8 +199,8 @@ func getStats(stats RequisitionsStats, foreignSource string) RequisitionStats {
 	return RequisitionStats{}
 }
 
-func getDisplayTime(lastImport common.Time) string {
-	if lastImport.IsZero() {
+func getDisplayTime(lastImport *common.Time) string {
+	if lastImport == nil || lastImport.IsZero() {
 		return "Never"
 	}
 	return lastImport.In(time.Local).String()

@@ -8,9 +8,9 @@ type OnmsInfoDatetimeFormat struct {
 
 // OnmsInfo provides information about the OpenNMS server
 type OnmsInfo struct {
-	DisplayVersion     string                 `json:"displayVersion" yaml:"displayVersion"`
-	Version            string                 `json:"version" yaml:"version"`
-	PackageName        string                 `json:"packageName" yaml:"packageName"`
-	PackageDescription string                 `json:"packageDescription" yaml:"packageDescription"`
-	DatetimeFormat     OnmsInfoDatetimeFormat `json:"datetimeformatConfig" yaml:"datetimeFormat"`
+	DisplayVersion     string                  `json:"displayVersion" yaml:"displayVersion"`
+	Version            string                  `json:"version" yaml:"version"`
+	PackageName        string                  `json:"packageName" yaml:"packageName"`
+	PackageDescription string                  `json:"packageDescription" yaml:"packageDescription"`
+	DatetimeFormat     *OnmsInfoDatetimeFormat `json:"datetimeformatConfig" yaml:"datetimeFormat"`
 }

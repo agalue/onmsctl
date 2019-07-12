@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/rest"
@@ -53,7 +54,8 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 
 		case "/rest/requisitions/deployed/stats":
 			assert.Equal(t, http.MethodGet, req.Method)
-			sendData(res, RequisitionsStats{1, []RequisitionStats{{"Test", 0, []string{}, common.Time{}}}})
+			now := common.Time{Time: time.Now()}
+			sendData(res, RequisitionsStats{1, []RequisitionStats{{"Test", 0, nil, &now}}})
 
 		case "/rest/requisitions/Test":
 			assert.Equal(t, http.MethodGet, req.Method)

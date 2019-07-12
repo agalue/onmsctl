@@ -42,7 +42,10 @@ type Time struct {
 
 // MarshalJSON converts time object into timestamp in milliseconds
 func (t Time) MarshalJSON() ([]byte, error) {
-	return json.Marshal(time.Now().UnixNano() / int64(time.Millisecond))
+	if t.IsZero() {
+		return json.Marshal("")
+	}
+	return json.Marshal(t.UnixNano() / int64(time.Millisecond))
 }
 
 // UnmarshalJSON converts timestamp in milliseconds into time object
@@ -59,6 +62,9 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 
 // MarshalYAML converts time object into time as string
 func (t Time) MarshalYAML() ([]byte, error) {
+	if t.IsZero() {
+		return json.Marshal("")
+	}
 	return yaml.Marshal(t.String())
 }
 
