@@ -2,17 +2,19 @@
 
 A CLI tool for OpenNMS.
 
-For now, only provisioning is implemented. Future releases can be able to control foreign source definitions, snmp configuration, send events, reload daemon configuration, list and search nodes, events, alarms, notifications, outages, among other features.
+The following features have been implemented:
 
-The reason for implemenging a CLI in Go is that the generated binaries are self contained, and for the first time, Windows users will be able to control OpenNMS from the command line.
+* Verify installed OpenNMS Version
+* Manage provisioning requisitions (replacing `provision.pl`)
+* Manage SNMP configuration (replacing `provision.pl`)
 
-The current alternative is `provision.pl` which relies on having `Perl` installed with some additional dependencies. This script only controls requisitions, whereas the scope of `onmsctl` is way wider.
+The reason for implemenging a CLI in `Go` is that the generated binaries are self contained, and for the first time, Windows users will be able to control OpenNMS from the command line. For example, `provision.pl` or `send-events.pl` rely on having Perl installed with some additional dependencies, which can be complicated on environment where this is either hard or impossible to have.
 
 ## Compilation
 
 1. Make sure to have [GoLang](https://golang.org/dl/) installed on your system.
 
-2. Make sure to have Go Modules enabled
+2. Make sure to have `Go Modules` enabled (recommended version: 1.12 or newer)
 
 ```bash
 export GO111MODULE=on
@@ -40,7 +42,7 @@ GOOS=windows GOARCH=amd64 go build -o onmsctl.exe onmsctl.go
 
 For your own operating system, there is no need to specify parameters, as `go build` will be sufficient. Also, you can build targets for any operating system from any operating system, and the generated binary will work on itself, there is no need to install anything on the target device, besides copying the generated binary file.
 
-Alternatively, in case you don't want to install GO on your system, but you have [Docker](https://www.docker.com) installed, you can use it to compile it:
+Alternatively, in case you don't want to install `Go` on your system, but you have [Docker](https://www.docker.com) installed, you can use it to compile it:
 
 ```bash
 ➜ docker run -it --rm -e GO111MODULE=on -e GOOS=windows -e GOARCH=amd64 -v $(pwd):/app golang:1.12 bash
@@ -81,7 +83,7 @@ assets:
 Importing requisition Local (rescanExisting? true)...
 ```
 
-2. You can build requisitions in YAML and apply it like K8s workload with `kubectl`:
+2. You can build requisitions in `YAML` and apply it like `kubernetes` workload with `kubectl`:
 
 ```bash
 ➜ cat <<EOF | onmsctl inv req apply -f -
@@ -149,8 +151,8 @@ Make sure to protect the file, as the credentials are on plain text.
 
 * Reload daemons configuration; for example `onmsctl daemon reload Pollerd`. This should include the list of reloadable daemons, and requires a way to send events through ReST.
 
-* Visualize and search entities. The idea is to provide a way to build a search expression that will be translated into a FIQL expression and use the ReST API v2 of OpenNMS to search for events, alarms, nodes, etc.
+* Search for entities. The idea is to provide a way to build a search expression that will be translated into a [FIQL](https://fiql-parser.readthedocs.io/en/stable/usage.html) expression and use the ReST API v2 of OpenNMS to search for events, alarms, nodes, etc.
 
-* Visualize tabular data with pagination (events, alarms, outages, notifications).
+* Visualize tabular data with pagination (nodes, events, alarms, outages, notifications).
 
 * Replace `resourcecli` to visualize resources and metrics available.
