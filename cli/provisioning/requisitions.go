@@ -88,7 +88,7 @@ func listRequisitions(c *cli.Context) error {
 	fmt.Fprintln(writer, "Requisition\tNodes in DB\tLast Import")
 	for _, req := range requisitions.ForeignSources {
 		stats := getStats(stats, req)
-		fmt.Fprintf(writer, "%s\t%d\t%s\n", req, len(stats.ForeignIDs), getLastImport(stats.LastImport))
+		fmt.Fprintf(writer, "%s\t%d\t%s\n", req, len(stats.ForeignIDs), getDisplayTime(stats.LastImport))
 	}
 	writer.Flush()
 	return nil
@@ -199,11 +199,9 @@ func getStats(stats RequisitionsStats, foreignSource string) RequisitionStats {
 	return RequisitionStats{}
 }
 
-func getLastImport(timestamp int64) string {
-	if timestamp == 0 {
+func getDisplayTime(lastImport common.Time) string {
+	if lastImport.IsZero() {
 		return "Never"
 	}
-	sec := timestamp / 1000
-	nsec := (timestamp % 1000) * 1000
-	return time.Unix(sec, nsec).In(time.Local).String()
+	return lastImport.In(time.Local).String()
 }

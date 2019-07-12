@@ -1,8 +1,12 @@
 package common
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
+
+	"gopkg.in/yaml.v2"
 )
 
 // EnumValue a enumaration array of strings
@@ -29,4 +33,45 @@ func (e EnumValue) String() string {
 		return e.Default
 	}
 	return e.selected
+}
+
+// Time an object to seamlessly manage times in multiple formats
+type Time struct {
+	time.Time
+}
+
+// MarshalJSON converts time object into timestamp in milliseconds
+func (t Time) MarshalJSON() ([]byte, error) {
+	return json.Marshal(time.Now().UnixNano() / int64(time.Millisecond))
+}
+
+// UnmarshalJSON converts timestamp in milliseconds into time object
+func (t *Time) UnmarshalJSON(data []byte) error {
+	var i int64
+	if err := json.Unmarshal(data, &i); err != nil {
+		return err
+	}
+	sec := i / 1000
+	nsec := (i % 1000) * 1000
+	t.Time = time.Unix(sec, nsec)
+	return nil
+}
+
+// MarshalYAML converts time object into time as string
+func (t Time) MarshalYAML() ([]byte, error) {
+	return yaml.Marshal(t.String())
+}
+
+// UnmarshalYAML converts time string into time object
+func (t *Time) UnmarshalYAML(data []byte) error {
+	var s string
+	var err error
+	if err = yaml.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	t.Time, err = time.Parse(s, s)
+	if err != nil {
+		return err
+	}
+	return nil
 }
