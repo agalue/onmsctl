@@ -8,7 +8,7 @@ The following features have been implemented:
 * Manage provisioning requisitions (replacing `provision.pl`)
 * Manage SNMP configuration (replacing `provision.pl`)
 
-The reason for implemenging a CLI in `Go` is that the generated binaries are self contained, and for the first time, Windows users will be able to control OpenNMS from the command line. For example, `provision.pl` or `send-events.pl` rely on having Perl installed with some additional dependencies, which can be complicated on environment where this is either hard or impossible to have.
+The reason for implementing a CLI in `Go` is that the generated binaries are self-contained, and for the first time, Windows users will be able to control OpenNMS from the command line. For example, `provision.pl` or `send-events.pl` rely on having Perl installed with some additional dependencies, which can be complicated on the environment where this is either hard or impossible to have.
 
 ## Compilation
 
@@ -53,7 +53,7 @@ root@3854e5d2d67c:/app# exit
 
 ## Usage
 
-The binary contains help for all commands and subcommands by passing `-h` or `--help`. Everything should be self explanatory.
+The binary contains help for all commands and subcommands by using `-h` or `--help`. Everything should be self-explanatory.
 
 1. Build a requisition like you would do it with `provision.pl`:
 
@@ -104,7 +104,7 @@ nodes:
 EOF
 ```
 
-The above also work for individual nodes:
+The above also works for individual nodes:
 
 ```bash
 ➜ cat <<EOF | onmsctl inv node apply -f - Local
@@ -149,7 +149,7 @@ Make sure to protect the file, as the credentials are on plain text.
 
 * Send events to OpenNMS, to replace `send-event.pl`. The user will be able to choose between using TCP 5817 or the ReST API for this purpose.
 
-* Reload daemons configuration; for example `onmsctl daemon reload Pollerd`. This should include the list of reloadable daemons, and requires a way to send events through ReST.
+* Reload daemons configuration; for example `onmsctl daemon reload Pollerd`. This should include the list of reloadable daemons and requires a way to send events through ReST.
 
 * Search for entities. The idea is to provide a way to build a search expression that will be translated into a [FIQL](https://fiql-parser.readthedocs.io/en/stable/usage.html) expression and use the ReST API v2 of OpenNMS to search for events, alarms, nodes, etc.
 
