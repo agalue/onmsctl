@@ -14,18 +14,18 @@ import (
 // TableWriterOutput the default output for table writers
 var TableWriterOutput = os.Stdout
 
-// NewTableWriter creates a new table writer
-func NewTableWriter() *tabwriter.Writer {
-	return tabwriter.NewWriter(TableWriterOutput, 0, 8, 1, '\t', tabwriter.AlignRight)
-}
-
-// ReadConfig reads YAML configuration from file and place it on a target object
-func ReadConfig(target *rest.Client) {
+// Reads YAML configuration from file and place it on a target object
+func init() {
 	configFile := getConfigFile()
 	if fileExists(configFile) {
 		data, _ := ioutil.ReadFile(configFile)
-		yaml.Unmarshal(data, target)
+		yaml.Unmarshal(data, &rest.Instance)
 	}
+}
+
+// NewTableWriter creates a new table writer
+func NewTableWriter() *tabwriter.Writer {
+	return tabwriter.NewWriter(TableWriterOutput, 0, 8, 1, '\t', tabwriter.AlignRight)
 }
 
 // ReadInput reads data from a file specified on the CLI context

@@ -2,6 +2,7 @@ package rest
 
 import (
 	"bytes"
+	"crypto/tls"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -9,16 +10,25 @@ import (
 
 // Instance a global reference to the ReST Client instance
 var Instance = Client{
-	URL:      "http://localhost:8980/opennms",
-	Username: "admin",
-	Password: "admin",
+	URL:                "http://localhost:8980/opennms",
+	Username:           "admin",
+	Password:           "admin",
+	InsecureSkipVerify: true,
 }
 
 // Client OpenNMS ReST API configuration
 type Client struct {
-	URL      string
-	Username string
-	Password string
+	URL                string
+	Username           string
+	Password           string
+	InsecureSkipVerify bool
+}
+
+func (cli Client) getHTTPClient() *http.Client {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: cli.InsecureSkipVerify},
+	}
+	return &http.Client{Transport: tr}
 }
 
 // Get sends an HTTP GET request
@@ -28,7 +38,7 @@ func (cli Client) Get(path string) ([]byte, error) {
 		return nil, err
 	}
 	setCommonHeaders(cli, request)
-	response, err := http.DefaultClient.Do(request)
+	response, err := cli.getHTTPClient().Do(request)
 	if err != nil {
 		return nil, err
 	}
@@ -47,8 +57,7 @@ func (cli Client) Post(path string, jsonBytes []byte) error {
 	}
 	setCommonHeaders(cli, request)
 	request.Header.Set("Content-Type", "application/json")
-	client := &http.Client{}
-	response, err := client.Do(request)
+	response, err := cli.getHTTPClient().Do(request)
 	if err != nil {
 		return err
 	}
@@ -62,8 +71,7 @@ func (cli Client) Delete(path string) error {
 		return err
 	}
 	setCommonHeaders(cli, request)
-	client := &http.Client{}
-	response, err := client.Do(request)
+	response, err := cli.getHTTPClient().Do(request)
 	if err != nil {
 		return err
 	}
@@ -78,8 +86,7 @@ func (cli Client) Put(path string, jsonBytes []byte) error {
 	}
 	setCommonHeaders(cli, request)
 	request.Header.Set("Content-Type", "application/json")
-	client := &http.Client{}
-	response, err := client.Do(request)
+	response, err := cli.getHTTPClient().Do(request)
 	if err != nil {
 		return err
 	}

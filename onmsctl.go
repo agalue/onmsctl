@@ -4,18 +4,15 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/OpenNMS/onmsctl/cli/events"
+	"github.com/OpenNMS/onmsctl/cli/info"
 	"github.com/OpenNMS/onmsctl/cli/provisioning"
 	"github.com/OpenNMS/onmsctl/cli/snmp"
-	"github.com/OpenNMS/onmsctl/cli/info"
-	"github.com/OpenNMS/onmsctl/cli/events"
-	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 )
 
 func main() {
-	common.ReadConfig(&rest.Instance)
-
 	var app = cli.NewApp()
 	initCliInfo(app)
 	initCliFlags(app)
@@ -34,6 +31,7 @@ func initCliInfo(app *cli.App) {
 	app.Author = "Alejandro Galue"
 	app.Email = "agalue@opennms.org"
 	app.Version = "1.0.0"
+	app.EnableBashCompletion = true
 }
 
 func initCliFlags(app *cli.App) {

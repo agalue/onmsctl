@@ -129,6 +129,12 @@ func (n *Node) IsValid() error {
 	if n.ParentForeignID != "" && n.ParentNodeLabel != "" {
 		return fmt.Errorf("Cannot set both parent foreign ID and parent node label, choose one")
 	}
+	if n.ParentNodeLabel == n.NodeLabel {
+		return fmt.Errorf("The parent node cannot be the node itself. The parent-nodel-label has to be different than the node-label")
+	}
+	if n.ParentForeignID == n.ForeignID {
+		return fmt.Errorf("The parent node cannot be the node itself. The parent-foreign-id has to be different than the foreign-id")
+	}
 	primaryCount := 0
 	for i := range n.Interfaces {
 		intf := &n.Interfaces[i]
@@ -160,8 +166,8 @@ func (n *Node) IsValid() error {
 
 // Requisition a requisition or set of nodes
 type Requisition struct {
-	DateStamp  *common.Time `json:"date-stamp" yaml:"dateStamp"`
-	LastImport *common.Time `json:"last-import" yaml:"lastImport"`
+	DateStamp  *common.Time `json:"date-stamp,omitempty" yaml:"dateStamp,omitempty"`
+	LastImport *common.Time `json:"last-import,omitempty" yaml:"lastImport,omitempty"`
 	Name       string       `json:"foreign-source" yaml:"name"`
 	Nodes      []Node       `json:"node,omitempty" yaml:"nodes,omitempty"`
 }
@@ -199,7 +205,7 @@ type RequisitionStats struct {
 	Name       string       `json:"name" yaml:"name"`
 	Count      int          `json:"count" yaml:"count"`
 	ForeignIDs []string     `json:"foreign-id" yaml:"foreignID"`
-	LastImport *common.Time `json:"last-imported" yaml:"lastImport"`
+	LastImport *common.Time `json:"last-imported,omitempty" yaml:"lastImport,omitempty"`
 }
 
 // RequisitionsStats statistics about all the requisitions
@@ -224,20 +230,20 @@ type Parameter struct {
 type Detector struct {
 	Name       string      `json:"name" yaml:"name"`
 	Class      string      `json:"class" yaml:"class"`
-	Parameters []Parameter `json:"parameters,omitempty" yaml:"parameters,omitempty"`
+	Parameters []Parameter `json:"parameter,omitempty" yaml:"parameters,omitempty"`
 }
 
 // Policy a provisioning policy
 type Policy struct {
 	Name       string      `json:"name" yaml:"name"`
 	Class      string      `json:"class" yaml:"class"`
-	Parameters []Parameter `json:"parameters,omitempty" yaml:"parameters,omitempty"`
+	Parameters []Parameter `json:"parameter,omitempty" yaml:"parameters,omitempty"`
 }
 
 // ForeignSourceDef a foreign source definition
 type ForeignSourceDef struct {
 	Name         string       `json:"name" yaml:"name"`
-	DateStamp    *common.Time `json:"date-stamp" yaml:"dateStamp"`
+	DateStamp    *common.Time `json:"date-stamp,omitempty" yaml:"dateStamp,omitempty"`
 	ScanInterval string       `json:"scan-interval" yaml:"scanInterval"`
 	Detectors    []Detector   `json:"detectors,omitempty" yaml:"detectors,omitempty"`
 	Policies     []Policy     `json:"policies,omitempty" yaml:"policies,omitempty"`
