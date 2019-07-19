@@ -110,7 +110,7 @@ func showInterface(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	intf := model.Interface{}
+	intf := model.RequisitionInterface{}
 	json.Unmarshal(jsonString, &intf)
 	data, _ := yaml.Marshal(&intf)
 	fmt.Println(string(data))
@@ -133,7 +133,7 @@ func setInterface(c *cli.Context) error {
 	if ipAddress == "" {
 		return fmt.Errorf("IP Address required")
 	}
-	intf := model.Interface{
+	intf := model.RequisitionInterface{
 		IPAddress:   ipAddress,
 		Description: c.String("description"),
 		SnmpPrimary: c.String("snmpPrimary"),
@@ -163,7 +163,7 @@ func applyInterface(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	intf := model.Interface{}
+	intf := model.RequisitionInterface{}
 	yaml.Unmarshal(data, &intf)
 	err = intf.IsValid()
 	if err != nil {

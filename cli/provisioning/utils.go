@@ -37,8 +37,8 @@ func RequisitionExists(foreignSource string) bool {
 }
 
 // GetNode gets a node from ReST using CLI context
-func GetNode(c *cli.Context) (model.Node, error) {
-	node := model.Node{}
+func GetNode(c *cli.Context) (model.RequisitionNode, error) {
+	node := model.RequisitionNode{}
 	if !c.Args().Present() {
 		return node, fmt.Errorf("Requisition name and foreign ID required")
 	}

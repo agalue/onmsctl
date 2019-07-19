@@ -68,13 +68,13 @@ func TestApplyRequisition(t *testing.T) {
 
 	var testReq = model.Requisition{
 		Name: "WebSites",
-		Nodes: []model.Node{
+		Nodes: []model.RequisitionNode{
 			{
 				ForeignID: "opennms.com",
-				Interfaces: []model.Interface{
+				Interfaces: []model.RequisitionInterface{
 					{IPAddress: "www.opennms.com"},
 				},
-				Categories: []model.Category{
+				Categories: []model.RequisitionCategory{
 					{Name: "Server"},
 				},
 			},

@@ -137,7 +137,7 @@ func setNode(c *cli.Context) error {
 	if foreignID == "" {
 		return fmt.Errorf("Foreign ID required")
 	}
-	node := model.Node{
+	node := model.RequisitionNode{
 		ForeignID:           foreignID,
 		NodeLabel:           c.String("label"),
 		Location:            c.String("location"),
@@ -170,7 +170,7 @@ func applyNode(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	node := &model.Node{}
+	node := &model.RequisitionNode{}
 	yaml.Unmarshal(data, node)
 	err = node.IsValid()
 	if err != nil {

@@ -81,12 +81,12 @@ func TestApplyNode(t *testing.T) {
 	err = app.Run([]string{app.Name, "node", "apply", "Test"})
 	assert.Error(t, err, "YAML content cannot be empty")
 
-	var testNode = model.Node{
+	var testNode = model.RequisitionNode{
 		ForeignID: "opennms.com",
-		Interfaces: []model.Interface{
+		Interfaces: []model.RequisitionInterface{
 			{IPAddress: "www.opennms.com"},
 		},
-		Categories: []model.Category{
+		Categories: []model.RequisitionCategory{
 			{"Server"},
 		},
 	}

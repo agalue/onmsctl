@@ -15,16 +15,16 @@ import (
 	"gotest.tools/assert"
 )
 
-var testNode = model.Node{
+var testNode = model.RequisitionNode{
 	ForeignID: "n1",
 	NodeLabel: "n1",
-	Interfaces: []model.Interface{
+	Interfaces: []model.RequisitionInterface{
 		{IPAddress: "10.0.0.1", SnmpPrimary: "P"},
 	},
-	Categories: []model.Category{
+	Categories: []model.RequisitionCategory{
 		{"Server"},
 	},
-	Assets: []model.Asset{
+	Assets: []model.RequisitionAsset{
 		{"city", "Durham"},
 	},
 }
@@ -59,7 +59,7 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 
 		case "/rest/requisitions/Test":
 			assert.Equal(t, http.MethodGet, req.Method)
-			sendData(res, model.Requisition{Name: "Test", Nodes: []model.Node{testNode}})
+			sendData(res, model.Requisition{Name: "Test", Nodes: []model.RequisitionNode{testNode}})
 
 		case "/rest/requisitions":
 			assert.Equal(t, http.MethodPost, req.Method)
@@ -99,7 +99,7 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 
 		case "/rest/requisitions/Test/nodes":
 			assert.Equal(t, http.MethodPost, req.Method)
-			var node model.Node
+			var node model.RequisitionNode
 			bytes, err := ioutil.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &node)
@@ -116,7 +116,7 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 
 		case "/rest/requisitions/Test/nodes/n1/interfaces":
 			assert.Equal(t, http.MethodPost, req.Method)
-			var intf model.Interface
+			var intf model.RequisitionInterface
 			bytes, err := ioutil.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &intf)
@@ -131,7 +131,7 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 
 		case "/rest/requisitions/Test/nodes/n1/assets":
 			assert.Equal(t, http.MethodPost, req.Method)
-			var asset model.Asset
+			var asset model.RequisitionAsset
 			bytes, err := ioutil.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &asset)
@@ -143,7 +143,7 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 
 		case "/rest/requisitions/Test/nodes/n1/categories":
 			assert.Equal(t, http.MethodPost, req.Method)
-			var cat model.Category
+			var cat model.RequisitionCategory
 			bytes, err := ioutil.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &cat)

@@ -58,7 +58,7 @@ func listServices(c *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("Cannot retrieve interfaces")
 	}
-	intf := model.Interface{}
+	intf := model.RequisitionInterface{}
 	json.Unmarshal(jsonBytes, &intf)
 	writer := common.NewTableWriter()
 	fmt.Fprintln(writer, "Service Name")
@@ -89,7 +89,7 @@ func addService(c *cli.Context) error {
 	if service == "" {
 		return fmt.Errorf("Service name required")
 	}
-	svc := model.Service{Name: service}
+	svc := model.RequisitionMonitoredService{Name: service}
 	jsonBytes, _ := json.Marshal(svc)
 	return rest.Instance.Post("/rest/requisitions/"+foreignSource+"/nodes/"+foreignID+"/interfaces/"+ipAddress+"/services", jsonBytes)
 }

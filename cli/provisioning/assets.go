@@ -105,7 +105,7 @@ func setAsset(c *cli.Context) error {
 	if !found {
 		return fmt.Errorf("Invalid Asset Field: %s", assetKey)
 	}
-	asset := model.Asset{Name: assetKey, Value: assetValue}
+	asset := model.RequisitionAsset{Name: assetKey, Value: assetValue}
 	jsonBytes, _ := json.Marshal(asset)
 	return rest.Instance.Post("/rest/requisitions/"+foreignSource+"/nodes/"+foreignID+"/assets", jsonBytes)
 }
