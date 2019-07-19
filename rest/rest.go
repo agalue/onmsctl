@@ -37,7 +37,7 @@ func (cli Client) Get(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	setCommonHeaders(cli, request)
+	cli.setCommonHeaders(request)
 	response, err := cli.getHTTPClient().Do(request)
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func (cli Client) Post(path string, jsonBytes []byte) error {
 	if err != nil {
 		return err
 	}
-	setCommonHeaders(cli, request)
+	cli.setCommonHeaders(request)
 	request.Header.Set("Content-Type", "application/json")
 	response, err := cli.getHTTPClient().Do(request)
 	if err != nil {
@@ -70,7 +70,7 @@ func (cli Client) Delete(path string) error {
 	if err != nil {
 		return err
 	}
-	setCommonHeaders(cli, request)
+	cli.setCommonHeaders(request)
 	response, err := cli.getHTTPClient().Do(request)
 	if err != nil {
 		return err
@@ -84,7 +84,7 @@ func (cli Client) Put(path string, jsonBytes []byte) error {
 	if err != nil {
 		return err
 	}
-	setCommonHeaders(cli, request)
+	cli.setCommonHeaders(request)
 	request.Header.Set("Content-Type", "application/json")
 	response, err := cli.getHTTPClient().Do(request)
 	if err != nil {
@@ -93,7 +93,7 @@ func (cli Client) Put(path string, jsonBytes []byte) error {
 	return httpIsValid(response)
 }
 
-func setCommonHeaders(cli Client, request *http.Request) {
+func (cli Client) setCommonHeaders(request *http.Request) {
 	request.Header.Set("Accept", "application/json")
 	request.SetBasicAuth(cli.Username, cli.Password)
 }

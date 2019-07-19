@@ -89,7 +89,7 @@ func (e *Event) SetTime(date time.Time) {
 }
 
 // IsValid returns an error if the event object is invalid
-func (e *Event) IsValid() error {
+func (e Event) IsValid() error {
 	if e.UEI == "" {
 		return fmt.Errorf("UEI cannot be null")
 	}

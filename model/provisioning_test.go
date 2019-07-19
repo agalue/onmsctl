@@ -9,10 +9,10 @@ import (
 func TestRequisitionObject(t *testing.T) {
 	req := Requisition{
 		Name: "Test",
-		Nodes: []Node{
+		Nodes: []RequisitionNode{
 			{
 				ForeignID: "opennms.com",
-				Interfaces: []Interface{
+				Interfaces: []RequisitionInterface{
 					{
 						IPAddress: "www.opennms.com",
 					},
