@@ -51,6 +51,11 @@ func initCliFlags(app *cli.App) {
 			Value: rest.Instance.Password,
 			Usage: "OpenNMS User's Password",
 		},
+		cli.BoolFlag{
+			Name:        "insecure-https",
+			Destination: &rest.Instance.InsecureSkipVerify,
+			Usage:       "to skip HTTPS certificate validation (for self-signed certificates)",
+		},
 	}
 }
 

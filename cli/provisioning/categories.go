@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/OpenNMS/onmsctl/common"
+	"github.com/OpenNMS/onmsctl/model"
 	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 )
@@ -14,6 +15,7 @@ var CategoriesCliCommand = cli.Command{
 	Name:      "category",
 	ShortName: "cat",
 	Usage:     "Manage Surveillance Categories",
+	Category:  "Requisitions",
 	Subcommands: []cli.Command{
 		{
 			Name:      "list",
@@ -66,7 +68,7 @@ func addCategory(c *cli.Context) error {
 	if category == "" {
 		return fmt.Errorf("Category name required")
 	}
-	cat := Category{Name: category}
+	cat := model.Category{Name: category}
 	jsonBytes, _ := json.Marshal(cat)
 	return rest.Instance.Post("/rest/requisitions/"+foreignSource+"/nodes/"+foreignID+"/categories", jsonBytes)
 }

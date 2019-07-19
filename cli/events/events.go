@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/OpenNMS/onmsctl/common"
+	"github.com/OpenNMS/onmsctl/model"
 	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 
@@ -45,7 +46,7 @@ var CliCommand = cli.Command{
 				},
 				cli.GenericFlag{
 					Name: "severity, x",
-					Value: &common.EnumValue{
+					Value: &model.EnumValue{
 						Enum: []string{"Indeterminate", "Normal", "Warning", "Minor", "Major", "Critical"},
 					},
 					Usage: "The severity of the event: Indeterminate, Normal, Warning, Minor, Major, Critical",
@@ -76,7 +77,7 @@ func sendEvent(c *cli.Context) error {
 		return fmt.Errorf("UEI required")
 	}
 	uei := c.Args().First()
-	event := Event{
+	event := model.Event{
 		UEI:         uei,
 		NodeID:      c.Int64("nodeid"),
 		Interface:   c.String("interface"),
@@ -89,7 +90,7 @@ func sendEvent(c *cli.Context) error {
 	params := c.StringSlice("parm")
 	for _, p := range params {
 		data := strings.Split(p, "=")
-		param := Parameter{data[0], data[1]}
+		param := model.EventParam{Name: data[0], Value: data[1]}
 		event.Parameters = append(event.Parameters, param)
 	}
 	jsonBytes, _ := json.Marshal(event)
@@ -101,7 +102,7 @@ func applyEvent(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	event := Event{}
+	event := model.Event{}
 	yaml.Unmarshal(data, &event)
 	err = event.IsValid()
 	if err != nil {

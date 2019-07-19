@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/OpenNMS/onmsctl/model"
 	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 
@@ -19,7 +20,7 @@ var CliCommand = cli.Command{
 		if err != nil {
 			return err
 		}
-		info := OnmsInfo{}
+		info := model.OnmsInfo{}
 		json.Unmarshal(jsonInfo, &info)
 		data, _ := yaml.Marshal(&info)
 		fmt.Println(string(data))

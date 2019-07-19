@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/OpenNMS/onmsctl/common"
+	"github.com/OpenNMS/onmsctl/model"
 	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 
@@ -13,8 +14,9 @@ import (
 
 // NodesCliCommand the CLI command configuration for managing requisitioned nodes
 var NodesCliCommand = cli.Command{
-	Name:  "node",
-	Usage: "Manage Nodes",
+	Name:     "node",
+	Usage:    "Manage Nodes",
+	Category: "Requisitions",
 	Subcommands: []cli.Command{
 		{
 			Name:      "list",
@@ -98,7 +100,7 @@ func listNodes(c *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("Cannot retrieve nodes from requisition %s", foreignSource)
 	}
-	requisition := Requisition{}
+	requisition := model.Requisition{}
 	json.Unmarshal(jsonBytes, &requisition)
 	writer := common.NewTableWriter()
 	fmt.Fprintln(writer, "Foreign ID\tLabel\tLocation\tInterfaces\tAssets\tCategories")
@@ -135,7 +137,7 @@ func setNode(c *cli.Context) error {
 	if foreignID == "" {
 		return fmt.Errorf("Foreign ID required")
 	}
-	node := Node{
+	node := model.Node{
 		ForeignID:           foreignID,
 		NodeLabel:           c.String("label"),
 		Location:            c.String("location"),
@@ -168,7 +170,7 @@ func applyNode(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	node := &Node{}
+	node := &model.Node{}
 	yaml.Unmarshal(data, node)
 	err = node.IsValid()
 	if err != nil {
