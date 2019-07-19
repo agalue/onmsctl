@@ -93,10 +93,17 @@ func (i *Interface) IsValid() error {
 		}
 		i.IPAddress = addresses[0].String()
 	}
+	serviceMap := make(map[string]int)
 	for _, s := range i.Services {
+		serviceMap[s.Name]++
 		err := s.IsValid()
 		if err != nil {
 			return err
+		}
+	}
+	for service, count := range serviceMap {
+		if count > 1 {
+			return fmt.Errorf("Service %s is defined more than once on IP %s", service, i.IPAddress)
 		}
 	}
 	return nil
@@ -136,14 +143,21 @@ func (n *Node) IsValid() error {
 		return fmt.Errorf("The parent node cannot be the node itself. The parent-foreign-id has to be different than the foreign-id")
 	}
 	primaryCount := 0
+	intfMap := make(map[string]int)
 	for i := range n.Interfaces {
 		intf := &n.Interfaces[i]
+		intfMap[intf.IPAddress]++
 		if intf.SnmpPrimary == "P" {
 			primaryCount++
 		}
 		err := intf.IsValid()
 		if err != nil {
 			return err
+		}
+	}
+	for ipAddr, count := range intfMap {
+		if count > 1 {
+			return fmt.Errorf("IP Address %s is defined more than once on node %s", ipAddr, n.NodeLabel)
 		}
 	}
 	if primaryCount > 1 {
@@ -186,9 +200,9 @@ func (r Requisition) IsValid() error {
 			return err
 		}
 	}
-	for k, v := range foreignIDs {
-		if v > 1 {
-			return fmt.Errorf("Duplicate Foreign ID %s", k)
+	for id, count := range foreignIDs {
+		if count > 1 {
+			return fmt.Errorf("Duplicate Foreign ID %s on requisition %s", id, r.Name)
 		}
 	}
 	return nil
