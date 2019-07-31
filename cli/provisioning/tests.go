@@ -9,22 +9,22 @@ import (
 	"testing"
 	"time"
 
-	"github.com/OpenNMS/onmsctl/common"
+	"github.com/OpenNMS/onmsctl/model"
 	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 	"gotest.tools/assert"
 )
 
-var testNode = Node{
+var testNode = model.RequisitionNode{
 	ForeignID: "n1",
 	NodeLabel: "n1",
-	Interfaces: []Interface{
+	Interfaces: []model.RequisitionInterface{
 		{IPAddress: "10.0.0.1", SnmpPrimary: "P"},
 	},
-	Categories: []Category{
+	Categories: []model.RequisitionCategory{
 		{"Server"},
 	},
-	Assets: []Asset{
+	Assets: []model.RequisitionAsset{
 		{"city", "Durham"},
 	},
 }
@@ -46,24 +46,24 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 
 		case "/rest/foreignSourcesConfig/assets":
 			assert.Equal(t, http.MethodGet, req.Method)
-			sendData(res, ElementList{1, []string{"address1", "city", "state", "zip"}})
+			sendData(res, model.ElementList{1, []string{"address1", "city", "state", "zip"}})
 
 		case "/rest/requisitionNames":
 			assert.Equal(t, http.MethodGet, req.Method)
-			sendData(res, RequisitionsList{1, []string{"Test", "Local"}})
+			sendData(res, model.RequisitionsList{1, []string{"Test", "Local"}})
 
 		case "/rest/requisitions/deployed/stats":
 			assert.Equal(t, http.MethodGet, req.Method)
-			now := common.Time{Time: time.Now()}
-			sendData(res, RequisitionsStats{1, []RequisitionStats{{"Test", 0, nil, &now}}})
+			now := model.Time{Time: time.Now()}
+			sendData(res, model.RequisitionsStats{1, []model.RequisitionStats{{"Test", 0, nil, &now}}})
 
 		case "/rest/requisitions/Test":
 			assert.Equal(t, http.MethodGet, req.Method)
-			sendData(res, Requisition{Name: "Test", Nodes: []Node{testNode}})
+			sendData(res, model.Requisition{Name: "Test", Nodes: []model.RequisitionNode{testNode}})
 
 		case "/rest/requisitions":
 			assert.Equal(t, http.MethodPost, req.Method)
-			var r Requisition
+			var r model.Requisition
 			bytes, err := ioutil.ReadAll(req.Body)
 			assert.NilError(t, err)
 			err = json.Unmarshal(bytes, &r)
@@ -99,7 +99,7 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 
 		case "/rest/requisitions/Test/nodes":
 			assert.Equal(t, http.MethodPost, req.Method)
-			var node Node
+			var node model.RequisitionNode
 			bytes, err := ioutil.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &node)
@@ -116,7 +116,7 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 
 		case "/rest/requisitions/Test/nodes/n1/interfaces":
 			assert.Equal(t, http.MethodPost, req.Method)
-			var intf Interface
+			var intf model.RequisitionInterface
 			bytes, err := ioutil.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &intf)
@@ -131,7 +131,7 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 
 		case "/rest/requisitions/Test/nodes/n1/assets":
 			assert.Equal(t, http.MethodPost, req.Method)
-			var asset Asset
+			var asset model.RequisitionAsset
 			bytes, err := ioutil.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &asset)
@@ -143,7 +143,7 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 
 		case "/rest/requisitions/Test/nodes/n1/categories":
 			assert.Equal(t, http.MethodPost, req.Method)
-			var cat Category
+			var cat model.RequisitionCategory
 			bytes, err := ioutil.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &cat)

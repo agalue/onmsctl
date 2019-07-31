@@ -5,14 +5,16 @@ import (
 	"fmt"
 
 	"github.com/OpenNMS/onmsctl/common"
+	"github.com/OpenNMS/onmsctl/model"
 	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 )
 
 // AssetsCliCommand the CLI command configuration for managing categories for requisitioned nodes
 var AssetsCliCommand = cli.Command{
-	Name:  "assets",
-	Usage: "Manage node asset fields",
+	Name:     "assets",
+	Usage:    "Manage node asset fields",
+	Category: "Requisitions",
 	Subcommands: []cli.Command{
 		{
 			Name:      "list",
@@ -103,7 +105,7 @@ func setAsset(c *cli.Context) error {
 	if !found {
 		return fmt.Errorf("Invalid Asset Field: %s", assetKey)
 	}
-	asset := Asset{Name: assetKey, Value: assetValue}
+	asset := model.RequisitionAsset{Name: assetKey, Value: assetValue}
 	jsonBytes, _ := json.Marshal(asset)
 	return rest.Instance.Post("/rest/requisitions/"+foreignSource+"/nodes/"+foreignID+"/assets", jsonBytes)
 }
@@ -127,8 +129,8 @@ func deleteAsset(c *cli.Context) error {
 	return rest.Instance.Delete("/rest/requisitions/" + foreignSource + "/nodes/" + foreignID + "/assets/" + asset)
 }
 
-func getAssets(c *cli.Context) (ElementList, error) {
-	assets := ElementList{}
+func getAssets(c *cli.Context) (model.ElementList, error) {
+	assets := model.ElementList{}
 	jsonAssets, err := rest.Instance.Get("/rest/foreignSourcesConfig/assets")
 	if err != nil {
 		return assets, fmt.Errorf("Cannot retrieve asset names list")

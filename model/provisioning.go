@@ -1,40 +1,38 @@
-package provisioning
+package model
 
 import (
 	"fmt"
 	"net"
-
-	"github.com/OpenNMS/onmsctl/common"
 )
 
-// Meta a meta-data entry
-type Meta struct {
+// RequisitionMetaData a meta-data entry
+type RequisitionMetaData struct {
 	Key   string `json:"key" yaml:"key"`
 	Value string `json:"value" yaml:"value"`
 }
 
-// Service an IP interface monitored service
-type Service struct {
-	Name     string `json:"service-name" yaml:"name"`
-	MetaData []Meta `json:"meta-data,omitempty" yaml:"metaData,omitempty"`
+// RequisitionMonitoredService an IP interface monitored service
+type RequisitionMonitoredService struct {
+	Name     string                `json:"service-name" yaml:"name"`
+	MetaData []RequisitionMetaData `json:"meta-data,omitempty" yaml:"metaData,omitempty"`
 }
 
 // IsValid returns an error if the service is invalid
-func (s Service) IsValid() error {
+func (s RequisitionMonitoredService) IsValid() error {
 	if s.Name == "" {
 		return fmt.Errorf("Service name cannot be null")
 	}
 	return nil
 }
 
-// Asset a requisition node asset field
-type Asset struct {
+// RequisitionAsset a requisition node asset field
+type RequisitionAsset struct {
 	Name  string `json:"name" yaml:"name"`
 	Value string `json:"value" yaml:"value"`
 }
 
 // IsValid returns an error if asset field is invalid
-func (a Asset) IsValid() error {
+func (a RequisitionAsset) IsValid() error {
 	if a.Name == "" {
 		return fmt.Errorf("Asset name cannot be empty")
 	}
@@ -44,31 +42,31 @@ func (a Asset) IsValid() error {
 	return nil
 }
 
-// Category a requisition node category
-type Category struct {
+// RequisitionCategory a requisition node category
+type RequisitionCategory struct {
 	Name string `json:"name" yaml:"name"`
 }
 
 // IsValid returns an error if the category is invalid
-func (c Category) IsValid() error {
+func (c RequisitionCategory) IsValid() error {
 	if c.Name == "" {
 		return fmt.Errorf("Category name cannot be null")
 	}
 	return nil
 }
 
-// Interface an IP interface of a requisition node
-type Interface struct {
-	IPAddress   string    `json:"ip-addr" yaml:"ipAddress"`
-	Description string    `json:"descr,omitempty" yaml:"description,omitempty"`
-	SnmpPrimary string    `json:"snmp-primary" yaml:"snmpPrimary"`
-	Status      int       `json:"status" yaml:"status"`
-	Services    []Service `json:"monitored-service,omitempty" yaml:"services,omitempty"`
-	MetaData    []Meta    `json:"meta-data,omitempty" yaml:"metaData,omitempty"`
+// RequisitionInterface an IP interface of a requisition node
+type RequisitionInterface struct {
+	IPAddress   string                        `json:"ip-addr" yaml:"ipAddress"`
+	Description string                        `json:"descr,omitempty" yaml:"description,omitempty"`
+	SnmpPrimary string                        `json:"snmp-primary" yaml:"snmpPrimary"`
+	Status      int                           `json:"status" yaml:"status"`
+	Services    []RequisitionMonitoredService `json:"monitored-service,omitempty" yaml:"services,omitempty"`
+	MetaData    []RequisitionMetaData         `json:"meta-data,omitempty" yaml:"metaData,omitempty"`
 }
 
 // IsValid returns an error if the interface definition is invalid
-func (i *Interface) IsValid() error {
+func (i *RequisitionInterface) IsValid() error {
 	if i.IPAddress == "" {
 		return fmt.Errorf("IP Address cannot be empty")
 	}
@@ -109,24 +107,24 @@ func (i *Interface) IsValid() error {
 	return nil
 }
 
-// Node a requisition node
-type Node struct {
-	NodeLabel           string      `json:"node-label" yaml:"nodeLabel"`
-	ForeignID           string      `json:"foreign-id" yaml:"foreignID"`
-	Location            string      `json:"location,omitempty" yaml:"location,omitempty"`
-	City                string      `json:"city,omitempty" yaml:"city,omitempty"`
-	Building            string      `json:"building,omitempty" yaml:"building,omitempty"`
-	ParentForeignSource string      `json:"parent-foreign-source,omitempty" yaml:"parentForeignSource,omitempty"`
-	ParentForeignID     string      `json:"parent-foreign-id,omitempty" yaml:"parentForeignID,omitempty"`
-	ParentNodeLabel     string      `json:"parent-node-label,omitempty" yaml:"parentNodeLabel,omitempty"`
-	Interfaces          []Interface `json:"interface,omitempty" yaml:"interfaces,omitempty"`
-	Categories          []Category  `json:"category,omitempty" yaml:"categories,omitempty"`
-	Assets              []Asset     `json:"asset,omitempty" yaml:"assets,omitempty"`
-	MetaData            []Meta      `json:"meta-data,omitempty" yaml:"metaData,omitempty"`
+// RequisitionNode a requisitioned node
+type RequisitionNode struct {
+	NodeLabel           string                 `json:"node-label" yaml:"nodeLabel"`
+	ForeignID           string                 `json:"foreign-id" yaml:"foreignID"`
+	Location            string                 `json:"location,omitempty" yaml:"location,omitempty"`
+	City                string                 `json:"city,omitempty" yaml:"city,omitempty"`
+	Building            string                 `json:"building,omitempty" yaml:"building,omitempty"`
+	ParentForeignSource string                 `json:"parent-foreign-source,omitempty" yaml:"parentForeignSource,omitempty"`
+	ParentForeignID     string                 `json:"parent-foreign-id,omitempty" yaml:"parentForeignID,omitempty"`
+	ParentNodeLabel     string                 `json:"parent-node-label,omitempty" yaml:"parentNodeLabel,omitempty"`
+	Interfaces          []RequisitionInterface `json:"interface,omitempty" yaml:"interfaces,omitempty"`
+	Categories          []RequisitionCategory  `json:"category,omitempty" yaml:"categories,omitempty"`
+	Assets              []RequisitionAsset     `json:"asset,omitempty" yaml:"assets,omitempty"`
+	MetaData            []RequisitionMetaData  `json:"meta-data,omitempty" yaml:"metaData,omitempty"`
 }
 
 // IsValid returns an error if the node definition is invalid
-func (n *Node) IsValid() error {
+func (n *RequisitionNode) IsValid() error {
 	if n.ForeignID == "" {
 		return fmt.Errorf("Foreign ID cannot be empty")
 	}
@@ -180,10 +178,10 @@ func (n *Node) IsValid() error {
 
 // Requisition a requisition or set of nodes
 type Requisition struct {
-	DateStamp  *common.Time `json:"date-stamp,omitempty" yaml:"dateStamp,omitempty"`
-	LastImport *common.Time `json:"last-import,omitempty" yaml:"lastImport,omitempty"`
-	Name       string       `json:"foreign-source" yaml:"name"`
-	Nodes      []Node       `json:"node,omitempty" yaml:"nodes,omitempty"`
+	DateStamp  *Time             `json:"date-stamp,omitempty" yaml:"dateStamp,omitempty"`
+	LastImport *Time             `json:"last-import,omitempty" yaml:"lastImport,omitempty"`
+	Name       string            `json:"foreign-source" yaml:"name"`
+	Nodes      []RequisitionNode `json:"node,omitempty" yaml:"nodes,omitempty"`
 }
 
 // IsValid returns an error if the requisition definition is invalid
@@ -216,10 +214,10 @@ type RequisitionsList struct {
 
 // RequisitionStats statistics about the requisition
 type RequisitionStats struct {
-	Name       string       `json:"name" yaml:"name"`
-	Count      int          `json:"count" yaml:"count"`
-	ForeignIDs []string     `json:"foreign-id" yaml:"foreignID"`
-	LastImport *common.Time `json:"last-imported,omitempty" yaml:"lastImport,omitempty"`
+	Name       string   `json:"name" yaml:"name"`
+	Count      int      `json:"count" yaml:"count"`
+	ForeignIDs []string `json:"foreign-id" yaml:"foreignID"`
+	LastImport *Time    `json:"last-imported,omitempty" yaml:"lastImport,omitempty"`
 }
 
 // RequisitionsStats statistics about all the requisitions
@@ -256,11 +254,11 @@ type Policy struct {
 
 // ForeignSourceDef a foreign source definition
 type ForeignSourceDef struct {
-	Name         string       `json:"name" yaml:"name"`
-	DateStamp    *common.Time `json:"date-stamp,omitempty" yaml:"dateStamp,omitempty"`
-	ScanInterval string       `json:"scan-interval" yaml:"scanInterval"`
-	Detectors    []Detector   `json:"detectors,omitempty" yaml:"detectors,omitempty"`
-	Policies     []Policy     `json:"policies,omitempty" yaml:"policies,omitempty"`
+	Name         string     `json:"name" yaml:"name"`
+	DateStamp    *Time      `json:"date-stamp,omitempty" yaml:"dateStamp,omitempty"`
+	ScanInterval string     `json:"scan-interval" yaml:"scanInterval"`
+	Detectors    []Detector `json:"detectors,omitempty" yaml:"detectors,omitempty"`
+	Policies     []Policy   `json:"policies,omitempty" yaml:"policies,omitempty"`
 }
 
 // Plugin a definiton class for a detector or a policy

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/OpenNMS/onmsctl/common"
+	"github.com/OpenNMS/onmsctl/model"
 	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 )
@@ -14,6 +15,7 @@ var ServicesCliCommand = cli.Command{
 	Name:      "service",
 	ShortName: "svc",
 	Usage:     "Manage Monitored Services",
+	Category:  "Requisitions",
 	Subcommands: []cli.Command{
 		{
 			Name:      "list",
@@ -56,7 +58,7 @@ func listServices(c *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("Cannot retrieve interfaces")
 	}
-	intf := Interface{}
+	intf := model.RequisitionInterface{}
 	json.Unmarshal(jsonBytes, &intf)
 	writer := common.NewTableWriter()
 	fmt.Fprintln(writer, "Service Name")
@@ -87,7 +89,7 @@ func addService(c *cli.Context) error {
 	if service == "" {
 		return fmt.Errorf("Service name required")
 	}
-	svc := Service{Name: service}
+	svc := model.RequisitionMonitoredService{Name: service}
 	jsonBytes, _ := json.Marshal(svc)
 	return rest.Instance.Post("/rest/requisitions/"+foreignSource+"/nodes/"+foreignID+"/interfaces/"+ipAddress+"/services", jsonBytes)
 }

@@ -3,6 +3,7 @@ package provisioning
 import (
 	"testing"
 
+	"github.com/OpenNMS/onmsctl/model"
 	"gopkg.in/yaml.v2"
 	"gotest.tools/assert"
 )
@@ -65,16 +66,16 @@ func TestApplyRequisition(t *testing.T) {
 	err = app.Run([]string{app.Name, "req", "apply"})
 	assert.Error(t, err, "YAML content cannot be empty")
 
-	var testReq = Requisition{
+	var testReq = model.Requisition{
 		Name: "WebSites",
-		Nodes: []Node{
+		Nodes: []model.RequisitionNode{
 			{
 				ForeignID: "opennms.com",
-				Interfaces: []Interface{
+				Interfaces: []model.RequisitionInterface{
 					{IPAddress: "www.opennms.com"},
 				},
-				Categories: []Category{
-					{"Server"},
+				Categories: []model.RequisitionCategory{
+					{Name: "Server"},
 				},
 			},
 		},

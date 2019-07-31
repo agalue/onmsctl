@@ -20,7 +20,7 @@ func main() {
 
 	err := app.Run(os.Args)
 	if err != nil {
-		fmt.Printf("ERROR: %s\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: %s\n", err)
 		os.Exit(1)
 	}
 }
@@ -51,14 +51,19 @@ func initCliFlags(app *cli.App) {
 			Value: rest.Instance.Password,
 			Usage: "OpenNMS User's Password",
 		},
+		cli.BoolFlag{
+			Name:        "insecure-https",
+			Destination: &rest.Instance.InsecureSkipVerify,
+			Usage:       "to skip HTTPS certificate validation (for self-signed certificates)",
+		},
 	}
 }
 
 func initCliCommands(app *cli.App) {
 	app.Commands = []cli.Command{
+		info.CliCommand,
 		provisioning.CliCommand,
 		snmp.CliCommand,
-		info.CliCommand,
 		events.CliCommand,
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"github.com/OpenNMS/onmsctl/common"
+	"github.com/OpenNMS/onmsctl/model"
 	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 
@@ -37,7 +38,7 @@ var CliCommand = cli.Command{
 			Flags: []cli.Flag{
 				cli.GenericFlag{
 					Name: "version, v",
-					Value: &common.EnumValue{
+					Value: &model.EnumValue{
 						Enum:    []string{"v1", "v2c", "v3"},
 						Default: "v2c",
 					},
@@ -82,7 +83,7 @@ var CliCommand = cli.Command{
 				},
 				cli.GenericFlag{
 					Name: "privProtocol, pp",
-					Value: &common.EnumValue{
+					Value: &model.EnumValue{
 						Enum: []string{"DES", "AES", "AES192", "AES256"},
 					},
 					Usage: "SNMPv3 Privacy Protocol: DES, AES, AES192, AES256",
@@ -93,7 +94,7 @@ var CliCommand = cli.Command{
 				},
 				cli.GenericFlag{
 					Name: "authProtocol, ap",
-					Value: &common.EnumValue{
+					Value: &model.EnumValue{
 						Enum: []string{"MD5", "SHA"},
 					},
 					Usage: "SNMPv3 Authentication Protocol: MD5, SHA",
@@ -152,7 +153,7 @@ func showSnmpConfig(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	snmp := SnmpInfo{}
+	snmp := model.SnmpInfo{}
 	json.Unmarshal(jsonString, &snmp)
 	data, _ := yaml.Marshal(&snmp)
 	fmt.Println(string(data))
@@ -167,7 +168,7 @@ func setSnmpConfig(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	snmp := SnmpInfo{
+	snmp := model.SnmpInfo{
 		Version:         c.String("version"),
 		Location:        c.String("location"),
 		Port:            c.Int("port"),
@@ -208,7 +209,7 @@ func applySnmpConfig(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	snmp := SnmpInfo{}
+	snmp := model.SnmpInfo{}
 	yaml.Unmarshal(data, &snmp)
 	err = snmp.IsValid()
 	if err != nil {

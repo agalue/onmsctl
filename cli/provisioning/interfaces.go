@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/OpenNMS/onmsctl/common"
+	"github.com/OpenNMS/onmsctl/model"
 	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 
@@ -16,6 +17,7 @@ var InterfacesCliCommand = cli.Command{
 	Name:      "interface",
 	ShortName: "intf",
 	Usage:     "Manage IP Interfaces",
+	Category:  "Requisitions",
 	Subcommands: []cli.Command{
 		{
 			Name:      "list",
@@ -41,7 +43,7 @@ var InterfacesCliCommand = cli.Command{
 				},
 				cli.GenericFlag{
 					Name: "snmpPrimary, p",
-					Value: &common.EnumValue{
+					Value: &model.EnumValue{
 						Enum:    []string{"P", "N", "S"},
 						Default: "N",
 					},
@@ -108,7 +110,7 @@ func showInterface(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	intf := Interface{}
+	intf := model.RequisitionInterface{}
 	json.Unmarshal(jsonString, &intf)
 	data, _ := yaml.Marshal(&intf)
 	fmt.Println(string(data))
@@ -131,7 +133,7 @@ func setInterface(c *cli.Context) error {
 	if ipAddress == "" {
 		return fmt.Errorf("IP Address required")
 	}
-	intf := Interface{
+	intf := model.RequisitionInterface{
 		IPAddress:   ipAddress,
 		Description: c.String("description"),
 		SnmpPrimary: c.String("snmpPrimary"),
@@ -161,7 +163,7 @@ func applyInterface(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	intf := Interface{}
+	intf := model.RequisitionInterface{}
 	yaml.Unmarshal(data, &intf)
 	err = intf.IsValid()
 	if err != nil {

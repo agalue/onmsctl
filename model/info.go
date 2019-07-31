@@ -1,4 +1,4 @@
-package info
+package model
 
 // OnmsInfoDatetimeFormat provides information about the time format
 type OnmsInfoDatetimeFormat struct {

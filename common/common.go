@@ -19,7 +19,11 @@ func init() {
 	configFile := getConfigFile()
 	if fileExists(configFile) {
 		data, _ := ioutil.ReadFile(configFile)
-		yaml.Unmarshal(data, &rest.Instance)
+		err := yaml.Unmarshal(data, &rest.Instance)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "ERROR: cannot read configuration file %s; %s\n", configFile, err)
+			os.Exit(1)
+		}
 	}
 }
 
