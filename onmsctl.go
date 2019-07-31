@@ -37,19 +37,22 @@ func initCliInfo(app *cli.App) {
 func initCliFlags(app *cli.App) {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:  "url",
-			Value: rest.Instance.URL,
-			Usage: "OpenNMS Base URL",
+			Name:        "url",
+			Value:       rest.Instance.URL,
+			Destination: &rest.Instance.URL,
+			Usage:       "OpenNMS Base URL",
 		},
 		cli.StringFlag{
-			Name:  "user",
-			Value: rest.Instance.Username,
-			Usage: "OpenNMS Username (with ROLE_REST or ROLE_ADMIN)",
+			Name:        "user",
+			Value:       rest.Instance.Username,
+			Destination: &rest.Instance.Username,
+			Usage:       "OpenNMS Username (with ROLE_REST or ROLE_ADMIN)",
 		},
 		cli.StringFlag{
-			Name:  "passwd",
-			Value: rest.Instance.Password,
-			Usage: "OpenNMS User's Password",
+			Name:        "passwd",
+			Value:       rest.Instance.Password,
+			Destination: &rest.Instance.Password,
+			Usage:       "OpenNMS User's Password",
 		},
 		cli.BoolFlag{
 			Name:        "insecure-https",
