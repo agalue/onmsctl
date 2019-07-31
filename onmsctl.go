@@ -20,7 +20,7 @@ func main() {
 
 	err := app.Run(os.Args)
 	if err != nil {
-		fmt.Printf("ERROR: %s\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: %s\n", err)
 		os.Exit(1)
 	}
 }
@@ -61,9 +61,9 @@ func initCliFlags(app *cli.App) {
 
 func initCliCommands(app *cli.App) {
 	app.Commands = []cli.Command{
+		info.CliCommand,
 		provisioning.CliCommand,
 		snmp.CliCommand,
-		info.CliCommand,
 		events.CliCommand,
 	}
 }
