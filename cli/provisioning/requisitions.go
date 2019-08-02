@@ -2,6 +2,7 @@ package provisioning
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"time"
 
@@ -48,6 +49,27 @@ var RequisitionsCliCommand = cli.Command{
 				},
 			},
 			ArgsUsage: "<yaml>",
+		},
+		{
+			Name:      "validate",
+			ShortName: "v",
+			Usage:     "Validates a requisition from a external file",
+			Action:    validateRequisition,
+			Flags: []cli.Flag{
+				cli.GenericFlag{
+					Name: "format, x",
+					Value: &model.EnumValue{
+						Enum:    []string{"xml", "json", "yaml"},
+						Default: "xml",
+					},
+					Usage: "File Format: xml (default), json, yaml",
+				},
+				cli.StringFlag{
+					Name:  "file, f",
+					Usage: "External YAML file (use '-' for STDIN Pipe)",
+				},
+			},
+			ArgsUsage: "<content>",
 		},
 		{
 			Name:      "import",
@@ -138,6 +160,31 @@ func applyRequisition(c *cli.Context) error {
 	fmt.Printf("Adding requisition %s...\n", requisition.Name)
 	jsonBytes, _ := json.Marshal(requisition)
 	return rest.Instance.Post("/rest/requisitions", jsonBytes)
+}
+
+func validateRequisition(c *cli.Context) error {
+	data, err := common.ReadInput(c, 0)
+	if err != nil {
+		return err
+	}
+	requisition := &model.Requisition{}
+	switch c.String("format") {
+	case "xml":
+		err = xml.Unmarshal(data, requisition)
+	case "yaml":
+		err = yaml.Unmarshal(data, requisition)
+	case "json":
+		err = json.Unmarshal(data, requisition)
+	}
+	if err != nil {
+		return err
+	}
+	err = requisition.IsValid()
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Requisition %s is valid!\n", requisition.Name)
+	return nil
 }
 
 func importRequisition(c *cli.Context) error {

@@ -2,6 +2,7 @@ package model
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"strings"
 	"time"
@@ -73,6 +74,28 @@ func (t *Time) UnmarshalYAML(data []byte) error {
 	var s string
 	var err error
 	if err = yaml.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	t.Time, err = time.Parse(s, s)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalXML converts time object into time as string
+func (t Time) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	if t.IsZero() {
+		return e.EncodeElement("", start)
+	}
+	return e.EncodeElement(t.String(), start)
+}
+
+// UnmarshalXML converts time string into time object
+func (t *Time) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var s string
+	var err error
+	if err := d.DecodeElement(&s, &start); err != nil {
 		return err
 	}
 	t.Time, err = time.Parse(s, s)

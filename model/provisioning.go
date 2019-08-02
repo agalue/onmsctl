@@ -1,20 +1,23 @@
 package model
 
 import (
+	"encoding/xml"
 	"fmt"
 	"net"
 )
 
 // RequisitionMetaData a meta-data entry
 type RequisitionMetaData struct {
-	Key   string `json:"key" yaml:"key"`
-	Value string `json:"value" yaml:"value"`
+	XMLName xml.Name `xml:"meta-data" json:"-" yaml:"-"`
+	Key     string   `xml:"key,attr" json:"key" yaml:"key"`
+	Value   string   `xml:"value,attr" json:"value" yaml:"value"`
 }
 
 // RequisitionMonitoredService an IP interface monitored service
 type RequisitionMonitoredService struct {
-	Name     string                `json:"service-name" yaml:"name"`
-	MetaData []RequisitionMetaData `json:"meta-data,omitempty" yaml:"metaData,omitempty"`
+	XMLName  xml.Name              `xml:"monitored-service" json:"-" yaml:"-"`
+	Name     string                `xml:"name,attr" json:"service-name" yaml:"name"`
+	MetaData []RequisitionMetaData `xml:"meta-data,omitempty" json:"meta-data,omitempty" yaml:"metaData,omitempty"`
 }
 
 // IsValid returns an error if the service is invalid
@@ -27,8 +30,9 @@ func (s RequisitionMonitoredService) IsValid() error {
 
 // RequisitionAsset a requisition node asset field
 type RequisitionAsset struct {
-	Name  string `json:"name" yaml:"name"`
-	Value string `json:"value" yaml:"value"`
+	XMLName xml.Name `xml:"asset" json:"-" yaml:"-"`
+	Name    string   `xml:"name,attr" json:"name" yaml:"name"`
+	Value   string   `xml:"value,attr" json:"value" yaml:"value"`
 }
 
 // IsValid returns an error if asset field is invalid
@@ -44,7 +48,8 @@ func (a RequisitionAsset) IsValid() error {
 
 // RequisitionCategory a requisition node category
 type RequisitionCategory struct {
-	Name string `json:"name" yaml:"name"`
+	XMLName xml.Name `xml:"category" json:"-" yaml:"-"`
+	Name    string   `xml:"name,attr" json:"name" yaml:"name"`
 }
 
 // IsValid returns an error if the category is invalid
@@ -57,12 +62,13 @@ func (c RequisitionCategory) IsValid() error {
 
 // RequisitionInterface an IP interface of a requisition node
 type RequisitionInterface struct {
-	IPAddress   string                        `json:"ip-addr" yaml:"ipAddress"`
-	Description string                        `json:"descr,omitempty" yaml:"description,omitempty"`
-	SnmpPrimary string                        `json:"snmp-primary" yaml:"snmpPrimary"`
-	Status      int                           `json:"status" yaml:"status"`
-	Services    []RequisitionMonitoredService `json:"monitored-service,omitempty" yaml:"services,omitempty"`
-	MetaData    []RequisitionMetaData         `json:"meta-data,omitempty" yaml:"metaData,omitempty"`
+	XMLName     xml.Name                      `xml:"interface" json:"-" yaml:"-"`
+	IPAddress   string                        `xml:"ip-addr,attr" json:"ip-addr" yaml:"ipAddress"`
+	Description string                        `xml:"descr,attr,omitempty" json:"descr,omitempty" yaml:"description,omitempty"`
+	SnmpPrimary string                        `xml:"snmp-primary,attr,omitempty" json:"snmp-primary" yaml:"snmpPrimary"`
+	Status      int                           `xml:"status,attr,omitempty" json:"status" yaml:"status"`
+	Services    []RequisitionMonitoredService `xml:"monitored-service,omitempty" json:"monitored-service,omitempty" yaml:"services,omitempty"`
+	MetaData    []RequisitionMetaData         `xml:"meta-data,omitempty" json:"meta-data,omitempty" yaml:"metaData,omitempty"`
 }
 
 // IsValid returns an error if the interface definition is invalid
@@ -85,10 +91,10 @@ func (i *RequisitionInterface) IsValid() error {
 	ip := net.ParseIP(i.IPAddress)
 	if ip == nil {
 		addresses, err := net.LookupIP(i.IPAddress)
-		fmt.Printf("%s translates to %s, using the first entry.\n", i.IPAddress, addresses)
 		if err != nil {
-			return fmt.Errorf("Cannot get address from %s: %s", i.IPAddress, err)
+			return fmt.Errorf("Cannot get address from %s (invalid IP or FQDN); %s", i.IPAddress, err)
 		}
+		fmt.Printf("%s translates to %s, using the first entry.\n", i.IPAddress, addresses)
 		i.IPAddress = addresses[0].String()
 	}
 	serviceMap := make(map[string]int)
@@ -109,18 +115,19 @@ func (i *RequisitionInterface) IsValid() error {
 
 // RequisitionNode a requisitioned node
 type RequisitionNode struct {
-	NodeLabel           string                 `json:"node-label" yaml:"nodeLabel"`
-	ForeignID           string                 `json:"foreign-id" yaml:"foreignID"`
-	Location            string                 `json:"location,omitempty" yaml:"location,omitempty"`
-	City                string                 `json:"city,omitempty" yaml:"city,omitempty"`
-	Building            string                 `json:"building,omitempty" yaml:"building,omitempty"`
-	ParentForeignSource string                 `json:"parent-foreign-source,omitempty" yaml:"parentForeignSource,omitempty"`
-	ParentForeignID     string                 `json:"parent-foreign-id,omitempty" yaml:"parentForeignID,omitempty"`
-	ParentNodeLabel     string                 `json:"parent-node-label,omitempty" yaml:"parentNodeLabel,omitempty"`
-	Interfaces          []RequisitionInterface `json:"interface,omitempty" yaml:"interfaces,omitempty"`
-	Categories          []RequisitionCategory  `json:"category,omitempty" yaml:"categories,omitempty"`
-	Assets              []RequisitionAsset     `json:"asset,omitempty" yaml:"assets,omitempty"`
-	MetaData            []RequisitionMetaData  `json:"meta-data,omitempty" yaml:"metaData,omitempty"`
+	XMLName             xml.Name               `xml:"node" json:"-" yaml:"-"`
+	NodeLabel           string                 `xml:"node-label,attr" json:"node-label" yaml:"nodeLabel"`
+	ForeignID           string                 `xml:"foreign-id,attr" json:"foreign-id" yaml:"foreignID"`
+	Location            string                 `xml:"location,attr,omitempty" json:"location,omitempty" yaml:"location,omitempty"`
+	City                string                 `xml:"city,attr,omitempty" json:"city,omitempty" yaml:"city,omitempty"`
+	Building            string                 `xml:"building,attr,omitempty" json:"building,omitempty" yaml:"building,omitempty"`
+	ParentForeignSource string                 `xml:"parent-foreign-source,attr,omitempty" json:"parent-foreign-source,omitempty" yaml:"parentForeignSource,omitempty"`
+	ParentForeignID     string                 `xml:"parent-foreign-id,attr,omitempty" json:"parent-foreign-id,omitempty" yaml:"parentForeignID,omitempty"`
+	ParentNodeLabel     string                 `xml:"parent-node-label,omitempty" json:"parent-node-label,omitempty" yaml:"parentNodeLabel,omitempty"`
+	Interfaces          []RequisitionInterface `xml:"interface,omitempty" json:"interface,omitempty" yaml:"interfaces,omitempty"`
+	Categories          []RequisitionCategory  `xml:"category,omitempty" json:"category,omitempty" yaml:"categories,omitempty"`
+	Assets              []RequisitionAsset     `xml:"asset,omitempty" json:"asset,omitempty" yaml:"assets,omitempty"`
+	MetaData            []RequisitionMetaData  `xml:"meta-data,omitempty" json:"meta-data,omitempty" yaml:"metaData,omitempty"`
 }
 
 // IsValid returns an error if the node definition is invalid
@@ -178,10 +185,11 @@ func (n *RequisitionNode) IsValid() error {
 
 // Requisition a requisition or set of nodes
 type Requisition struct {
-	DateStamp  *Time             `json:"date-stamp,omitempty" yaml:"dateStamp,omitempty"`
-	LastImport *Time             `json:"last-import,omitempty" yaml:"lastImport,omitempty"`
-	Name       string            `json:"foreign-source" yaml:"name"`
-	Nodes      []RequisitionNode `json:"node,omitempty" yaml:"nodes,omitempty"`
+	XMLName    xml.Name          `xml:"model-import" json:"-" yaml:"-"`
+	DateStamp  *Time             `xml:"date-stamp,attr,omitempty" json:"date-stamp,omitempty" yaml:"dateStamp,omitempty"`
+	LastImport *Time             `xml:"last-import,attr,omitempty" json:"last-import,omitempty" yaml:"lastImport,omitempty"`
+	Name       string            `xml:"foreign-source,attr" json:"foreign-source" yaml:"name"`
+	Nodes      []RequisitionNode `xml:"node,omitempty" json:"node,omitempty" yaml:"nodes,omitempty"`
 }
 
 // IsValid returns an error if the requisition definition is invalid
@@ -195,7 +203,7 @@ func (r Requisition) IsValid() error {
 		foreignIDs[n.ForeignID]++
 		err := n.IsValid()
 		if err != nil {
-			return err
+			return fmt.Errorf("Problem on node %s on requisition %s: %s", n.NodeLabel, r.Name, err.Error())
 		}
 	}
 	for id, count := range foreignIDs {

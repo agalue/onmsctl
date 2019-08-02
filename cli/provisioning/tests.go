@@ -22,10 +22,10 @@ var testNode = model.RequisitionNode{
 		{IPAddress: "10.0.0.1", SnmpPrimary: "P"},
 	},
 	Categories: []model.RequisitionCategory{
-		{"Server"},
+		{Name: "Server"},
 	},
 	Assets: []model.RequisitionAsset{
-		{"city", "Durham"},
+		{Name: "city", Value: "Durham"},
 	},
 }
 
