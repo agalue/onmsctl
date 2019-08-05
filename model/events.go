@@ -6,6 +6,13 @@ import (
 	"time"
 )
 
+var (
+	// Severities list of valid event severities
+	Severities = EnumValue{
+		Enum: []string{"Indeterminate", "Normal", "Warning", "Minor", "Major", "Critical"},
+	}
+)
+
 // SNMP an event SNMP object
 type SNMP struct {
 	ID        string `json:"id" yaml:"id"`
@@ -74,6 +81,11 @@ type Event struct {
 	OperInstruct  string       `json:"operinstruct,omitempty" yaml:"operInstruct,omitempty"`
 }
 
+// AddParameter adds a new parameter to the event
+func (e *Event) AddParameter(key string, value string) {
+	e.Parameters = append(e.Parameters, EventParam{Name: key, Value: value})
+}
+
 // SetTime sets the string date based on a Time object
 func (e *Event) SetTime(date time.Time) {
 	d := date.UTC()
@@ -106,10 +118,7 @@ func (e Event) IsValid() error {
 		}
 	}
 	if e.Severity != "" {
-		severities := EnumValue{
-			Enum: []string{"Indeterminate", "Normal", "Warning", "Minor", "Major", "Critical"},
-		}
-		err := severities.Set(e.Severity)
+		err := Severities.Set(e.Severity)
 		if err != nil {
 			return err
 		}

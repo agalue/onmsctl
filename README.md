@@ -9,6 +9,7 @@ The following features have been implemented:
 * Manage SNMP configuration (replacing `provision.pl`)
 * Manage Foreign Source definitions
 * Send events to OpenNMS (replacing `send-event.pl`)
+* Reload configuration of OpenNMS daemons
 
 The reason for implementing a CLI in `Go` is that the generated binaries are self-contained, and for the first time, Windows users will be able to control OpenNMS from the command line. For example, `provision.pl` or `send-events.pl` rely on having Perl installed with some additional dependencies, which can be complicated on the environment where this is either hard or impossible to have.
 
@@ -146,8 +147,6 @@ password: demo
 Make sure to protect the file, as the credentials are on plain text.
 
 ## Upcoming features
-
-* Reload daemons configuration; for example `onmsctl daemon reload Pollerd`. This should include the list of reloadable daemons and requires a way to send events through ReST.
 
 * Search for entities. The idea is to provide a way to build a search expression that will be translated into a [FIQL](https://fiql-parser.readthedocs.io/en/stable/usage.html) expression and use the ReST API v2 of OpenNMS to search for events, alarms, nodes, etc.
 

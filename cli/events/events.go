@@ -90,8 +90,7 @@ func sendEvent(c *cli.Context) error {
 	params := c.StringSlice("parm")
 	for _, p := range params {
 		data := strings.Split(p, "=")
-		param := model.EventParam{Name: data[0], Value: data[1]}
-		event.Parameters = append(event.Parameters, param)
+		event.AddParameter(data[0], data[1])
 	}
 	jsonBytes, _ := json.Marshal(event)
 	return rest.Instance.Post("/rest/events/", jsonBytes)

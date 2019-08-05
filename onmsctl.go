@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/OpenNMS/onmsctl/cli/daemon"
 	"github.com/OpenNMS/onmsctl/cli/events"
 	"github.com/OpenNMS/onmsctl/cli/info"
 	"github.com/OpenNMS/onmsctl/cli/provisioning"
@@ -78,5 +79,6 @@ func initCliCommands(app *cli.App) {
 		provisioning.CliCommand,
 		snmp.CliCommand,
 		events.CliCommand,
+		daemon.CliCommand,
 	}
 }
