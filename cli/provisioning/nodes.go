@@ -33,7 +33,7 @@ var NodesCliCommand = cli.Command{
 		{
 			Name:      "set",
 			ShortName: "add",
-			Usage:     "Adds a new node, or updates an existing node based on Foreign ID, on a given requisition",
+			Usage:     "Adds or updates a node from a given requisition",
 			ArgsUsage: "<foreignSource> <foreignId>",
 			Action:    setNode,
 			Flags: []cli.Flag{
@@ -81,6 +81,7 @@ var NodesCliCommand = cli.Command{
 		},
 		{
 			Name:      "delete",
+			ShortName: "del",
 			Usage:     "Deletes a node from a given requisition",
 			ArgsUsage: "<foreignSource> <foreignId>",
 			Action:    deleteNode,

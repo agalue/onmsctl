@@ -12,6 +12,10 @@ import (
 	"github.com/urfave/cli"
 )
 
+var (
+	version = "v1.0.0"
+)
+
 func main() {
 	var app = cli.NewApp()
 	initCliInfo(app)
@@ -30,7 +34,7 @@ func initCliInfo(app *cli.App) {
 	app.Usage = "A CLI to manage OpenNMS"
 	app.Author = "Alejandro Galue"
 	app.Email = "agalue@opennms.org"
-	app.Version = "1.0.0"
+	app.Version = version
 	app.EnableBashCompletion = true
 }
 
@@ -43,21 +47,27 @@ func initCliFlags(app *cli.App) {
 			Usage:       "OpenNMS Base URL",
 		},
 		cli.StringFlag{
-			Name:        "user",
+			Name:        "user, u",
 			Value:       rest.Instance.Username,
 			Destination: &rest.Instance.Username,
 			Usage:       "OpenNMS Username (with ROLE_REST or ROLE_ADMIN)",
 		},
 		cli.StringFlag{
-			Name:        "passwd",
+			Name:        "passwd, p",
 			Value:       rest.Instance.Password,
 			Destination: &rest.Instance.Password,
 			Usage:       "OpenNMS User's Password",
 		},
+		cli.IntFlag{
+			Name:        "timeout, t",
+			Value:       rest.Instance.Timeout,
+			Destination: &rest.Instance.Timeout,
+			Usage:       "Connection Timeout in Seconds",
+		},
 		cli.BoolFlag{
-			Name:        "insecure-https",
-			Destination: &rest.Instance.InsecureSkipVerify,
-			Usage:       "to skip HTTPS certificate validation (for self-signed certificates)",
+			Name:        "insecure, k",
+			Destination: &rest.Instance.Insecure,
+			Usage:       "To skip HTTPS certificate validation (e.x. self-signed certificates)",
 		},
 	}
 }

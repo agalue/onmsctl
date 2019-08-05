@@ -64,7 +64,7 @@ func TestApplyRequisition(t *testing.T) {
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "req", "apply"})
-	assert.Error(t, err, "YAML content cannot be empty")
+	assert.Error(t, err, "Content cannot be empty")
 
 	var testReq = model.Requisition{
 		Name: "WebSites",

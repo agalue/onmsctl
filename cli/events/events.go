@@ -53,7 +53,7 @@ var CliCommand = cli.Command{
 				},
 				cli.StringSliceFlag{
 					Name:  "parm, p",
-					Usage: "An event parameter (ie: --parm 'url=http://www.google.com/')",
+					Usage: "An event parameter (e.x. --parm 'url=http://www.google.com/')",
 				},
 			},
 		},

@@ -12,7 +12,7 @@ import (
 
 // AssetsCliCommand the CLI command configuration for managing categories for requisitioned nodes
 var AssetsCliCommand = cli.Command{
-	Name:     "assets",
+	Name:     "asset",
 	Usage:    "Manage node asset fields",
 	Category: "Requisitions",
 	Subcommands: []cli.Command{
@@ -30,12 +30,13 @@ var AssetsCliCommand = cli.Command{
 		},
 		{
 			Name:      "set",
-			Usage:     "Adds a new asset or update an existing based on its name, for a given requisition/node",
+			Usage:     "Adds or update an asset from a given requisition/node",
 			ArgsUsage: "<foreignSource> <foreignId> <assetKey> <assetValue>",
 			Action:    setAsset,
 		},
 		{
 			Name:      "delete",
+			ShortName: "del",
 			Usage:     "Deletes an existing asset from a given node",
 			ArgsUsage: "<foreignSource> <foreignId> <assetKey>",
 			Action:    deleteAsset,

@@ -4,6 +4,8 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net"
+	"regexp"
+	"strings"
 )
 
 // RequisitionMetaData a meta-data entry
@@ -11,6 +13,7 @@ type RequisitionMetaData struct {
 	XMLName xml.Name `xml:"meta-data" json:"-" yaml:"-"`
 	Key     string   `xml:"key,attr" json:"key" yaml:"key"`
 	Value   string   `xml:"value,attr" json:"value" yaml:"value"`
+	Context string   `xml:"context,attr,omitempty" json:"context,omitempty" yaml:"context,omitempty"`
 }
 
 // RequisitionMonitoredService an IP interface monitored service
@@ -24,6 +27,9 @@ type RequisitionMonitoredService struct {
 func (s RequisitionMonitoredService) IsValid() error {
 	if s.Name == "" {
 		return fmt.Errorf("Service name cannot be null")
+	}
+	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, s.Name); matched {
+		return fmt.Errorf("Invalid characters on service name %s:, /, \\, ?, &, *, ', \"", s.Name)
 	}
 	return nil
 }
@@ -39,6 +45,9 @@ type RequisitionAsset struct {
 func (a RequisitionAsset) IsValid() error {
 	if a.Name == "" {
 		return fmt.Errorf("Asset name cannot be empty")
+	}
+	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, a.Name); matched {
+		return fmt.Errorf("Invalid characters on asset name %s:, /, \\, ?, &, *, ', \"", a.Name)
 	}
 	if a.Value == "" {
 		return fmt.Errorf("Asset value cannot be empty")
@@ -56,6 +65,9 @@ type RequisitionCategory struct {
 func (c RequisitionCategory) IsValid() error {
 	if c.Name == "" {
 		return fmt.Errorf("Category name cannot be null")
+	}
+	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, c.Name); matched {
+		return fmt.Errorf("Invalid characters on category name %s:, /, \\, ?, &, *, ', \"", c.Name)
 	}
 	return nil
 }
@@ -135,6 +147,9 @@ func (n *RequisitionNode) IsValid() error {
 	if n.ForeignID == "" {
 		return fmt.Errorf("Foreign ID cannot be empty")
 	}
+	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, n.ForeignID); matched {
+		return fmt.Errorf("Invalid characters on Foreign ID %s:, /, \\, ?, &, *, ', \"", n.ForeignID)
+	}
 	if n.NodeLabel == "" { // Set a reasonable default when the label is not initialized
 		n.NodeLabel = n.ForeignID
 	}
@@ -197,6 +212,9 @@ func (r Requisition) IsValid() error {
 	if r.Name == "" {
 		return fmt.Errorf("Requisition name cannot be null")
 	}
+	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, r.Name); matched {
+		return fmt.Errorf("Invalid characters on requisition name %s:, /, \\, ?, &, *, ', \"", r.Name)
+	}
 	foreignIDs := make(map[string]int)
 	for i := range r.Nodes {
 		n := &r.Nodes[i]
@@ -242,31 +260,86 @@ type ElementList struct {
 
 // Parameter a parameter for a detector or a policy
 type Parameter struct {
-	Key   string `json:"key" yaml:"key"`
-	Value string `json:"value" yaml:"value"`
+	XMLName xml.Name `xml:"parameter" json:"-" yaml:"-"`
+	Key     string   `xml:"key,attr" json:"key" yaml:"key"`
+	Value   string   `xml:"value,attr" json:"value" yaml:"value"`
 }
 
 // Detector a provisioning detector
 type Detector struct {
-	Name       string      `json:"name" yaml:"name"`
-	Class      string      `json:"class" yaml:"class"`
-	Parameters []Parameter `json:"parameter,omitempty" yaml:"parameters,omitempty"`
+	XMLName    xml.Name    `xml:"detector" json:"-" yaml:"-"`
+	Name       string      `xml:"name,attr" json:"name" yaml:"name"`
+	Class      string      `xml:"class,attr" json:"class" yaml:"class"`
+	Parameters []Parameter `xml:"parameter,omitempty" json:"parameter,omitempty" yaml:"parameters,omitempty"`
+}
+
+// IsValid returns an error if the detector is invalid
+func (p *Detector) IsValid() error {
+	if p.Name == "" {
+		return fmt.Errorf("Detector name cannot be empty")
+	}
+	if p.Class == "" {
+		return fmt.Errorf("Detector class cannot be empty")
+	}
+	return nil
 }
 
 // Policy a provisioning policy
 type Policy struct {
-	Name       string      `json:"name" yaml:"name"`
-	Class      string      `json:"class" yaml:"class"`
-	Parameters []Parameter `json:"parameter,omitempty" yaml:"parameters,omitempty"`
+	XMLName    xml.Name    `xml:"policy" json:"-" yaml:"-"`
+	Name       string      `xml:"name,attr" json:"name" yaml:"name"`
+	Class      string      `xml:"class,attr" json:"class" yaml:"class"`
+	Parameters []Parameter `xml:"parameter,omitempty" json:"parameter,omitempty" yaml:"parameters,omitempty"`
+}
+
+// IsValid returns an error if the policy is invalid
+func (p *Policy) IsValid() error {
+	if p.Name == "" {
+		return fmt.Errorf("Policy name cannot be empty")
+	}
+	if p.Class == "" {
+		return fmt.Errorf("Policy class cannot be empty")
+	}
+	return nil
 }
 
 // ForeignSourceDef a foreign source definition
 type ForeignSourceDef struct {
-	Name         string     `json:"name" yaml:"name"`
-	DateStamp    *Time      `json:"date-stamp,omitempty" yaml:"dateStamp,omitempty"`
-	ScanInterval string     `json:"scan-interval" yaml:"scanInterval"`
-	Detectors    []Detector `json:"detectors,omitempty" yaml:"detectors,omitempty"`
-	Policies     []Policy   `json:"policies,omitempty" yaml:"policies,omitempty"`
+	XMLName      xml.Name   `xml:"foreign-source" json:"-" yaml:"-"`
+	Name         string     `xml:"name,attr" json:"name" yaml:"name"`
+	DateStamp    *Time      `xml:"date-stamp,attr,omitempty" json:"date-stamp,omitempty" yaml:"dateStamp,omitempty"`
+	ScanInterval string     `xml:"scan-interval" json:"scan-interval" yaml:"scanInterval"`
+	Detectors    []Detector `xml:"detectors>detector" json:"detectors,omitempty" yaml:"detectors,omitempty"`
+	Policies     []Policy   `xml:"policies>policy" json:"policies,omitempty" yaml:"policies,omitempty"`
+}
+
+// IsValid returns an error if the node definition is invalid
+func (fs *ForeignSourceDef) IsValid() error {
+	if fs.Name == "" {
+		return fmt.Errorf("The name of a Foreign Source definition cannot be empty")
+	}
+	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, fs.Name); matched {
+		return fmt.Errorf("Invalid characters on Foreign Source name %s:, /, \\, ?, &, *, ', \"", fs.Name)
+	}
+	if fs.ScanInterval == "" {
+		return fmt.Errorf("The scan interval of a Foreign Source definition cannot be empty")
+	}
+	for !IsValidScanInterval(fs.ScanInterval) {
+		return fmt.Errorf("Invalid scan interval %s", fs.ScanInterval)
+	}
+	for _, d := range fs.Detectors {
+		err := d.IsValid()
+		if err != nil {
+			return err
+		}
+	}
+	for _, p := range fs.Policies {
+		err := p.IsValid()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Plugin a definiton class for a detector or a policy
@@ -274,6 +347,47 @@ type Plugin struct {
 	Name       string        `json:"name" yaml:"name"`
 	Class      string        `json:"class" yaml:"class"`
 	Parameters []PluginParam `json:"parameters,omitempty" yaml:"parameters,omitempty"`
+}
+
+// FindParameter finds a parameter on the plugin
+func (p Plugin) FindParameter(paramName string) *PluginParam {
+	for _, param := range p.Parameters {
+		if param.Key == paramName {
+			return &param
+		}
+	}
+	return nil
+}
+
+// VerifyParameters verify detector/policy parameters
+func (p Plugin) VerifyParameters(parameters []Parameter) error {
+	for _, param := range parameters {
+		config := p.FindParameter(param.Key)
+		if config == nil {
+			return fmt.Errorf("Invalid parameter %s", param.Key)
+		}
+	}
+	for _, param := range p.Parameters {
+		if param.Required {
+			p := FindParameter(parameters, param.Key)
+			if p == nil {
+				return fmt.Errorf("Missing required parameter %s", param.Key)
+			}
+			if len(param.Options) > 0 {
+				found := false
+				for _, opt := range param.Options {
+					if opt == p.Value {
+						found = true
+						break
+					}
+				}
+				if !found {
+					return fmt.Errorf("Invalid parameter value %s. Valid values are: %s", p.Key, param.Options)
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // PluginParam a parameter of a given plugin
@@ -287,4 +401,37 @@ type PluginParam struct {
 type PluginList struct {
 	Count   int      `json:"count" yaml:"count"`
 	Plugins []Plugin `json:"plugins,omitempty" yaml:"plugins,omitempty"`
+}
+
+// FindPlugin finds a plugin by class name
+func (list PluginList) FindPlugin(cls string) *Plugin {
+	for _, p := range list.Plugins {
+		if p.Class == cls {
+			return &p
+		}
+	}
+	return nil
+}
+
+// FindParameter finds a parameter by name on a slice of parameters
+func FindParameter(parameters []Parameter, paramName string) *Parameter {
+	for _, param := range parameters {
+		if param.Key == paramName {
+			return &param
+		}
+	}
+	return nil
+}
+
+// IsValidScanInterval checks if a given scan-interval is valid
+func IsValidScanInterval(scanInterval string) bool {
+	if scanInterval == "" {
+		return false
+	}
+	for _, el := range strings.Split(scanInterval, " ") {
+		if matched, _ := regexp.MatchString(`^[0-9]+(w|d|h|m|s|ms)$`, el); !matched {
+			return false
+		}
+	}
+	return true
 }

@@ -90,6 +90,7 @@ var RequisitionsCliCommand = cli.Command{
 		},
 		{
 			Name:      "delete",
+			ShortName: "del",
 			Usage:     "Deletes a requisition",
 			Action:    deleteRequisition,
 			ArgsUsage: "<name>",
@@ -157,7 +158,7 @@ func applyRequisition(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Adding requisition %s...\n", requisition.Name)
+	fmt.Printf("Updating requisition %s...\n", requisition.Name)
 	jsonBytes, _ := json.Marshal(requisition)
 	return rest.Instance.Post("/rest/requisitions", jsonBytes)
 }
@@ -197,7 +198,7 @@ func importRequisition(c *cli.Context) error {
 	}
 	rescanExisting := c.String("rescanExisting")
 	fmt.Printf("Importing requisition %s (rescanExisting? %s)...\n", foreignSource, rescanExisting)
-	return rest.Instance.Put("/rest/requisitions/"+foreignSource+"/import?rescanExisting="+rescanExisting, nil)
+	return rest.Instance.Put("/rest/requisitions/"+foreignSource+"/import?rescanExisting="+rescanExisting, nil, "application/json")
 }
 
 func deleteRequisition(c *cli.Context) error {
@@ -215,7 +216,7 @@ func deleteRequisition(c *cli.Context) error {
 		return err
 	}
 	// Import requisition to remove nodes from the database
-	err = rest.Instance.Put("/rest/requisitions/"+foreignSource+"/import?rescanExisting=false", nil)
+	err = rest.Instance.Put("/rest/requisitions/"+foreignSource+"/import?rescanExisting=false", nil, "application/json")
 	if err != nil {
 		return err
 	}

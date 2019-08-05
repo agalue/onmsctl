@@ -57,3 +57,21 @@ func GetNode(c *cli.Context) (model.RequisitionNode, error) {
 	json.Unmarshal(jsonBytes, &node)
 	return node, nil
 }
+
+// GetForeignSourceDef gets a foreign source definition from ReST using CLI context
+func GetForeignSourceDef(c *cli.Context) (model.ForeignSourceDef, error) {
+	fsDef := model.ForeignSourceDef{}
+	if !c.Args().Present() {
+		return fsDef, fmt.Errorf("Foreign source name required")
+	}
+	foreignSource := c.Args().Get(0)
+	if foreignSource != "default" && !RequisitionExists(foreignSource) {
+		return fsDef, fmt.Errorf("Foreign source %s doesn't exist", foreignSource)
+	}
+	jsonBytes, err := rest.Instance.Get("/rest/foreignSources/" + foreignSource)
+	if err != nil {
+		return fsDef, fmt.Errorf("Cannot retrieve foreign source definition %s", foreignSource)
+	}
+	json.Unmarshal(jsonBytes, &fsDef)
+	return fsDef, nil
+}

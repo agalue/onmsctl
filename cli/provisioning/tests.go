@@ -29,6 +29,213 @@ var testNode = model.RequisitionNode{
 	},
 }
 
+var policiesJSON = `
+{
+	"plugins": [
+		{
+			"name": "Set Node Category",
+			"class": "org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy",
+			"parameters": [
+				{
+					"key": "category",
+					"required": true,
+					"options": []
+				},
+				{
+					"key": "matchBehavior",
+					"required": true,
+					"options": [
+						"ALL_PARAMETERS",
+						"ANY_PARAMETER",
+						"NO_PARAMETERS"
+					]
+				},
+				{
+					"key": "foreignId",
+					"required": false,
+					"options": []
+				},
+				{
+					"key": "foreignSource",
+					"required": false,
+					"options": []
+				},
+				{
+					"key": "label",
+					"required": false,
+					"options": []
+				},
+				{
+					"key": "labelSource",
+					"required": false,
+					"options": []
+				},
+				{
+					"key": "netBiosDomain",
+					"required": false,
+					"options": []
+				},
+				{
+					"key": "netBiosName",
+					"required": false,
+					"options": []
+				},
+				{
+					"key": "operatingSystem",
+					"required": false,
+					"options": []
+				},
+				{
+					"key": "sysContact",
+					"required": false,
+					"options": []
+				},
+				{
+					"key": "sysDescription",
+					"required": false,
+					"options": []
+				},
+				{
+					"key": "sysLocation",
+					"required": false,
+					"options": []
+				},
+				{
+					"key": "sysName",
+					"required": false,
+					"options": []
+				},
+				{
+					"key": "sysObjectId",
+					"required": false,
+					"options": []
+				},
+				{
+					"key": "type",
+					"required": false,
+					"options": []
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalCount": 1,
+	"offset": 0
+}
+`
+
+var detectorsJSON = `
+{
+  "plugins": [
+    {
+      "name": "ICMP",
+      "class": "org.opennms.netmgt.provision.detector.icmp.IcmpDetector",
+      "parameters": [
+        {
+          "key": "allowFragmentation",
+          "required": false,
+          "options": []
+        },
+        {
+          "key": "dscp",
+          "required": false,
+          "options": []
+        },
+        {
+          "key": "ipMatch",
+          "required": false,
+          "options": []
+        },
+        {
+          "key": "port",
+          "required": false,
+          "options": []
+        },
+        {
+          "key": "retries",
+          "required": false,
+          "options": []
+        },
+        {
+          "key": "serviceName",
+          "required": false,
+          "options": []
+        },
+        {
+          "key": "timeout",
+          "required": false,
+          "options": []
+        }
+      ]
+    },
+    {
+      "name": "SNMP",
+      "class": "org.opennms.netmgt.provision.detector.snmp.SnmpDetector",
+      "parameters": [
+        {
+          "key": "forceVersion",
+          "required": false,
+          "options": []
+        },
+        {
+          "key": "hex",
+          "required": false,
+          "options": []
+        },
+        {
+          "key": "ipMatch",
+          "required": false,
+          "options": []
+        },
+        {
+          "key": "isTable",
+          "required": false,
+          "options": []
+        },
+        {
+          "key": "matchType",
+          "required": false,
+          "options": []
+        },
+        {
+          "key": "oid",
+          "required": false,
+          "options": []
+        },
+        {
+          "key": "port",
+          "required": false,
+          "options": []
+        },
+        {
+          "key": "retries",
+          "required": false,
+          "options": []
+        },
+        {
+          "key": "serviceName",
+          "required": false,
+          "options": []
+        },
+        {
+          "key": "timeout",
+          "required": false,
+          "options": []
+        },
+        {
+          "key": "vbvalue",
+          "required": false,
+          "options": []
+        }
+      ]
+    }
+	],
+	"count": 1,
+	"totalCount": 1,
+	"offset": 0
+}
+`
+
 // CreateCli creates a CLI Application object
 func CreateCli(cmd cli.Command) *cli.App {
 	var app = cli.NewApp()
@@ -44,22 +251,44 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 
 		switch req.URL.Path {
 
+		case "/rest/foreignSourcesConfig/policies":
+			res.WriteHeader(http.StatusOK)
+			res.Write([]byte(policiesJSON))
+
+		case "/rest/foreignSourcesConfig/detectors":
+			res.WriteHeader(http.StatusOK)
+			res.Write([]byte(detectorsJSON))
+
 		case "/rest/foreignSourcesConfig/assets":
 			assert.Equal(t, http.MethodGet, req.Method)
-			sendData(res, model.ElementList{1, []string{"address1", "city", "state", "zip"}})
+			sendData(res, model.ElementList{
+				Count:   1,
+				Element: []string{"address1", "city", "state", "zip"},
+			})
 
 		case "/rest/requisitionNames":
 			assert.Equal(t, http.MethodGet, req.Method)
-			sendData(res, model.RequisitionsList{1, []string{"Test", "Local"}})
+			sendData(res, model.RequisitionsList{
+				Count:          1,
+				ForeignSources: []string{"Test", "Local"},
+			})
 
 		case "/rest/requisitions/deployed/stats":
 			assert.Equal(t, http.MethodGet, req.Method)
 			now := model.Time{Time: time.Now()}
-			sendData(res, model.RequisitionsStats{1, []model.RequisitionStats{{"Test", 0, nil, &now}}})
+			sendData(res, model.RequisitionsStats{
+				Count: 1,
+				ForeignSources: []model.RequisitionStats{
+					{Name: "Test", Count: 0, LastImport: &now},
+				},
+			})
 
 		case "/rest/requisitions/Test":
 			assert.Equal(t, http.MethodGet, req.Method)
-			sendData(res, model.Requisition{Name: "Test", Nodes: []model.RequisitionNode{testNode}})
+			sendData(res, model.Requisition{
+				Name:  "Test",
+				Nodes: []model.RequisitionNode{testNode},
+			})
 
 		case "/rest/requisitions":
 			assert.Equal(t, http.MethodPost, req.Method)
@@ -150,6 +379,72 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 			assert.Equal(t, "Production", cat.Name)
 
 		case "/rest/requisitions/Test/nodes/n1/categories/Production":
+			assert.Equal(t, http.MethodDelete, req.Method)
+
+		case "/rest/foreignSources/Test":
+			if req.Method == http.MethodPut {
+				interval := req.FormValue("scan-interval")
+				if interval == "" {
+					res.WriteHeader(http.StatusBadRequest)
+				}
+				return
+			}
+			assert.Equal(t, http.MethodGet, req.Method)
+			sendData(res, model.ForeignSourceDef{
+				Name: "Test",
+				Detectors: []model.Detector{
+					{
+						Name:  "ICMP",
+						Class: "org.opennms.netmgt.provision.detector.icmp.IcmpDetector",
+					},
+				},
+				Policies: []model.Policy{
+					{
+						Name:  "Production",
+						Class: "org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy",
+						Parameters: []model.Parameter{
+							{
+								Key:   "category",
+								Value: "Production",
+							},
+							{
+								Key:   "matchBehavior",
+								Value: "NO_PARAMETERS",
+							},
+						},
+					},
+				},
+			})
+
+		case "/rest/foreignSources":
+			assert.Equal(t, http.MethodPost, req.Method)
+			var fs model.ForeignSourceDef
+			bytes, err := ioutil.ReadAll(req.Body)
+			assert.NilError(t, err)
+			json.Unmarshal(bytes, &fs)
+			assert.Equal(t, "Local", fs.Name)
+
+		case "/rest/foreignSources/Test/detectors":
+			assert.Equal(t, http.MethodPost, req.Method)
+			var detector model.Detector
+			bytes, err := ioutil.ReadAll(req.Body)
+			assert.NilError(t, err)
+			json.Unmarshal(bytes, &detector)
+			assert.Equal(t, "ICMP", detector.Name)
+
+		case "/rest/foreignSources/Test/detectors/HTTP":
+			assert.Equal(t, http.MethodDelete, req.Method)
+
+		case "/rest/foreignSources/Test/policies":
+			assert.Equal(t, http.MethodPost, req.Method)
+			var policy model.Policy
+			bytes, err := ioutil.ReadAll(req.Body)
+			assert.NilError(t, err)
+			json.Unmarshal(bytes, &policy)
+			assert.Equal(t, "Switches", policy.Name)
+			assert.Equal(t, 2, len(policy.Parameters))
+
+		case "/rest/foreignSources/Test/policies/Production":
 			assert.Equal(t, http.MethodDelete, req.Method)
 
 		default:

@@ -79,7 +79,7 @@ func TestApplyNode(t *testing.T) {
 	assert.Error(t, err, "Requisition name required")
 
 	err = app.Run([]string{app.Name, "node", "apply", "Test"})
-	assert.Error(t, err, "YAML content cannot be empty")
+	assert.Error(t, err, "Content cannot be empty")
 
 	var testNode = model.RequisitionNode{
 		ForeignID: "opennms.com",
@@ -87,7 +87,7 @@ func TestApplyNode(t *testing.T) {
 			{IPAddress: "www.opennms.com"},
 		},
 		Categories: []model.RequisitionCategory{
-			{"Server"},
+			{Name: "Server"},
 		},
 	}
 	nodeYaml, _ := yaml.Marshal(testNode)

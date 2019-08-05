@@ -31,6 +31,7 @@ var ServicesCliCommand = cli.Command{
 		},
 		{
 			Name:      "delete",
+			ShortName: "del",
 			Usage:     "Deletes a monitored service from a given IP interface",
 			ArgsUsage: "<foreignSource> <foreignId> <ipAddress> <serviceName>",
 			Action:    deleteService,

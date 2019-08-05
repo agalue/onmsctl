@@ -34,7 +34,7 @@ var InterfacesCliCommand = cli.Command{
 		{
 			Name:      "set",
 			ShortName: "add",
-			Usage:     "Adds a new IP interface, or update an existing one based on IP address, on a given requisition/node",
+			Usage:     "Adds or update an on IP address from a given requisition/node",
 			ArgsUsage: "<foreignSource> <foreignId> <ipAddress|fqdn>",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -65,6 +65,7 @@ var InterfacesCliCommand = cli.Command{
 		},
 		{
 			Name:      "delete",
+			ShortName: "del",
 			Usage:     "Deletes an interface from a given requisition/node",
 			ArgsUsage: "<foreignSource> <foreignId> <ipAddress>",
 			Action:    deleteInterface,

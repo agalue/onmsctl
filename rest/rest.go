@@ -6,29 +6,33 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
 // Instance a global reference to the ReST Client instance
 var Instance = Client{
-	URL:                "http://localhost:8980/opennms",
-	Username:           "admin",
-	Password:           "admin",
-	InsecureSkipVerify: true,
+	URL:      "http://localhost:8980/opennms",
+	Username: "admin",
+	Password: "admin",
+	Insecure: true,
+	Timeout:  5,
 }
 
 // Client OpenNMS ReST API configuration
 type Client struct {
-	URL                string
-	Username           string
-	Password           string
-	InsecureSkipVerify bool
+	URL      string
+	Username string
+	Password string
+	Insecure bool
+	Timeout  int
 }
 
 func (cli Client) getHTTPClient() *http.Client {
 	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: cli.InsecureSkipVerify},
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: cli.Insecure},
 	}
-	return &http.Client{Transport: tr}
+	timeout := time.Duration(cli.Timeout) * time.Second
+	return &http.Client{Transport: tr, Timeout: timeout}
 }
 
 // Get sends an HTTP GET request
@@ -79,13 +83,13 @@ func (cli Client) Delete(path string) error {
 }
 
 // Put sends an HTTP PUT request
-func (cli Client) Put(path string, jsonBytes []byte) error {
+func (cli Client) Put(path string, jsonBytes []byte, contentType string) error {
 	request, err := http.NewRequest(http.MethodPut, cli.URL+path, bytes.NewBuffer(jsonBytes))
 	if err != nil {
 		return err
 	}
 	cli.setCommonHeaders(request)
-	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Content-Type", contentType)
 	response, err := cli.getHTTPClient().Do(request)
 	if err != nil {
 		return err

@@ -16,5 +16,8 @@ var CliCommand = cli.Command{
 		ServicesCliCommand,
 		CategoriesCliCommand,
 		AssetsCliCommand,
+		ForeignSourcesCliCommand,
+		DetectorsCliCommand,
+		PoliciesCliCommand,
 	},
 }

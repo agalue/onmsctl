@@ -31,6 +31,7 @@ var CategoriesCliCommand = cli.Command{
 		},
 		{
 			Name:      "delete",
+			ShortName: "del",
 			Usage:     "Deletes a category from a given node",
 			ArgsUsage: "<foreignSource> <foreignId> <categoryName>",
 			Action:    deleteCategory,

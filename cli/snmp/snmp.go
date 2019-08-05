@@ -194,7 +194,7 @@ func setSnmpConfig(c *cli.Context) error {
 		return err
 	}
 	jsonBytes, _ := json.Marshal(snmp)
-	return rest.Instance.Put("/rest/snmpConfig/"+ipAddress, jsonBytes)
+	return rest.Instance.Put("/rest/snmpConfig/"+ipAddress, jsonBytes, "application/json")
 }
 
 func applySnmpConfig(c *cli.Context) error {
@@ -216,7 +216,7 @@ func applySnmpConfig(c *cli.Context) error {
 		return err
 	}
 	jsonBytes, _ := json.Marshal(snmp)
-	return rest.Instance.Put("/rest/snmpConfig/"+ipAddress, jsonBytes)
+	return rest.Instance.Put("/rest/snmpConfig/"+ipAddress, jsonBytes, "application/json")
 }
 
 func getIPAddress(c *cli.Context) (string, error) {
