@@ -43,6 +43,14 @@ var RequisitionsCliCommand = cli.Command{
 			Usage:  "Creates or updates a requisition from a external YAML file",
 			Action: applyRequisition,
 			Flags: []cli.Flag{
+				cli.GenericFlag{
+					Name: "format, x",
+					Value: &model.EnumValue{
+						Enum:    []string{"xml", "json", "yaml"},
+						Default: "yaml",
+					},
+					Usage: "File Format: xml, json, yaml",
+				},
 				cli.StringFlag{
 					Name:  "file, f",
 					Usage: "External YAML file (use '-' for STDIN Pipe)",
@@ -62,7 +70,7 @@ var RequisitionsCliCommand = cli.Command{
 						Enum:    []string{"xml", "json", "yaml"},
 						Default: "xml",
 					},
-					Usage: "File Format: xml (default), json, yaml",
+					Usage: "File Format: xml, json, yaml",
 				},
 				cli.StringFlag{
 					Name:  "file, f",
@@ -74,7 +82,7 @@ var RequisitionsCliCommand = cli.Command{
 		{
 			Name:      "import",
 			ShortName: "sync",
-			Usage:     "Imports or synchronize a requisition",
+			Usage:     "Import or synchronize a requisition",
 			Action:    importRequisition,
 			Flags: []cli.Flag{
 				cli.GenericFlag{
@@ -83,7 +91,11 @@ var RequisitionsCliCommand = cli.Command{
 						Enum:    []string{"true", "false", "dbonly"},
 						Default: "true",
 					},
-					Usage: "Rescan Existing: true, false, dbonly",
+					Usage: `
+	true, to update the database and execute the scan phase
+	false, to add/delete nodes on the DB skipping the scan phase
+	dbonly, to add/detete/update nodes on the DB skipping the scan phase
+	`,
 				},
 			},
 			ArgsUsage: "<name>",
@@ -148,13 +160,7 @@ func addRequisition(c *cli.Context) error {
 }
 
 func applyRequisition(c *cli.Context) error {
-	data, err := common.ReadInput(c, 0)
-	if err != nil {
-		return err
-	}
-	requisition := &model.Requisition{}
-	yaml.Unmarshal(data, requisition)
-	err = requisition.IsValid()
+	requisition, err := parseRequisition(c)
 	if err != nil {
 		return err
 	}
@@ -164,23 +170,7 @@ func applyRequisition(c *cli.Context) error {
 }
 
 func validateRequisition(c *cli.Context) error {
-	data, err := common.ReadInput(c, 0)
-	if err != nil {
-		return err
-	}
-	requisition := &model.Requisition{}
-	switch c.String("format") {
-	case "xml":
-		err = xml.Unmarshal(data, requisition)
-	case "yaml":
-		err = yaml.Unmarshal(data, requisition)
-	case "json":
-		err = json.Unmarshal(data, requisition)
-	}
-	if err != nil {
-		return err
-	}
-	err = requisition.IsValid()
+	requisition, err := parseRequisition(c)
 	if err != nil {
 		return err
 	}
@@ -254,4 +244,24 @@ func getDisplayTime(lastImport *model.Time) string {
 		return "Never"
 	}
 	return lastImport.In(time.Local).String()
+}
+
+func parseRequisition(c *cli.Context) (*model.Requisition, error) {
+	requisition := &model.Requisition{}
+	data, err := common.ReadInput(c, 0)
+	if err != nil {
+		return requisition, err
+	}
+	switch c.String("format") {
+	case "xml":
+		err = xml.Unmarshal(data, requisition)
+	case "yaml":
+		err = yaml.Unmarshal(data, requisition)
+	case "json":
+		err = json.Unmarshal(data, requisition)
+	}
+	if err != nil {
+		return requisition, err
+	}
+	return requisition, requisition.IsValid()
 }

@@ -38,6 +38,14 @@ var ForeignSourcesCliCommand = cli.Command{
 			Usage:  "Creates or updates a foreign source definition from a external YAML file",
 			Action: applyForeignSource,
 			Flags: []cli.Flag{
+				cli.GenericFlag{
+					Name: "format, x",
+					Value: &model.EnumValue{
+						Enum:    []string{"xml", "json", "yaml"},
+						Default: "yaml",
+					},
+					Usage: "File Format: xml, json, yaml",
+				},
 				cli.StringFlag{
 					Name:  "file, f",
 					Usage: "External YAML file (use '-' for STDIN Pipe)",
@@ -57,7 +65,7 @@ var ForeignSourcesCliCommand = cli.Command{
 						Enum:    []string{"xml", "json", "yaml"},
 						Default: "xml",
 					},
-					Usage: "File Format: xml (default), json, yaml",
+					Usage: "File Format: xml, json, yaml",
 				},
 				cli.StringFlag{
 					Name:  "file, f",
@@ -112,13 +120,7 @@ func setScanInterval(c *cli.Context) error {
 }
 
 func applyForeignSource(c *cli.Context) error {
-	data, err := common.ReadInput(c, 0)
-	if err != nil {
-		return err
-	}
-	fsDef := &model.ForeignSourceDef{}
-	yaml.Unmarshal(data, fsDef)
-	err = isForeignSourceValid(*fsDef)
+	fsDef, err := parseForeignSourceDefinition(c)
 	if err != nil {
 		return err
 	}
@@ -128,23 +130,7 @@ func applyForeignSource(c *cli.Context) error {
 }
 
 func validateForeignSource(c *cli.Context) error {
-	data, err := common.ReadInput(c, 0)
-	if err != nil {
-		return err
-	}
-	fsDef := &model.ForeignSourceDef{}
-	switch c.String("format") {
-	case "xml":
-		err = xml.Unmarshal(data, fsDef)
-	case "yaml":
-		err = yaml.Unmarshal(data, fsDef)
-	case "json":
-		err = json.Unmarshal(data, fsDef)
-	}
-	if err != nil {
-		return err
-	}
-	err = isForeignSourceValid(*fsDef)
+	fsDef, err := parseForeignSourceDefinition(c)
 	if err != nil {
 		return err
 	}
@@ -175,23 +161,47 @@ func isForeignSourceValid(fs model.ForeignSourceDef) error {
 	if err := fs.IsValid(); err != nil {
 		return err
 	}
-	policiesConfig, err := getPolicies()
-	if err != nil {
-		return err
-	}
-	for _, policy := range fs.Policies {
-		if err := isPolicyValid(policy, policiesConfig); err != nil {
+	if len(fs.Policies) > 0 {
+		policiesConfig, err := getPolicies()
+		if err != nil {
 			return err
 		}
+		for _, policy := range fs.Policies {
+			if err := isPolicyValid(policy, policiesConfig); err != nil {
+				return err
+			}
+		}
 	}
-	detectorsConfig, err := getDetectors()
-	if err != nil {
-		return err
-	}
-	for _, detector := range fs.Detectors {
-		if err := isDetectorValid(detector, detectorsConfig); err != nil {
+	if len(fs.Detectors) > 0 {
+		detectorsConfig, err := getDetectors()
+		if err != nil {
 			return err
+		}
+		for _, detector := range fs.Detectors {
+			if err := isDetectorValid(detector, detectorsConfig); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
+}
+
+func parseForeignSourceDefinition(c *cli.Context) (*model.ForeignSourceDef, error) {
+	fsDef := &model.ForeignSourceDef{}
+	data, err := common.ReadInput(c, 0)
+	if err != nil {
+		return fsDef, err
+	}
+	switch c.String("format") {
+	case "xml":
+		err = xml.Unmarshal(data, fsDef)
+	case "yaml":
+		err = yaml.Unmarshal(data, fsDef)
+	case "json":
+		err = json.Unmarshal(data, fsDef)
+	}
+	if err != nil {
+		return fsDef, err
+	}
+	return fsDef, isForeignSourceValid(*fsDef)
 }
