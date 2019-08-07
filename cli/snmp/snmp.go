@@ -42,7 +42,7 @@ var CliCommand = cli.Command{
 						Enum:    []string{"v1", "v2c", "v3"},
 						Default: "v2c",
 					},
-					Usage: "SNMP Version: v1, v2c (default), v3",
+					Usage: "SNMP Version: v1, v2c, v3",
 				},
 				cli.StringFlag{
 					Name:  "location, l",
@@ -62,11 +62,11 @@ var CliCommand = cli.Command{
 				},
 				cli.StringFlag{
 					Name:  "maxRepetitions, mr",
-					Usage: "Maximum repetitions (defaults to 2)",
+					Usage: "Maximum repetitions",
 				},
 				cli.StringFlag{
 					Name:  "maxVarsPerPdu, mvpp",
-					Usage: "Maximum variables per PDU (defaults to 10)",
+					Usage: "Maximum variables per PDU",
 				},
 				cli.StringFlag{
 					Name:  "community, c",
@@ -79,7 +79,7 @@ var CliCommand = cli.Command{
 				cli.StringFlag{
 					Name:  "securityLevel, sl",
 					Value: "1",
-					Usage: "SNMPv3 Security Level: 1 noAuthNoPriv (default), 2: authNoPriv, 3: authPriv",
+					Usage: "SNMPv3 Security Level: 1 noAuthNoPriv, 2: authNoPriv, 3: authPriv",
 				},
 				cli.GenericFlag{
 					Name: "privProtocol, pp",
