@@ -19,14 +19,14 @@ type RequisitionMetaData struct {
 // RequisitionMonitoredService an IP interface monitored service
 type RequisitionMonitoredService struct {
 	XMLName  xml.Name              `xml:"monitored-service" json:"-" yaml:"-"`
-	Name     string                `xml:"name,attr" json:"service-name" yaml:"name"`
+	Name     string                `xml:"service-name,attr" json:"service-name" yaml:"name"`
 	MetaData []RequisitionMetaData `xml:"meta-data,omitempty" json:"meta-data,omitempty" yaml:"metaData,omitempty"`
 }
 
 // IsValid returns an error if the service is invalid
 func (s RequisitionMonitoredService) IsValid() error {
 	if s.Name == "" {
-		return fmt.Errorf("Service name cannot be null")
+		return fmt.Errorf("Service name cannot be empty")
 	}
 	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, s.Name); matched {
 		return fmt.Errorf("Invalid characters on service name %s:, /, \\, ?, &, *, ', \"", s.Name)
@@ -64,7 +64,7 @@ type RequisitionCategory struct {
 // IsValid returns an error if the category is invalid
 func (c RequisitionCategory) IsValid() error {
 	if c.Name == "" {
-		return fmt.Errorf("Category name cannot be null")
+		return fmt.Errorf("Category name cannot be empty")
 	}
 	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, c.Name); matched {
 		return fmt.Errorf("Invalid characters on category name %s:, /, \\, ?, &, *, ', \"", c.Name)
@@ -111,11 +111,11 @@ func (i *RequisitionInterface) IsValid() error {
 	}
 	serviceMap := make(map[string]int)
 	for _, s := range i.Services {
-		serviceMap[s.Name]++
 		err := s.IsValid()
 		if err != nil {
 			return err
 		}
+		serviceMap[s.Name]++
 	}
 	for service, count := range serviceMap {
 		if count > 1 {
@@ -210,7 +210,7 @@ type Requisition struct {
 // IsValid returns an error if the requisition definition is invalid
 func (r Requisition) IsValid() error {
 	if r.Name == "" {
-		return fmt.Errorf("Requisition name cannot be null")
+		return fmt.Errorf("Requisition name cannot be empty")
 	}
 	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, r.Name); matched {
 		return fmt.Errorf("Invalid characters on requisition name %s:, /, \\, ?, &, *, ', \"", r.Name)
