@@ -3,12 +3,13 @@ package provisioning
 import (
 	"testing"
 
+	"github.com/OpenNMS/onmsctl/test"
 	"github.com/urfave/cli"
 	"gotest.tools/assert"
 )
 
 func TestUtils(t *testing.T) {
-	testServer := CreateTestServer(t)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	names, err := GetRequisitionNames()
@@ -19,7 +20,7 @@ func TestUtils(t *testing.T) {
 	assert.Equal(t, true, RequisitionExists("Test"))
 	assert.Equal(t, false, RequisitionExists("Unexisting"))
 
-	app := CreateCli(cli.Command{
+	app := test.CreateCli(cli.Command{
 		Name: "node",
 		Action: func(c *cli.Context) error {
 			node, err := GetNode(c)

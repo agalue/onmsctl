@@ -4,14 +4,15 @@ import (
 	"testing"
 
 	"github.com/OpenNMS/onmsctl/model"
+	"github.com/OpenNMS/onmsctl/test"
 	"gopkg.in/yaml.v2"
 	"gotest.tools/assert"
 )
 
 func TestListNodes(t *testing.T) {
 	var err error
-	app := CreateCli(NodesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(NodesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "node", "list"})
@@ -23,8 +24,8 @@ func TestListNodes(t *testing.T) {
 
 func TestGetNode(t *testing.T) {
 	var err error
-	app := CreateCli(NodesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(NodesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "node", "get"})
@@ -39,8 +40,8 @@ func TestGetNode(t *testing.T) {
 
 func TestAddNode(t *testing.T) {
 	var err error
-	app := CreateCli(NodesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(NodesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "node", "add"})
@@ -55,8 +56,8 @@ func TestAddNode(t *testing.T) {
 
 func TestDeleteNode(t *testing.T) {
 	var err error
-	app := CreateCli(NodesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(NodesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "node", "delete"})
@@ -71,8 +72,8 @@ func TestDeleteNode(t *testing.T) {
 
 func TestApplyNode(t *testing.T) {
 	var err error
-	app := CreateCli(NodesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(NodesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "node", "apply"})

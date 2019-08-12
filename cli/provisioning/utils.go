@@ -9,6 +9,9 @@ import (
 	"github.com/urfave/cli"
 )
 
+// Formats the available file formats for requisitions and foreign source definitions
+var Formats = []string{"xml", "json", "yaml"}
+
 // GetRequisitionNames gets the requisition list
 func GetRequisitionNames() (model.RequisitionsList, error) {
 	jsonRequisitions, err := rest.Instance.Get("/rest/requisitionNames")

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/OpenNMS/onmsctl/common"
@@ -46,10 +47,10 @@ var RequisitionsCliCommand = cli.Command{
 				cli.GenericFlag{
 					Name: "format, x",
 					Value: &model.EnumValue{
-						Enum:    []string{"xml", "json", "yaml"},
+						Enum:    Formats,
 						Default: "yaml",
 					},
-					Usage: "File Format: xml, json, yaml",
+					Usage: "File Format: " + strings.Join(Formats, ", "),
 				},
 				cli.StringFlag{
 					Name:  "file, f",
@@ -67,10 +68,10 @@ var RequisitionsCliCommand = cli.Command{
 				cli.GenericFlag{
 					Name: "format, x",
 					Value: &model.EnumValue{
-						Enum:    []string{"xml", "json", "yaml"},
+						Enum:    Formats,
 						Default: "xml",
 					},
-					Usage: "File Format: xml, json, yaml",
+					Usage: "File Format: " + strings.Join(Formats, ", "),
 				},
 				cli.StringFlag{
 					Name:  "file, f",

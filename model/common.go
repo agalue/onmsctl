@@ -36,6 +36,10 @@ func (e EnumValue) String() string {
 	return e.selected
 }
 
+func (e EnumValue) EnumAsString() string {
+	return strings.Join(e.Enum, ", ")
+}
+
 // Time an object to seamlessly manage times in multiple formats
 type Time struct {
 	time.Time

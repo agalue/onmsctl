@@ -1,4 +1,4 @@
-package provisioning
+package test
 
 import (
 	"encoding/json"
@@ -446,6 +446,45 @@ func CreateTestServer(t *testing.T) *httptest.Server {
 
 		case "/rest/foreignSources/Test/policies/Production":
 			assert.Equal(t, http.MethodDelete, req.Method)
+
+		case "/rest/info":
+			data := &model.OnmsInfo{
+				DisplayVersion:     "24.1.2",
+				Version:            "24.1.2",
+				PackageName:        "opennms",
+				PackageDescription: "OpenNMS",
+			}
+			sendData(res, data)
+
+		case "/rest/events":
+			assert.Equal(t, http.MethodPost, req.Method)
+			var event model.Event
+			bytes, err := ioutil.ReadAll(req.Body)
+			assert.NilError(t, err)
+			json.Unmarshal(bytes, &event)
+			assert.Assert(t, event.UEI != "")
+
+		case "/rest/snmpConfig/10.0.0.1":
+			if http.MethodGet == req.Method {
+				data := &model.SnmpInfo{
+					Version:   "v2c",
+					Community: "public",
+					Port:      161,
+				}
+				sendData(res, data)
+				return
+			}
+			if http.MethodPut == req.Method {
+				var snmp model.SnmpInfo
+				bytes, err := ioutil.ReadAll(req.Body)
+				assert.NilError(t, err)
+				json.Unmarshal(bytes, &snmp)
+				assert.Equal(t, "v1", snmp.Version)
+				assert.Equal(t, "private", snmp.Community)
+
+				return
+			}
+			res.WriteHeader(http.StatusForbidden)
 
 		default:
 			res.WriteHeader(http.StatusForbidden)

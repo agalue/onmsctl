@@ -121,17 +121,17 @@ func TestRequisitionXML(t *testing.T) {
 	reqXML := `
 	<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2018-10-25T04:10:15.355-05:00" foreign-source="Cassandra" last-import="2018-10-25T04:10:21.944-05:00">
 		<node foreign-id="cass01" node-label="cass01">
-		 <interface descr="bond0" ip-addr="10.128.150.62" status="1" snmp-primary="P">
+		 <interface descr="bond0" ip-addr="10.0.0.10" status="1" snmp-primary="P">
 				<monitored-service service-name="ICMP"/>
 				<monitored-service service-name="SNMP"/>
 				<monitored-service service-name="JMX-Cassandra-Newts-I1"/>
 				<monitored-service service-name="JMX-Cassandra-I1"/>
 		 </interface>
-		 <interface descr="bond0:1" ip-addr="10.128.150.152" status="1" snmp-primary="N">
+		 <interface descr="bond0:1" ip-addr="10.0.0.11" status="1" snmp-primary="N">
 				<monitored-service service-name="JMX-Cassandra-Newts-I2"/>
 				<monitored-service service-name="JMX-Cassandra-I2"/>
 		 </interface>
-		 <interface descr="bond0:2" ip-addr="10.128.150.153" status="1" snmp-primary="N">
+		 <interface descr="bond0:2" ip-addr="10.0.0.12" status="1" snmp-primary="N">
 				<monitored-service service-name="JMX-Cassandra-Newts-I3"/>
 				<monitored-service service-name="JMX-Cassandra-I3"/>
 		 </interface>

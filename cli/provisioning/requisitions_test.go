@@ -4,14 +4,15 @@ import (
 	"testing"
 
 	"github.com/OpenNMS/onmsctl/model"
+	"github.com/OpenNMS/onmsctl/test"
 	"gopkg.in/yaml.v2"
 	"gotest.tools/assert"
 )
 
 func TestListRequisitions(t *testing.T) {
 	var err error
-	app := CreateCli(RequisitionsCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(RequisitionsCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "req", "list"})
@@ -20,8 +21,8 @@ func TestListRequisitions(t *testing.T) {
 
 func TestGetRequisition(t *testing.T) {
 	var err error
-	app := CreateCli(RequisitionsCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(RequisitionsCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "req", "get"})
@@ -33,8 +34,8 @@ func TestGetRequisition(t *testing.T) {
 
 func TestAddRequisition(t *testing.T) {
 	var err error
-	app := CreateCli(RequisitionsCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(RequisitionsCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "req", "add"})
@@ -46,8 +47,8 @@ func TestAddRequisition(t *testing.T) {
 
 func TestDeleteRequisition(t *testing.T) {
 	var err error
-	app := CreateCli(RequisitionsCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(RequisitionsCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "req", "delete"})
@@ -59,8 +60,8 @@ func TestDeleteRequisition(t *testing.T) {
 
 func TestApplyRequisition(t *testing.T) {
 	var err error
-	app := CreateCli(RequisitionsCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(RequisitionsCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "req", "apply"})

@@ -3,13 +3,14 @@ package provisioning
 import (
 	"testing"
 
+	"github.com/OpenNMS/onmsctl/test"
 	"gotest.tools/assert"
 )
 
 func TestListInterfaces(t *testing.T) {
 	var err error
-	app := CreateCli(InterfacesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(InterfacesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "intf", "list"})
@@ -24,8 +25,8 @@ func TestListInterfaces(t *testing.T) {
 
 func TestGetInterface(t *testing.T) {
 	var err error
-	app := CreateCli(InterfacesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(InterfacesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "intf", "get"})
@@ -43,8 +44,8 @@ func TestGetInterface(t *testing.T) {
 
 func TestAddInterface(t *testing.T) {
 	var err error
-	app := CreateCli(InterfacesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(InterfacesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "intf", "add"})
@@ -62,8 +63,8 @@ func TestAddInterface(t *testing.T) {
 
 func TestDeleteInterface(t *testing.T) {
 	var err error
-	app := CreateCli(InterfacesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(InterfacesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "intf", "delete"})

@@ -13,6 +13,22 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// SNMPVersions the SNMP version enumeration
+var SNMPVersions = &model.EnumValue{
+	Enum:    []string{"v1", "v2c", "v3"},
+	Default: "v2c",
+}
+
+// SNMPPrivProtocols the Private Protocols enumeration
+var SNMPPrivProtocols = &model.EnumValue{
+	Enum: []string{"DES", "AES", "AES192", "AES256"},
+}
+
+// SNMPAuthProtocols the Authentication Protocols enumeration
+var SNMPAuthProtocols = &model.EnumValue{
+	Enum: []string{"MD5", "SHA"},
+}
+
 // CliCommand the CLI command to provide server information
 var CliCommand = cli.Command{
 	Name:  "snmp",
@@ -37,12 +53,9 @@ var CliCommand = cli.Command{
 			Action:    setSnmpConfig,
 			Flags: []cli.Flag{
 				cli.GenericFlag{
-					Name: "version, v",
-					Value: &model.EnumValue{
-						Enum:    []string{"v1", "v2c", "v3"},
-						Default: "v2c",
-					},
-					Usage: "SNMP Version: v1, v2c, v3",
+					Name:  "version, v",
+					Value: SNMPVersions,
+					Usage: "SNMP Version: " + SNMPVersions.EnumAsString(),
 				},
 				cli.StringFlag{
 					Name:  "location, l",
@@ -82,22 +95,18 @@ var CliCommand = cli.Command{
 					Usage: "SNMPv3 Security Level: 1 noAuthNoPriv, 2: authNoPriv, 3: authPriv",
 				},
 				cli.GenericFlag{
-					Name: "privProtocol, pp",
-					Value: &model.EnumValue{
-						Enum: []string{"DES", "AES", "AES192", "AES256"},
-					},
-					Usage: "SNMPv3 Privacy Protocol: DES, AES, AES192, AES256",
+					Name:  "privProtocol, pp",
+					Value: SNMPPrivProtocols,
+					Usage: "SNMPv3 Privacy Protocol: " + SNMPPrivProtocols.EnumAsString(),
 				},
 				cli.StringFlag{
 					Name:  "privPassPhrase, ppp",
 					Usage: "SNMPv3 Password Phrase for Privacy Protocol",
 				},
 				cli.GenericFlag{
-					Name: "authProtocol, ap",
-					Value: &model.EnumValue{
-						Enum: []string{"MD5", "SHA"},
-					},
-					Usage: "SNMPv3 Authentication Protocol: MD5, SHA",
+					Name:  "authProtocol, ap",
+					Value: SNMPAuthProtocols,
+					Usage: "SNMPv3 Authentication Protocol: " + SNMPAuthProtocols.EnumAsString(),
 				},
 				cli.StringFlag{
 					Name:  "authPassPhrase, app",
@@ -137,9 +146,6 @@ var CliCommand = cli.Command{
 }
 
 func showSnmpConfig(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("IP Address required")
-	}
 	ipAddress, err := getIPAddress(c)
 	if err != nil {
 		return err
@@ -161,9 +167,6 @@ func showSnmpConfig(c *cli.Context) error {
 }
 
 func setSnmpConfig(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("IP Address required")
-	}
 	ipAddress, err := getIPAddress(c)
 	if err != nil {
 		return err
@@ -198,9 +201,6 @@ func setSnmpConfig(c *cli.Context) error {
 }
 
 func applySnmpConfig(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("IP Address required")
-	}
 	ipAddress, err := getIPAddress(c)
 	if err != nil {
 		return err
@@ -221,13 +221,16 @@ func applySnmpConfig(c *cli.Context) error {
 
 func getIPAddress(c *cli.Context) (string, error) {
 	ipAddress := c.Args().Get(0)
+	if ipAddress == "" {
+		return "", fmt.Errorf("IP Address or FQDN required")
+	}
 	ip := net.ParseIP(ipAddress)
 	if ip == nil {
 		addresses, err := net.LookupIP(ipAddress)
-		fmt.Printf("%s translates to %s, using the first entry.\n", ipAddress, addresses)
-		if err != nil {
-			return "", fmt.Errorf("Cannot get address from %s: %s", ipAddress, err)
+		if err != nil || len(addresses) == 0 {
+			return "", fmt.Errorf("Cannot parse address from %s (invalid IP or FQDN); %s", ipAddress, err)
 		}
+		fmt.Printf("%s translates to %s\n", ipAddress, addresses[0].String())
 		ipAddress = addresses[0].String()
 	}
 	return ipAddress, nil

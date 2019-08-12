@@ -103,10 +103,10 @@ func (i *RequisitionInterface) IsValid() error {
 	ip := net.ParseIP(i.IPAddress)
 	if ip == nil {
 		addresses, err := net.LookupIP(i.IPAddress)
-		if err != nil {
+		if err != nil || len(addresses) == 0 {
 			return fmt.Errorf("Cannot get address from %s (invalid IP or FQDN); %s", i.IPAddress, err)
 		}
-		fmt.Printf("%s translates to %s, using the first entry.\n", i.IPAddress, addresses)
+		fmt.Printf("%s translates to %s.\n", i.IPAddress, addresses[0].String())
 		i.IPAddress = addresses[0].String()
 	}
 	serviceMap := make(map[string]int)

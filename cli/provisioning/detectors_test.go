@@ -4,14 +4,15 @@ import (
 	"testing"
 
 	"github.com/OpenNMS/onmsctl/model"
+	"github.com/OpenNMS/onmsctl/test"
 	"gopkg.in/yaml.v2"
 	"gotest.tools/assert"
 )
 
 func TestEnumDetectors(t *testing.T) {
 	var err error
-	app := CreateCli(DetectorsCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(DetectorsCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "detector", "enum"})
@@ -20,8 +21,8 @@ func TestEnumDetectors(t *testing.T) {
 
 func TestDescribeDetector(t *testing.T) {
 	var err error
-	app := CreateCli(DetectorsCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(DetectorsCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "detector", "desc"})
@@ -33,8 +34,8 @@ func TestDescribeDetector(t *testing.T) {
 
 func TestListDetectors(t *testing.T) {
 	var err error
-	app := CreateCli(DetectorsCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(DetectorsCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "detector", "list"})
@@ -46,8 +47,8 @@ func TestListDetectors(t *testing.T) {
 
 func TestGetDetector(t *testing.T) {
 	var err error
-	app := CreateCli(DetectorsCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(DetectorsCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "detector", "get"})
@@ -62,8 +63,8 @@ func TestGetDetector(t *testing.T) {
 
 func TestDeleteDetector(t *testing.T) {
 	var err error
-	app := CreateCli(DetectorsCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(DetectorsCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "detector", "del"})
@@ -78,8 +79,8 @@ func TestDeleteDetector(t *testing.T) {
 
 func TestApplyDetector(t *testing.T) {
 	var err error
-	app := CreateCli(DetectorsCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(DetectorsCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "detector", "apply"})
@@ -107,8 +108,8 @@ func TestApplyDetector(t *testing.T) {
 
 func TestSetDetector(t *testing.T) {
 	var err error
-	app := CreateCli(DetectorsCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(DetectorsCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "detector", "set"})

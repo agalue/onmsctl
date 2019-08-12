@@ -13,6 +13,11 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// Severities list of valid event severities
+var Severities = &model.EnumValue{
+	Enum: []string{"Indeterminate", "Normal", "Warning", "Minor", "Major", "Critical"},
+}
+
 // CliCommand the CLI command to manage events
 var CliCommand = cli.Command{
 	Name:  "events",
@@ -45,11 +50,9 @@ var CliCommand = cli.Command{
 					Usage: "A description for the event browser",
 				},
 				cli.GenericFlag{
-					Name: "severity, x",
-					Value: &model.EnumValue{
-						Enum: []string{"Indeterminate", "Normal", "Warning", "Minor", "Major", "Critical"},
-					},
-					Usage: "The severity of the event: Indeterminate, Normal, Warning, Minor, Major, Critical",
+					Name:  "severity, x",
+					Value: Severities,
+					Usage: "The severity of the event: " + Severities.EnumAsString(),
 				},
 				cli.StringSliceFlag{
 					Name:  "parm, p",
@@ -93,11 +96,11 @@ func sendEvent(c *cli.Context) error {
 		event.AddParameter(data[0], data[1])
 	}
 	jsonBytes, _ := json.Marshal(event)
-	return rest.Instance.Post("/rest/events/", jsonBytes)
+	return rest.Instance.Post("/rest/events", jsonBytes)
 }
 
 func applyEvent(c *cli.Context) error {
-	data, err := common.ReadInput(c, 1)
+	data, err := common.ReadInput(c, 0)
 	if err != nil {
 		return err
 	}
@@ -108,5 +111,5 @@ func applyEvent(c *cli.Context) error {
 		return err
 	}
 	jsonBytes, _ := json.Marshal(event)
-	return rest.Instance.Post("/rest/events/", jsonBytes)
+	return rest.Instance.Post("/rest/events", jsonBytes)
 }

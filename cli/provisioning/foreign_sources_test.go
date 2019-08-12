@@ -4,14 +4,15 @@ import (
 	"testing"
 
 	"github.com/OpenNMS/onmsctl/model"
+	"github.com/OpenNMS/onmsctl/test"
 	"gopkg.in/yaml.v2"
 	"gotest.tools/assert"
 )
 
 func TestGetForeignSource(t *testing.T) {
 	var err error
-	app := CreateCli(ForeignSourcesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(ForeignSourcesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "fs", "get"})
@@ -23,8 +24,8 @@ func TestGetForeignSource(t *testing.T) {
 
 func TestSetScanInterval(t *testing.T) {
 	var err error
-	app := CreateCli(ForeignSourcesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(ForeignSourcesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "fs", "int"})
@@ -42,8 +43,8 @@ func TestSetScanInterval(t *testing.T) {
 
 func TestDeleteForeignSource(t *testing.T) {
 	var err error
-	app := CreateCli(ForeignSourcesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(ForeignSourcesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "fs", "del"})
@@ -55,8 +56,8 @@ func TestDeleteForeignSource(t *testing.T) {
 
 func TestApplyForeignSource(t *testing.T) {
 	var err error
-	app := CreateCli(ForeignSourcesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(ForeignSourcesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "fs", "apply"})

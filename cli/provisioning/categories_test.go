@@ -3,13 +3,14 @@ package provisioning
 import (
 	"testing"
 
+	"github.com/OpenNMS/onmsctl/test"
 	"gotest.tools/assert"
 )
 
 func TestListCategories(t *testing.T) {
 	var err error
-	app := CreateCli(CategoriesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(CategoriesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "cat", "list"})
@@ -24,8 +25,8 @@ func TestListCategories(t *testing.T) {
 
 func TestAddCategory(t *testing.T) {
 	var err error
-	app := CreateCli(CategoriesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(CategoriesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "cat", "add"})
@@ -43,8 +44,8 @@ func TestAddCategory(t *testing.T) {
 
 func TestDeleteCategory(t *testing.T) {
 	var err error
-	app := CreateCli(CategoriesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(CategoriesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "cat", "delete"})

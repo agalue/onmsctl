@@ -11,13 +11,16 @@ import (
 	"github.com/urfave/cli"
 )
 
+// CorrelatorPrefix the prefix for correlation engines
+const CorrelatorPrefix = "correlation"
+
 // DaemonMap a map with reloadable daemons
 var DaemonMap = map[string]string{
 	"ackd":                               "Ackd",
 	"alarmd":                             "alarmd",
 	"bsmd":                               "Bsmd",
 	"collectd":                           "Collectd",
-	"correlation:<engine-name>":          "DroolsCorrelationEngine", // Append engine name
+	CorrelatorPrefix:                     "DroolsCorrelationEngine", // Append engine name
 	"discoverd":                          "Discovery",
 	"enlinkd":                            "Enlinkd",
 	"eventd":                             "Eventd",
@@ -33,14 +36,14 @@ var DaemonMap = map[string]string{
 	"pollerd":                            "Pollerd",
 	"poller-backend":                     "PollerBackEnd",
 	"provisiond":                         "Provisiond",
+	"provisiond:snmp-asset":              "Provisiond.SnmpAssetProvisioningAdapter",
+	"provisiond:snmp-hardware-inventory": "Provisiond.SnmpHardwareInventoryProvisioningAdapter",
+	"provisiond:wsman":                   "WsManAssetProvisioningAdapter",
 	"scriptd":                            "Scriptd",
 	"statsd":                             "Statsd",
 	"tl1d":                               "Tl1d",
 	"threshd":                            "Threshd",
 	"translator":                         "Translator",
-	"provisiond:snmp-asset":              "Provisiond.SnmpAssetProvisioningAdapter",
-	"provisiond:snmp-hardware-inventory": "Provisiond.SnmpHardwareInventoryProvisioningAdapter",
-	"provisiond:wsman":                   "WsManAssetProvisioningAdapter",
 	"vacuumd":                            "Vacuumd",
 }
 
@@ -81,13 +84,13 @@ func reloadDaemon(c *cli.Context) error {
 		UEI:    "uei.opennms.org/internal/reloadDaemonConfig",
 		Source: "onmsctl",
 	}
-	event.AddParameter("daemonName", DaemonMap[daemonName])
+	event.AddParameter("daemonName", getDaemonName(daemonName))
 	configFile := c.String("configFile")
 	if configFile != "" {
 		event.AddParameter("configFile", configFile)
 	}
 	jsonBytes, _ := json.Marshal(event)
-	return rest.Instance.Post("/rest/events/", jsonBytes)
+	return rest.Instance.Post("/rest/events", jsonBytes)
 }
 
 func showReloadableDaemons(c *cli.Context) error {
@@ -106,8 +109,17 @@ func isValidDaemon(daemonName string) bool {
 	name := strings.ToLower(daemonName)
 	if _, ok := DaemonMap[name]; ok {
 		return true
-	} else if strings.HasPrefix(name, "correlation:") {
+	} else if strings.HasPrefix(name, CorrelatorPrefix) {
 		return true
 	}
 	return false
+}
+
+func getDaemonName(id string) string {
+	if strings.HasPrefix(id, CorrelatorPrefix) {
+		data := strings.Split(id, ":")
+		fmt.Println(data)
+		return DaemonMap[CorrelatorPrefix] + ":" + data[1]
+	}
+	return DaemonMap[id]
 }

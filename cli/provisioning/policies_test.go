@@ -4,14 +4,15 @@ import (
 	"testing"
 
 	"github.com/OpenNMS/onmsctl/model"
+	"github.com/OpenNMS/onmsctl/test"
 	"gopkg.in/yaml.v2"
 	"gotest.tools/assert"
 )
 
 func TestEnumPolicies(t *testing.T) {
 	var err error
-	app := CreateCli(PoliciesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(PoliciesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "policy", "enum"})
@@ -20,8 +21,8 @@ func TestEnumPolicies(t *testing.T) {
 
 func TestDescribePolicy(t *testing.T) {
 	var err error
-	app := CreateCli(PoliciesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(PoliciesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "policy", "desc"})
@@ -33,8 +34,8 @@ func TestDescribePolicy(t *testing.T) {
 
 func TestListPolicy(t *testing.T) {
 	var err error
-	app := CreateCli(PoliciesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(PoliciesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "policy", "list"})
@@ -46,8 +47,8 @@ func TestListPolicy(t *testing.T) {
 
 func TestGetPolicy(t *testing.T) {
 	var err error
-	app := CreateCli(PoliciesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(PoliciesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "policy", "get"})
@@ -62,8 +63,8 @@ func TestGetPolicy(t *testing.T) {
 
 func TestDeletePolicy(t *testing.T) {
 	var err error
-	app := CreateCli(PoliciesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(PoliciesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "policy", "del"})
@@ -78,8 +79,8 @@ func TestDeletePolicy(t *testing.T) {
 
 func TestApplyPolicy(t *testing.T) {
 	var err error
-	app := CreateCli(PoliciesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(PoliciesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "policy", "apply"})
@@ -136,8 +137,8 @@ func TestApplyPolicy(t *testing.T) {
 
 func TestSetPolicy(t *testing.T) {
 	var err error
-	app := CreateCli(PoliciesCliCommand)
-	testServer := CreateTestServer(t)
+	app := test.CreateCli(PoliciesCliCommand)
+	testServer := test.CreateTestServer(t)
 	defer testServer.Close()
 
 	err = app.Run([]string{app.Name, "policy", "set"})
