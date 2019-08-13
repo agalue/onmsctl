@@ -16,11 +16,30 @@ type RequisitionMetaData struct {
 	Context string   `xml:"context,attr,omitempty" json:"context,omitempty" yaml:"context,omitempty"`
 }
 
+// IsValid returns an error if asset field is invalid
+func (m *RequisitionMetaData) IsValid() error {
+	if m.Context == "" {
+		m.Context = "requisition"
+	}
+	if m.Key == "" {
+		return fmt.Errorf("Meta-data key cannot be empty")
+	}
+	if m.Value == "" {
+		return fmt.Errorf("Meta-data value cannot be empty")
+	}
+	return nil
+}
+
 // RequisitionMonitoredService an IP interface monitored service
 type RequisitionMonitoredService struct {
 	XMLName  xml.Name              `xml:"monitored-service" json:"-" yaml:"-"`
 	Name     string                `xml:"service-name,attr" json:"service-name" yaml:"name"`
 	MetaData []RequisitionMetaData `xml:"meta-data,omitempty" json:"meta-data,omitempty" yaml:"metaData,omitempty"`
+}
+
+// AddMetaData adds a meta-data entry to the node
+func (s *RequisitionMonitoredService) AddMetaData(key string, value string) {
+	s.MetaData = append(s.MetaData, RequisitionMetaData{Key: key, Value: value})
 }
 
 // IsValid returns an error if the service is invalid
@@ -30,6 +49,12 @@ func (s RequisitionMonitoredService) IsValid() error {
 	}
 	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, s.Name); matched {
 		return fmt.Errorf("Invalid characters on service name %s:, /, \\, ?, &, *, ', \"", s.Name)
+	}
+	for _, m := range s.MetaData {
+		err := m.IsValid()
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -83,6 +108,11 @@ type RequisitionInterface struct {
 	MetaData    []RequisitionMetaData         `xml:"meta-data,omitempty" json:"meta-data,omitempty" yaml:"metaData,omitempty"`
 }
 
+// AddMetaData adds a meta-data entry to the interface
+func (i *RequisitionInterface) AddMetaData(key string, value string) {
+	i.MetaData = append(i.MetaData, RequisitionMetaData{Key: key, Value: value})
+}
+
 // IsValid returns an error if the interface definition is invalid
 func (i *RequisitionInterface) IsValid() error {
 	if i.IPAddress == "" {
@@ -122,6 +152,12 @@ func (i *RequisitionInterface) IsValid() error {
 			return fmt.Errorf("Service %s is defined more than once on IP %s", service, i.IPAddress)
 		}
 	}
+	for _, m := range i.MetaData {
+		err := m.IsValid()
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -140,6 +176,11 @@ type RequisitionNode struct {
 	Categories          []RequisitionCategory  `xml:"category,omitempty" json:"category,omitempty" yaml:"categories,omitempty"`
 	Assets              []RequisitionAsset     `xml:"asset,omitempty" json:"asset,omitempty" yaml:"assets,omitempty"`
 	MetaData            []RequisitionMetaData  `xml:"meta-data,omitempty" json:"meta-data,omitempty" yaml:"metaData,omitempty"`
+}
+
+// AddMetaData adds a meta-data entry to the node
+func (n *RequisitionNode) AddMetaData(key string, value string) {
+	n.MetaData = append(n.MetaData, RequisitionMetaData{Key: key, Value: value})
 }
 
 // IsValid returns an error if the node definition is invalid
@@ -191,6 +232,12 @@ func (n *RequisitionNode) IsValid() error {
 	}
 	for _, a := range n.Assets {
 		err := a.IsValid()
+		if err != nil {
+			return err
+		}
+	}
+	for _, m := range n.MetaData {
+		err := m.IsValid()
 		if err != nil {
 			return err
 		}

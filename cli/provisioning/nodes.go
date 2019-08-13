@@ -3,6 +3,7 @@ package provisioning
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/model"
@@ -64,6 +65,10 @@ var NodesCliCommand = cli.Command{
 				cli.StringFlag{
 					Name:  "parentNodeLabel, pnl",
 					Usage: "Parent Node Label",
+				},
+				cli.StringSliceFlag{
+					Name:  "metaData, m",
+					Usage: "A meta-data entry (e.x. --metaData 'foo=bar')",
 				},
 			},
 		},
@@ -147,6 +152,11 @@ func setNode(c *cli.Context) error {
 		ParentForeignSource: c.String("parentForeignSource"),
 		ParentForeignID:     c.String("parentForeignID"),
 		ParentNodeLabel:     c.String("parentNodeLabel"),
+	}
+	metaData := c.StringSlice("metaData")
+	for _, p := range metaData {
+		data := strings.Split(p, "=")
+		node.AddMetaData(data[0], data[1])
 	}
 	err := node.IsValid()
 	if err != nil {

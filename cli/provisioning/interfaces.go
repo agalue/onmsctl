@@ -3,6 +3,7 @@ package provisioning
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/model"
@@ -27,14 +28,14 @@ var InterfacesCliCommand = cli.Command{
 		},
 		{
 			Name:      "get",
-			Usage:     "Gets a specific interface from a given node",
+			Usage:     "Gets a specific IP interface from a given node",
 			ArgsUsage: "<foreignSource> <foreignId> <ipAddress>",
 			Action:    showInterface,
 		},
 		{
 			Name:      "set",
 			ShortName: "add",
-			Usage:     "Adds or update an on IP address from a given requisition/node",
+			Usage:     "Adds or update an IP interface from a given node",
 			ArgsUsage: "<foreignSource> <foreignId> <ipAddress|fqdn>",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -54,19 +55,23 @@ var InterfacesCliCommand = cli.Command{
 					Value: "1",
 					Usage: "Interface Status: 1 for managed, 3 for unmanaged (yes, I know)",
 				},
+				cli.StringSliceFlag{
+					Name:  "metaData, m",
+					Usage: "A meta-data entry (e.x. --metaData 'foo=bar')",
+				},
 			},
 			Action: setInterface,
 		},
 		{
 			Name:      "apply",
-			Usage:     "Creates or updates an interface on a given requisition/node from a external YAML file",
+			Usage:     "Creates or updates an IP interface on a given node from a external YAML file",
 			ArgsUsage: "<foreignSource> <foreignId> <yaml>",
 			Action:    applyInterface,
 		},
 		{
 			Name:      "delete",
 			ShortName: "del",
-			Usage:     "Deletes an interface from a given requisition/node",
+			Usage:     "Deletes an IP interface from a given node",
 			ArgsUsage: "<foreignSource> <foreignId> <ipAddress>",
 			Action:    deleteInterface,
 		},
@@ -139,6 +144,11 @@ func setInterface(c *cli.Context) error {
 		Description: c.String("description"),
 		SnmpPrimary: c.String("snmpPrimary"),
 		Status:      c.Int("status"),
+	}
+	metaData := c.StringSlice("metaData")
+	for _, p := range metaData {
+		data := strings.Split(p, "=")
+		intf.AddMetaData(data[0], data[1])
 	}
 	err := intf.IsValid()
 	if err != nil {

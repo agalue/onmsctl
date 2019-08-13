@@ -3,6 +3,7 @@ package provisioning
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/model"
@@ -24,10 +25,17 @@ var ServicesCliCommand = cli.Command{
 			Action:    listServices,
 		},
 		{
-			Name:      "add",
-			Usage:     "Adds a new monitored service to a given IP interface",
+			Name:      "set",
+			ShortName: "add",
+			Usage:     "Adds or update a monitored service to a given IP interface",
 			ArgsUsage: "<foreignSource> <foreignId> <ipAddress> <serviceName>",
-			Action:    addService,
+			Action:    setService,
+			Flags: []cli.Flag{
+				cli.StringSliceFlag{
+					Name:  "metaData, m",
+					Usage: "A meta-data entry (e.x. --metaData 'foo=bar')",
+				},
+			},
 		},
 		{
 			Name:      "delete",
@@ -70,7 +78,7 @@ func listServices(c *cli.Context) error {
 	return nil
 }
 
-func addService(c *cli.Context) error {
+func setService(c *cli.Context) error {
 	if !c.Args().Present() {
 		return fmt.Errorf("Requisition name, foreign ID, IP address and service name required")
 	}
@@ -91,6 +99,11 @@ func addService(c *cli.Context) error {
 		return fmt.Errorf("Service name required")
 	}
 	svc := model.RequisitionMonitoredService{Name: service}
+	metaData := c.StringSlice("metaData")
+	for _, p := range metaData {
+		data := strings.Split(p, "=")
+		svc.AddMetaData(data[0], data[1])
+	}
 	jsonBytes, _ := json.Marshal(svc)
 	return rest.Instance.Post("/rest/requisitions/"+foreignSource+"/nodes/"+foreignID+"/interfaces/"+ipAddress+"/services", jsonBytes)
 }
