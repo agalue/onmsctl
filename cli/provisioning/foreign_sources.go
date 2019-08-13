@@ -32,7 +32,7 @@ var ForeignSourcesCliCommand = cli.Command{
 			ShortName: "int",
 			Usage:     "Sets the scan interval",
 			Action:    setScanInterval,
-			ArgsUsage: "<interval>",
+			ArgsUsage: "<name> <interval>",
 		},
 		{
 			Name:   "apply",
@@ -49,10 +49,10 @@ var ForeignSourcesCliCommand = cli.Command{
 				},
 				cli.StringFlag{
 					Name:  "file, f",
-					Usage: "External YAML file (use '-' for STDIN Pipe)",
+					Usage: "External file (use '-' for STDIN Pipe)",
 				},
 			},
-			ArgsUsage: "<yaml>",
+			ArgsUsage: "<content>",
 		},
 		{
 			Name:      "validate",

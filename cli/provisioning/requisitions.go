@@ -41,7 +41,7 @@ var RequisitionsCliCommand = cli.Command{
 		},
 		{
 			Name:   "apply",
-			Usage:  "Creates or updates a requisition from a external YAML file",
+			Usage:  "Creates or updates a requisition from a external file",
 			Action: applyRequisition,
 			Flags: []cli.Flag{
 				cli.GenericFlag{
@@ -54,10 +54,10 @@ var RequisitionsCliCommand = cli.Command{
 				},
 				cli.StringFlag{
 					Name:  "file, f",
-					Usage: "External YAML file (use '-' for STDIN Pipe)",
+					Usage: "External file (use '-' for STDIN Pipe)",
 				},
 			},
-			ArgsUsage: "<yaml>",
+			ArgsUsage: "<content>",
 		},
 		{
 			Name:      "validate",

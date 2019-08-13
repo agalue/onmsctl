@@ -50,7 +50,7 @@ var DaemonMap = map[string]string{
 // CliCommand the CLI command to manage events
 var CliCommand = cli.Command{
 	Name:  "daemon",
-	Usage: "Manage OpenNMS daemons",
+	Usage: "Manage OpenNMS Daemons",
 	Subcommands: []cli.Command{
 		{
 			Name:      "reload",

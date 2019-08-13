@@ -14,7 +14,7 @@ import (
 // CliCommand the CLI command to provide server information
 var CliCommand = cli.Command{
 	Name:  "info",
-	Usage: "Disply information about the OpenNMS server",
+	Usage: "Shows version information about the OpenNMS server",
 	Action: func(c *cli.Context) error {
 		jsonInfo, err := rest.Instance.Get("/rest/info")
 		if err != nil {

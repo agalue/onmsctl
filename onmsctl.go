@@ -69,7 +69,7 @@ func initCliFlags(app *cli.App) {
 		cli.BoolFlag{
 			Name:        "insecure, k",
 			Destination: &rest.Instance.Insecure,
-			Usage:       "To skip HTTPS certificate validation (e.x. self-signed certificates)",
+			Usage:       "Skips HTTPS certificate validation (e.x. self-signed certificates)",
 		},
 	}
 }
