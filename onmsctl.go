@@ -7,9 +7,9 @@ import (
 	"github.com/OpenNMS/onmsctl/cli/daemon"
 	"github.com/OpenNMS/onmsctl/cli/events"
 	"github.com/OpenNMS/onmsctl/cli/info"
-	"github.com/OpenNMS/onmsctl/cli/snmp"
 	"github.com/OpenNMS/onmsctl/cli/provisioning"
 	"github.com/OpenNMS/onmsctl/cli/resources"
+	"github.com/OpenNMS/onmsctl/cli/snmp"
 	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 )

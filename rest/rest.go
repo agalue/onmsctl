@@ -14,17 +14,16 @@ var Instance = Client{
 	URL:      "http://localhost:8980/opennms",
 	Username: "admin",
 	Password: "admin",
-	Insecure: true,
 	Timeout:  5,
 }
 
 // Client OpenNMS ReST API configuration
 type Client struct {
-	URL      string
-	Username string
-	Password string
-	Insecure bool
-	Timeout  int
+	URL      string `yaml:"url"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+	Insecure bool   `yaml:"insecure"`
+	Timeout  int    `yaml:"timeout"`
 }
 
 func (cli Client) getHTTPClient() *http.Client {
