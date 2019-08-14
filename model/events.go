@@ -125,3 +125,48 @@ func (e Event) IsValid() error {
 	}
 	return nil
 }
+
+// OnmsEventParam parameters of an OnmsEvent entity
+type OnmsEventParam struct {
+	Name  string
+	Value string
+	Type  string
+}
+
+// OnmsEvent OpenNMS event entity
+type OnmsEvent struct {
+	ID                   int              `json:"id" yaml:"id"`
+	UEI                  string           `json:"uei" yaml:"uei"`
+	EventTime            *Time            `json:"time,omitempty" yaml:"time,omitempty"`
+	EventHost            string           `json:"host,omitempty" yaml:"host,omitempty"`
+	EventSource          string           `json:"source,omitempty" yaml:"source,omitempty"`
+	CreateTime           *Time            `json:"createTime,omitempty" yaml:"createTime,omitempty"`
+	SnmpHost             string           `json:"snmpHost,omitempty" yaml:"snmpHost,omitempty"`
+	Snmp                 string           `json:"snmp,omitempty" yaml:"snmp,omitempty"`
+	NodeID               int              `json:"nodeId,omitempty" yaml:"nodeId,omitempty"`
+	NodeLabel            string           `json:"nodeLabel,omitempty" yaml:"nodeLabel,omitempty"`
+	IPAddress            string           `json:"ipAddress,omitempty" yaml:"ipAddress,omitempty"`
+	ServiceType          OnmsServiceType  `json:"serviceType,omitempty" yaml:"serviceType,omitempty"`
+	IfIndex              int              `json:"ifIndex,omitempty" yaml:"ifIndex,omitempty"`
+	Severity             string           `json:"severity,omitempty" yaml:"severity,omitempty"`
+	Log                  string           `json:"log,omitempty" yaml:"log,omitempty"`
+	LogGroup             string           `json:"logGroup,omitempty" yaml:"logGroup,omitempty"`
+	LogMessage           string           `json:"logMessage,omitempty" yaml:"logMessage,omitempty"`
+	Display              string           `json:"display,omitempty" yaml:"display,omitempty"`
+	Description          string           `json:"description,omitempty" yaml:"description,omitempty"`
+	PathOutage           string           `json:"pathOutage,omitempty" yaml:"pathOutage,omitempty"`
+	Correlation          string           `json:"correlation,omitempty" yaml:"correlation,omitempty"`
+	SuppressedCount      int              `json:"suppressedCount,omitempty" yaml:"suppressedCount,omitempty"`
+	OperatorInstructions string           `json:"operatorInstructions,omitempty" yaml:"operatorInstructions,omitempty"`
+	OperatorAction       string           `json:"operatorAction,omitempty" yaml:"operatorAction,omitempty"`
+	AutoAction           string           `json:"autoAction,omitempty" yaml:"autoAction,omitempty"`
+	Parameters           []OnmsEventParam `json:"parameters,omitempty" yaml:"parameters,omitempty"`
+}
+
+// OnmsEventList a list of events
+type OnmsEventList struct {
+	Count      int         `json:"count" yaml:"count"`
+	TotalCount int         `json:"totalCount" yaml:"totalCount"`
+	Offset     int         `json:"offset" yaml:"offset"`
+	Events     []OnmsEvent `json:"event" yaml:"events"`
+}
