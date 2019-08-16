@@ -157,3 +157,19 @@ func TestRequisitionXML(t *testing.T) {
 	err = req.IsValid()
 	assert.NilError(t, err)
 }
+
+func TestInvalidRequisitionXML(t *testing.T) {
+	reqXML := `
+	<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2018-10-25T04:10:15.355-05:00" foreign-source="Test" last-import="2018-10-25T04:10:21.944-05:00">
+		<node foreign-id="www.opennms.org" node-label="www.opennms.org">
+		 <interface descr="eth0" ip-addr="www.opennms.org" status="1" snmp-primary="N"/>
+		</node>
+	</model-import>
+	`
+	req := &Requisition{}
+	err := xml.Unmarshal([]byte(reqXML), req)
+	assert.NilError(t, err)
+	AllowFqdnOnRequisitionedInterfaces = false
+	err = req.IsValid()
+	assert.ErrorContains(t, err, "not a valid IPv4")
+}

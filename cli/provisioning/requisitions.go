@@ -256,10 +256,12 @@ func parseRequisition(c *cli.Context) (*model.Requisition, error) {
 	switch c.String("format") {
 	case "xml":
 		err = xml.Unmarshal(data, requisition)
-	case "yaml":
-		err = yaml.Unmarshal(data, requisition)
+		model.AllowFqdnOnRequisitionedInterfaces = false
 	case "json":
 		err = json.Unmarshal(data, requisition)
+		model.AllowFqdnOnRequisitionedInterfaces = false
+	case "yaml":
+		err = yaml.Unmarshal(data, requisition)
 	}
 	if err != nil {
 		return requisition, err

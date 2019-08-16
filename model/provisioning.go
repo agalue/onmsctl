@@ -8,6 +8,9 @@ import (
 	"strings"
 )
 
+// AllowFqdnOnRequisitionedInterfaces when this is true, if the content of an IP Address is a FQDN it will be translated into a valid IPv4
+var AllowFqdnOnRequisitionedInterfaces = true
+
 // RequisitionMetaData a meta-data entry
 type RequisitionMetaData struct {
 	XMLName xml.Name `xml:"meta-data" json:"-" yaml:"-"`
@@ -132,12 +135,16 @@ func (i *RequisitionInterface) IsValid() error {
 	}
 	ip := net.ParseIP(i.IPAddress)
 	if ip == nil {
-		addresses, err := net.LookupIP(i.IPAddress)
-		if err != nil || len(addresses) == 0 {
-			return fmt.Errorf("Cannot get address from %s (invalid IP or FQDN); %s", i.IPAddress, err)
+		if AllowFqdnOnRequisitionedInterfaces {
+			addresses, err := net.LookupIP(i.IPAddress)
+			if err != nil || len(addresses) == 0 {
+				return fmt.Errorf("Cannot get address from %s (invalid IP or FQDN); %s", i.IPAddress, err)
+			}
+			fmt.Printf("%s translates to %s.\n", i.IPAddress, addresses[0].String())
+			i.IPAddress = addresses[0].String()
+		} else {
+			return fmt.Errorf("%s is not a valid IPv4 or IPv6 address", i.IPAddress)
 		}
-		fmt.Printf("%s translates to %s.\n", i.IPAddress, addresses[0].String())
-		i.IPAddress = addresses[0].String()
 	}
 	serviceMap := make(map[string]int)
 	for _, s := range i.Services {
