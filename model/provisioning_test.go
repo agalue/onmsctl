@@ -53,14 +53,17 @@ func TestRequisitionObject(t *testing.T) {
 	bytes, err := json.MarshalIndent(req, "", "  ")
 	assert.NilError(t, err)
 	fmt.Println(string(bytes))
+	assert.NilError(t, json.Unmarshal(bytes, &Requisition{}))
 
 	bytes, err = xml.MarshalIndent(req, "", "  ")
 	assert.NilError(t, err)
 	fmt.Println(string(bytes))
+	assert.NilError(t, xml.Unmarshal(bytes, &Requisition{}))
 
 	bytes, err = yaml.Marshal(req)
 	assert.NilError(t, err)
 	fmt.Println(string(bytes))
+	assert.NilError(t, yaml.Unmarshal(bytes, &Requisition{}))
 }
 
 func TestForeignSourceObject(t *testing.T) {
@@ -107,14 +110,17 @@ func TestForeignSourceObject(t *testing.T) {
 	bytes, err := json.MarshalIndent(fsDef, "", "  ")
 	assert.NilError(t, err)
 	fmt.Println(string(bytes))
+	assert.NilError(t, json.Unmarshal(bytes, &ForeignSourceDef{}))
 
 	bytes, err = xml.MarshalIndent(fsDef, "", "  ")
 	assert.NilError(t, err)
 	fmt.Println(string(bytes))
+	assert.NilError(t, xml.Unmarshal(bytes, &ForeignSourceDef{}))
 
 	bytes, err = yaml.Marshal(fsDef)
 	assert.NilError(t, err)
 	fmt.Println(string(bytes))
+	assert.NilError(t, yaml.Unmarshal(bytes, &ForeignSourceDef{}))
 }
 
 func TestRequisitionXML(t *testing.T) {

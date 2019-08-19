@@ -73,6 +73,10 @@ var RequisitionsCliCommand = cli.Command{
 					},
 					Usage: "File Format: " + strings.Join(Formats, ", "),
 				},
+				cli.BoolFlag{
+					Name:  "forceParseFQDN, F",
+					Usage: "Force parsing FQDN (for XML and JSON)",
+				},
 				cli.StringFlag{
 					Name:  "file, f",
 					Usage: "External YAML file (use '-' for STDIN Pipe)",
@@ -253,13 +257,14 @@ func parseRequisition(c *cli.Context) (*model.Requisition, error) {
 	if err != nil {
 		return requisition, err
 	}
+	forceParse := c.Bool("forceParseFQDN")
 	switch c.String("format") {
 	case "xml":
 		err = xml.Unmarshal(data, requisition)
-		model.AllowFqdnOnRequisitionedInterfaces = false
+		model.AllowFqdnOnRequisitionedInterfaces = forceParse
 	case "json":
 		err = json.Unmarshal(data, requisition)
-		model.AllowFqdnOnRequisitionedInterfaces = false
+		model.AllowFqdnOnRequisitionedInterfaces = forceParse
 	case "yaml":
 		err = yaml.Unmarshal(data, requisition)
 	}

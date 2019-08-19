@@ -153,3 +153,5 @@ Make sure to protect the file, as the credentials are on plain text.
 * Search for entities. The idea is to provide a way to build a search expression that will be translated into a [FIQL](https://fiql-parser.readthedocs.io/en/stable/usage.html) expression and use the ReST API v2 of OpenNMS to search for events, alarms, nodes, etc.
 
 * Visualize tabular data with pagination (nodes, events, alarms, outages, notifications).
+
+* Configure scheduled outages.
