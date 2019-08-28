@@ -236,16 +236,20 @@ var detectorsJSON = `
 }
 `
 
-// CreateCli creates a CLI Application object
-func CreateCli(cmd cli.Command) *cli.App {
+func InitializeMocks(t *testing.T, cmd cli.Command) (*cli.App, *httptest.Server) {
+	return createCli(cmd), createTestServer(t)
+}
+
+// Creates a CLI Application object
+func createCli(cmd cli.Command) *cli.App {
 	var app = cli.NewApp()
 	app.Name = "onmsctl"
 	app.Commands = []cli.Command{cmd}
 	return app
 }
 
-// CreateTestServer creates a test HTTP server
-func CreateTestServer(t *testing.T) *httptest.Server {
+// Creates a test HTTP server
+func createTestServer(t *testing.T) *httptest.Server {
 	server := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		fmt.Printf("Received %s request from %s\n", req.Method, req.URL.Path)
 

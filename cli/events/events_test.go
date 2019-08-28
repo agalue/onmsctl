@@ -11,9 +11,8 @@ import (
 
 func TestSendEvent(t *testing.T) {
 	var err error
-	app := test.CreateCli(CliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, CliCommand)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "events", "send"})
 	assert.Error(t, err, "UEI required")
@@ -24,9 +23,8 @@ func TestSendEvent(t *testing.T) {
 
 func TestApplyEvent(t *testing.T) {
 	var err error
-	app := test.CreateCli(CliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, CliCommand)
+	defer server.Close()
 
 	event := &model.Event{
 		UEI:       "uei.opennms.org/test",

@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/OpenNMS/onmsctl/model"
+	"github.com/OpenNMS/onmsctl/rest"
+	"github.com/OpenNMS/onmsctl/services"
 	"github.com/OpenNMS/onmsctl/test"
 	"gopkg.in/yaml.v2"
 	"gotest.tools/assert"
@@ -11,12 +13,13 @@ import (
 
 func TestGetForeignSource(t *testing.T) {
 	var err error
-	app := test.CreateCli(ForeignSourcesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, ForeignSourcesCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
+	fs = services.GetForeignSourcesAPI(rest.Instance, api)
 
 	err = app.Run([]string{app.Name, "fs", "get"})
-	assert.Error(t, err, "Foreign source name required")
+	assert.Error(t, err, "Requisition name required")
 
 	err = app.Run([]string{app.Name, "fs", "get", "Test"})
 	assert.NilError(t, err)
@@ -24,12 +27,13 @@ func TestGetForeignSource(t *testing.T) {
 
 func TestSetScanInterval(t *testing.T) {
 	var err error
-	app := test.CreateCli(ForeignSourcesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, ForeignSourcesCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
+	fs = services.GetForeignSourcesAPI(rest.Instance, api)
 
 	err = app.Run([]string{app.Name, "fs", "int"})
-	assert.Error(t, err, "Foreign source name and scan interval are required")
+	assert.Error(t, err, "Requisition name required")
 
 	err = app.Run([]string{app.Name, "fs", "int", "Test"})
 	assert.Error(t, err, "Scan interval required")
@@ -43,12 +47,13 @@ func TestSetScanInterval(t *testing.T) {
 
 func TestDeleteForeignSource(t *testing.T) {
 	var err error
-	app := test.CreateCli(ForeignSourcesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, ForeignSourcesCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
+	fs = services.GetForeignSourcesAPI(rest.Instance, api)
 
 	err = app.Run([]string{app.Name, "fs", "del"})
-	assert.Error(t, err, "Foreign source name required")
+	assert.Error(t, err, "Requisition name required")
 
 	err = app.Run([]string{app.Name, "fs", "del", "Local"})
 	assert.NilError(t, err)
@@ -56,9 +61,10 @@ func TestDeleteForeignSource(t *testing.T) {
 
 func TestApplyForeignSource(t *testing.T) {
 	var err error
-	app := test.CreateCli(ForeignSourcesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, ForeignSourcesCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
+	fs = services.GetForeignSourcesAPI(rest.Instance, api)
 
 	err = app.Run([]string{app.Name, "fs", "apply"})
 	assert.Error(t, err, "Content cannot be empty")

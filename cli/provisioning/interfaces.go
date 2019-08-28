@@ -1,13 +1,11 @@
 package provisioning
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/model"
-	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 
 	"gopkg.in/yaml.v2"
@@ -79,7 +77,7 @@ var InterfacesCliCommand = cli.Command{
 }
 
 func listInterfaces(c *cli.Context) error {
-	node, err := GetNode(c)
+	node, err := api.GetNode(c.Args().Get(0), c.Args().Get(1))
 	if err != nil {
 		return err
 	}
@@ -97,50 +95,18 @@ func listInterfaces(c *cli.Context) error {
 }
 
 func showInterface(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name, foreign ID, IP address required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	foreignID := c.Args().Get(1)
-	if foreignID == "" {
-		return fmt.Errorf("Foreign ID required")
-	}
-	ipAddress := c.Args().Get(2)
-	if ipAddress == "" {
-		return fmt.Errorf("IP Address required")
-	}
-	jsonString, err := rest.Instance.Get("/rest/requisitions/" + foreignSource + "/nodes/" + foreignID + "/interfaces/" + ipAddress)
+	intf, err := api.GetInterface(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
 	if err != nil {
 		return err
 	}
-	intf := model.RequisitionInterface{}
-	json.Unmarshal(jsonString, &intf)
 	data, _ := yaml.Marshal(&intf)
 	fmt.Println(string(data))
 	return nil
 }
 
 func setInterface(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name, foreign ID, IP address required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	foreignID := c.Args().Get(1)
-	if foreignID == "" {
-		return fmt.Errorf("Foreign ID required")
-	}
-	ipAddress := c.Args().Get(2)
-	if ipAddress == "" {
-		return fmt.Errorf("IP Address required")
-	}
 	intf := model.RequisitionInterface{
-		IPAddress:   ipAddress,
+		IPAddress:   c.Args().Get(2),
 		Description: c.String("description"),
 		SnmpPrimary: c.String("snmpPrimary"),
 		Status:      c.Int("status"),
@@ -150,56 +116,19 @@ func setInterface(c *cli.Context) error {
 		data := strings.Split(p, "=")
 		intf.AddMetaData(data[0], data[1])
 	}
-	err := intf.IsValid()
-	if err != nil {
-		return err
-	}
-	jsonBytes, _ := json.Marshal(intf)
-	return rest.Instance.Post("/rest/requisitions/"+foreignSource+"/nodes/"+foreignID+"/interfaces", jsonBytes)
+	return api.SetInterface(c.Args().Get(0), c.Args().Get(1), intf)
 }
 
 func applyInterface(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name, foreign ID required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	foreignID := c.Args().Get(1)
-	if foreignID == "" {
-		return fmt.Errorf("Foreign ID required")
-	}
 	data, err := common.ReadInput(c, 2)
 	if err != nil {
 		return err
 	}
 	intf := model.RequisitionInterface{}
 	yaml.Unmarshal(data, &intf)
-	err = intf.IsValid()
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Adding interface %s to requisition %s on node %s...\n", intf.IPAddress, foreignSource, foreignID)
-	jsonBytes, _ := json.Marshal(intf)
-	return rest.Instance.Post("/rest/requisitions/"+foreignSource+"/nodes/"+foreignID+"/interfaces", jsonBytes)
+	return api.SetInterface(c.Args().Get(0), c.Args().Get(1), intf)
 }
 
 func deleteInterface(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name, foreign ID, IP address required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	foreignID := c.Args().Get(1)
-	if foreignID == "" {
-		return fmt.Errorf("Foreign ID required")
-	}
-	ipAddress := c.Args().Get(2)
-	if ipAddress == "" {
-		return fmt.Errorf("IP address required")
-	}
-	return rest.Instance.Delete("/rest/requisitions/" + foreignSource + "/nodes/" + foreignID + "/interfaces/" + ipAddress)
+	return api.DeleteInterface(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
 }

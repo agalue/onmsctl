@@ -1,12 +1,10 @@
 package provisioning
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/model"
-	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 )
 
@@ -45,7 +43,7 @@ var AssetsCliCommand = cli.Command{
 }
 
 func listAssets(c *cli.Context) error {
-	node, err := GetNode(c)
+	node, err := api.GetNode(c.Args().Get(0), c.Args().Get(1))
 	if err != nil {
 		return err
 	}
@@ -59,7 +57,7 @@ func listAssets(c *cli.Context) error {
 }
 
 func enumerateAssets(c *cli.Context) error {
-	assets, err := getAssets(c)
+	assets, err := fs.GetAvailableAssets()
 	if err != nil {
 		return err
 	}
@@ -73,69 +71,10 @@ func enumerateAssets(c *cli.Context) error {
 }
 
 func setAsset(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name, foreign ID, asset name and value required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	foreignID := c.Args().Get(1)
-	if foreignID == "" {
-		return fmt.Errorf("Foreign ID required")
-	}
-	assetKey := c.Args().Get(2)
-	if assetKey == "" {
-		return fmt.Errorf("Asset name required")
-	}
-	assetValue := c.Args().Get(3)
-	if assetValue == "" {
-		return fmt.Errorf("Asset value required")
-	}
-	assets, err := getAssets(c)
-	if err != nil {
-		return err
-	}
-	var found = false
-	for _, asset := range assets.Element {
-		if asset == assetKey {
-			found = true
-			break
-		}
-	}
-	if !found {
-		return fmt.Errorf("Invalid Asset Field: %s", assetKey)
-	}
-	asset := model.RequisitionAsset{Name: assetKey, Value: assetValue}
-	jsonBytes, _ := json.Marshal(asset)
-	return rest.Instance.Post("/rest/requisitions/"+foreignSource+"/nodes/"+foreignID+"/assets", jsonBytes)
+	asset := model.RequisitionAsset{Name: c.Args().Get(2), Value: c.Args().Get(3)}
+	return api.SetAsset(c.Args().Get(0), c.Args().Get(1), asset)
 }
 
 func deleteAsset(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name, foreign ID, asset name required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	foreignID := c.Args().Get(1)
-	if foreignID == "" {
-		return fmt.Errorf("Foreign ID required")
-	}
-	asset := c.Args().Get(2)
-	if asset == "" {
-		return fmt.Errorf("Asset name required")
-	}
-	return rest.Instance.Delete("/rest/requisitions/" + foreignSource + "/nodes/" + foreignID + "/assets/" + asset)
-}
-
-func getAssets(c *cli.Context) (model.ElementList, error) {
-	assets := model.ElementList{}
-	jsonAssets, err := rest.Instance.Get("/rest/foreignSourcesConfig/assets")
-	if err != nil {
-		return assets, fmt.Errorf("Cannot retrieve asset names list")
-	}
-	json.Unmarshal(jsonAssets, &assets)
-	return assets, nil
+	return api.DeleteAsset(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
 }

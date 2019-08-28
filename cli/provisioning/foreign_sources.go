@@ -8,7 +8,6 @@ import (
 
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/model"
-	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 
 	"gopkg.in/yaml.v2"
@@ -86,38 +85,17 @@ var ForeignSourcesCliCommand = cli.Command{
 }
 
 func showForeignSource(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Foreign source name required")
-	}
-	foreignSource := c.Args().First()
-	jsonString, err := rest.Instance.Get("/rest/foreignSources/" + foreignSource)
+	fsDef, err := fs.GetForeignSourceDef(c.Args().Get(0))
 	if err != nil {
 		return err
 	}
-	fsDef := model.ForeignSourceDef{}
-	json.Unmarshal(jsonString, &fsDef)
-	data, _ := yaml.Marshal(&fsDef)
+	data, _ := yaml.Marshal(fsDef)
 	fmt.Println(string(data))
 	return nil
 }
 
 func setScanInterval(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Foreign source name and scan interval are required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	scanInterval := c.Args().Get(1)
-	if scanInterval == "" {
-		return fmt.Errorf("Scan interval required")
-	}
-	if !model.IsValidScanInterval(scanInterval) {
-		return fmt.Errorf("Invalid scan interval %s", scanInterval)
-	}
-	jsonBytes := []byte("scan-interval=" + scanInterval)
-	return rest.Instance.Put("/rest/foreignSources/"+foreignSource, jsonBytes, "application/x-www-form-urlencoded")
+	return fs.SetScanInterval(c.Args().Get(0), c.Args().Get(1))
 }
 
 func applyForeignSource(c *cli.Context) error {
@@ -125,9 +103,7 @@ func applyForeignSource(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Updating foreign source definition %s...\n", fsDef.Name)
-	jsonBytes, _ := json.Marshal(fsDef)
-	return rest.Instance.Post("/rest/foreignSources", jsonBytes)
+	return fs.SetForeignSourceDef(*fsDef)
 }
 
 func validateForeignSource(c *cli.Context) error {
@@ -140,51 +116,7 @@ func validateForeignSource(c *cli.Context) error {
 }
 
 func deleteForeignSource(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Foreign source name required")
-	}
-	foreignSource := c.Args().First()
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	err := rest.Instance.Delete("/rest/foreignSources/deployed/" + foreignSource)
-	if err != nil {
-		return err
-	}
-	err = rest.Instance.Delete("/rest/foreignSources/" + foreignSource)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func isForeignSourceValid(fs model.ForeignSourceDef) error {
-	if err := fs.IsValid(); err != nil {
-		return err
-	}
-	if len(fs.Policies) > 0 {
-		policiesConfig, err := getPolicies()
-		if err != nil {
-			return err
-		}
-		for _, policy := range fs.Policies {
-			if err := isPolicyValid(policy, policiesConfig); err != nil {
-				return err
-			}
-		}
-	}
-	if len(fs.Detectors) > 0 {
-		detectorsConfig, err := getDetectors()
-		if err != nil {
-			return err
-		}
-		for _, detector := range fs.Detectors {
-			if err := isDetectorValid(detector, detectorsConfig); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
+	return fs.DeleteForeignSourceDef(c.Args().Get(0))
 }
 
 func parseForeignSourceDefinition(c *cli.Context) (*model.ForeignSourceDef, error) {
@@ -204,5 +136,5 @@ func parseForeignSourceDefinition(c *cli.Context) (*model.ForeignSourceDef, erro
 	if err != nil {
 		return fsDef, err
 	}
-	return fsDef, isForeignSourceValid(*fsDef)
+	return fsDef, fs.IsForeignSourceValid(*fsDef)
 }

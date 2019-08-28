@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/OpenNMS/onmsctl/model"
+	"github.com/OpenNMS/onmsctl/rest"
+	"github.com/OpenNMS/onmsctl/services"
 	"github.com/OpenNMS/onmsctl/test"
 	"gopkg.in/yaml.v2"
 	"gotest.tools/assert"
@@ -11,9 +13,9 @@ import (
 
 func TestListRequisitions(t *testing.T) {
 	var err error
-	app := test.CreateCli(RequisitionsCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, RequisitionsCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "req", "list"})
 	assert.NilError(t, err)
@@ -21,9 +23,9 @@ func TestListRequisitions(t *testing.T) {
 
 func TestGetRequisition(t *testing.T) {
 	var err error
-	app := test.CreateCli(RequisitionsCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, RequisitionsCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "req", "get"})
 	assert.Error(t, err, "Requisition name required")
@@ -34,9 +36,9 @@ func TestGetRequisition(t *testing.T) {
 
 func TestAddRequisition(t *testing.T) {
 	var err error
-	app := test.CreateCli(RequisitionsCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, RequisitionsCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "req", "add"})
 	assert.Error(t, err, "Requisition name required")
@@ -47,9 +49,9 @@ func TestAddRequisition(t *testing.T) {
 
 func TestDeleteRequisition(t *testing.T) {
 	var err error
-	app := test.CreateCli(RequisitionsCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, RequisitionsCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "req", "delete"})
 	assert.Error(t, err, "Requisition name required")
@@ -60,9 +62,9 @@ func TestDeleteRequisition(t *testing.T) {
 
 func TestApplyRequisition(t *testing.T) {
 	var err error
-	app := test.CreateCli(RequisitionsCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, RequisitionsCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "req", "apply"})
 	assert.Error(t, err, "Content cannot be empty")

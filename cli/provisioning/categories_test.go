@@ -3,18 +3,20 @@ package provisioning
 import (
 	"testing"
 
+	"github.com/OpenNMS/onmsctl/rest"
+	"github.com/OpenNMS/onmsctl/services"
 	"github.com/OpenNMS/onmsctl/test"
 	"gotest.tools/assert"
 )
 
 func TestListCategories(t *testing.T) {
 	var err error
-	app := test.CreateCli(CategoriesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, CategoriesCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "cat", "list"})
-	assert.Error(t, err, "Requisition name and foreign ID required")
+	assert.Error(t, err, "Requisition name required")
 
 	err = app.Run([]string{app.Name, "cat", "list", "Test"})
 	assert.Error(t, err, "Foreign ID required")
@@ -25,18 +27,18 @@ func TestListCategories(t *testing.T) {
 
 func TestAddCategory(t *testing.T) {
 	var err error
-	app := test.CreateCli(CategoriesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, CategoriesCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "cat", "add"})
-	assert.Error(t, err, "Requisition name, foreign ID, category name required")
+	assert.Error(t, err, "Requisition name required")
 
 	err = app.Run([]string{app.Name, "cat", "add", "Test"})
 	assert.Error(t, err, "Foreign ID required")
 
 	err = app.Run([]string{app.Name, "cat", "add", "Test", "n1"})
-	assert.Error(t, err, "Category name required")
+	assert.Error(t, err, "Category name cannot be empty")
 
 	err = app.Run([]string{app.Name, "cat", "add", "Test", "n1", "Production"})
 	assert.NilError(t, err)
@@ -44,12 +46,12 @@ func TestAddCategory(t *testing.T) {
 
 func TestDeleteCategory(t *testing.T) {
 	var err error
-	app := test.CreateCli(CategoriesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, CategoriesCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "cat", "delete"})
-	assert.Error(t, err, "Requisition name, foreign ID and category name required")
+	assert.Error(t, err, "Requisition name required")
 
 	err = app.Run([]string{app.Name, "cat", "delete", "Test"})
 	assert.Error(t, err, "Foreign ID required")

@@ -306,6 +306,16 @@ type RequisitionsStats struct {
 	ForeignSources []RequisitionStats `json:"foreign-source"`
 }
 
+// GetRequisitionStats gets the stats of a given requisition
+func (stats RequisitionsStats) GetRequisitionStats(foreignSource string) RequisitionStats {
+	for _, req := range stats.ForeignSources {
+		if req.Name == foreignSource {
+			return req
+		}
+	}
+	return RequisitionStats{}
+}
+
 // ElementList a list of elements/strings
 type ElementList struct {
 	Count   int      `json:"count" yaml:"count"`
@@ -394,6 +404,32 @@ func (fs *ForeignSourceDef) IsValid() error {
 		}
 	}
 	return nil
+}
+
+// GetDetector gets a detector by its name or class
+func (fs ForeignSourceDef) GetDetector(detectorID string) (*Detector, error) {
+	if detectorID == "" {
+		return nil, fmt.Errorf("Detector name or class required")
+	}
+	for _, detector := range fs.Detectors {
+		if detector.Class == detectorID || detector.Name == detectorID {
+			return &detector, nil
+		}
+	}
+	return nil, fmt.Errorf("Cannot find detector for %s", detectorID)
+}
+
+// GetPolicy gets a policy by its name or class
+func (fs ForeignSourceDef) GetPolicy(policyID string) (*Policy, error) {
+	if policyID == "" {
+		return nil, fmt.Errorf("Policy name or class required")
+	}
+	for _, policy := range fs.Policies {
+		if policy.Class == policyID || policy.Name == policyID {
+			return &policy, nil
+		}
+	}
+	return nil, fmt.Errorf("Cannot find policy for %s", policyID)
 }
 
 // Plugin a definiton class for a detector or a policy

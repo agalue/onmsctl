@@ -11,9 +11,8 @@ import (
 
 func TestGetSnmp(t *testing.T) {
 	var err error
-	app := test.CreateCli(CliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, CliCommand)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "snmp", "get"})
 	assert.Error(t, err, "IP Address or FQDN required")
@@ -27,9 +26,8 @@ func TestGetSnmp(t *testing.T) {
 
 func TestSetSnmp(t *testing.T) {
 	var err error
-	app := test.CreateCli(CliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, CliCommand)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "snmp", "set"})
 	assert.Error(t, err, "IP Address or FQDN required")
@@ -40,9 +38,8 @@ func TestSetSnmp(t *testing.T) {
 
 func TestApplySnmp(t *testing.T) {
 	var err error
-	app := test.CreateCli(CliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, CliCommand)
+	defer server.Close()
 
 	info := &model.SnmpInfo{
 		Version:   "v1",

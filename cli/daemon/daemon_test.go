@@ -19,9 +19,8 @@ func TestDaemonMap(t *testing.T) {
 
 func TestListDaemon(t *testing.T) {
 	var err error
-	app := test.CreateCli(CliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, CliCommand)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "daemon", "list"})
 	assert.NilError(t, err)
@@ -29,9 +28,8 @@ func TestListDaemon(t *testing.T) {
 
 func TestReloadDaemon(t *testing.T) {
 	var err error
-	app := test.CreateCli(CliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, CliCommand)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "daemon", "reload"})
 	assert.Error(t, err, "Daemon name required")

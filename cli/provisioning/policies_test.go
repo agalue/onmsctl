@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/OpenNMS/onmsctl/model"
+	"github.com/OpenNMS/onmsctl/rest"
+	"github.com/OpenNMS/onmsctl/services"
 	"github.com/OpenNMS/onmsctl/test"
 	"gopkg.in/yaml.v2"
 	"gotest.tools/assert"
@@ -11,9 +13,10 @@ import (
 
 func TestEnumPolicies(t *testing.T) {
 	var err error
-	app := test.CreateCli(PoliciesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, PoliciesCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
+	fs = services.GetForeignSourcesAPI(rest.Instance, api)
 
 	err = app.Run([]string{app.Name, "policy", "enum"})
 	assert.NilError(t, err)
@@ -21,9 +24,10 @@ func TestEnumPolicies(t *testing.T) {
 
 func TestDescribePolicy(t *testing.T) {
 	var err error
-	app := test.CreateCli(PoliciesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, PoliciesCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
+	fs = services.GetForeignSourcesAPI(rest.Instance, api)
 
 	err = app.Run([]string{app.Name, "policy", "desc"})
 	assert.Error(t, err, "Policy name or class required")
@@ -34,12 +38,13 @@ func TestDescribePolicy(t *testing.T) {
 
 func TestListPolicy(t *testing.T) {
 	var err error
-	app := test.CreateCli(PoliciesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, PoliciesCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
+	fs = services.GetForeignSourcesAPI(rest.Instance, api)
 
 	err = app.Run([]string{app.Name, "policy", "list"})
-	assert.Error(t, err, "Foreign source name required")
+	assert.Error(t, err, "Requisition name required")
 
 	err = app.Run([]string{app.Name, "policy", "list", "Test"})
 	assert.NilError(t, err)
@@ -47,12 +52,13 @@ func TestListPolicy(t *testing.T) {
 
 func TestGetPolicy(t *testing.T) {
 	var err error
-	app := test.CreateCli(PoliciesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, PoliciesCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
+	fs = services.GetForeignSourcesAPI(rest.Instance, api)
 
 	err = app.Run([]string{app.Name, "policy", "get"})
-	assert.Error(t, err, "Foreign source name required")
+	assert.Error(t, err, "Requisition name required")
 
 	err = app.Run([]string{app.Name, "policy", "get", "Test"})
 	assert.Error(t, err, "Policy name or class required")
@@ -63,12 +69,13 @@ func TestGetPolicy(t *testing.T) {
 
 func TestDeletePolicy(t *testing.T) {
 	var err error
-	app := test.CreateCli(PoliciesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, PoliciesCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
+	fs = services.GetForeignSourcesAPI(rest.Instance, api)
 
 	err = app.Run([]string{app.Name, "policy", "del"})
-	assert.Error(t, err, "Foreign source name and policy name required")
+	assert.Error(t, err, "Requisition name required")
 
 	err = app.Run([]string{app.Name, "policy", "del", "Test"})
 	assert.Error(t, err, "Policy name required")
@@ -79,12 +86,13 @@ func TestDeletePolicy(t *testing.T) {
 
 func TestApplyPolicy(t *testing.T) {
 	var err error
-	app := test.CreateCli(PoliciesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, PoliciesCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
+	fs = services.GetForeignSourcesAPI(rest.Instance, api)
 
 	err = app.Run([]string{app.Name, "policy", "apply"})
-	assert.Error(t, err, "Foreign source name required")
+	assert.Error(t, err, "Content cannot be empty")
 
 	err = app.Run([]string{app.Name, "policy", "apply", "Test"})
 	assert.Error(t, err, "Content cannot be empty")
@@ -137,18 +145,19 @@ func TestApplyPolicy(t *testing.T) {
 
 func TestSetPolicy(t *testing.T) {
 	var err error
-	app := test.CreateCli(PoliciesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	app, server := test.InitializeMocks(t, PoliciesCliCommand)
+	defer server.Close()
+	api = services.GetRequisitionsAPI(rest.Instance)
+	fs = services.GetForeignSourcesAPI(rest.Instance, api)
 
 	err = app.Run([]string{app.Name, "policy", "set"})
-	assert.Error(t, err, "Foreign source name, policy name and class required")
+	assert.Error(t, err, "Requisition name required")
 
 	err = app.Run([]string{app.Name, "policy", "set", "Test"})
-	assert.Error(t, err, "Policy name required")
+	assert.Error(t, err, "Policy name cannot be empty")
 
 	err = app.Run([]string{app.Name, "policy", "set", "Test", "Switches"})
-	assert.Error(t, err, "Policy class required")
+	assert.Error(t, err, "Policy class cannot be empty")
 
 	err = app.Run([]string{app.Name, "policy", "set", "Test", "Switches", "org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy"})
 	assert.Error(t, err, "Missing required parameter category")

@@ -1,13 +1,11 @@
 package provisioning
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/model"
-	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 
 	"gopkg.in/yaml.v2"
@@ -79,7 +77,7 @@ var DetectorsCliCommand = cli.Command{
 }
 
 func listDetectors(c *cli.Context) error {
-	fsDef, err := GetForeignSourceDef(c)
+	fsDef, err := fs.GetForeignSourceDef(c.Args().Get(0))
 	if err != nil {
 		return err
 	}
@@ -93,7 +91,7 @@ func listDetectors(c *cli.Context) error {
 }
 
 func enumerateDetectorClasses(c *cli.Context) error {
-	detectors, err := getDetectors()
+	detectors, err := fs.GetAvailableDetectors()
 	if err != nil {
 		return err
 	}
@@ -107,140 +105,46 @@ func enumerateDetectorClasses(c *cli.Context) error {
 }
 
 func describeDetectorClass(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Detector name or class required")
-	}
-	src := c.Args().Get(0)
-	detectors, err := getDetectors()
+	plugin, err := fs.GetDetectorConfig(c.Args().Get(0))
 	if err != nil {
 		return err
 	}
-	for _, plugin := range detectors.Plugins {
-		if plugin.Class == src || plugin.Name == src {
-			data, _ := yaml.Marshal(&plugin)
-			fmt.Println(string(data))
-			return nil
-		}
-	}
-	return fmt.Errorf("Cannot find detector for %s", src)
+	data, _ := yaml.Marshal(plugin)
+	fmt.Println(string(data))
+	return nil
 }
 
 func getDetector(c *cli.Context) error {
-	fsDef, err := GetForeignSourceDef(c)
+	detector, err := fs.GetDetector(c.Args().Get(0), c.Args().Get(1))
 	if err != nil {
 		return err
 	}
-	src := c.Args().Get(1)
-	if src == "" {
-		return fmt.Errorf("Detector name or class required")
-	}
-	for _, detector := range fsDef.Detectors {
-		if detector.Class == src || detector.Name == src {
-			data, _ := yaml.Marshal(&detector)
-			fmt.Println(string(data))
-			return nil
-		}
-	}
-	return fmt.Errorf("Cannot find detector for %s", src)
+	data, _ := yaml.Marshal(detector)
+	fmt.Println(string(data))
+	return nil
 }
 
 func setDetector(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Foreign source name, detector name and class required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Foreign source %s doesn't exist", foreignSource)
-	}
-	detectorName := c.Args().Get(1)
-	if detectorName == "" {
-		return fmt.Errorf("Detector name required")
-	}
-	detectorClass := c.Args().Get(2)
-	if detectorClass == "" {
-		return fmt.Errorf("Detector class required")
-	}
-	detector := model.Detector{Name: detectorName, Class: detectorClass}
+	detector := model.Detector{Name: c.Args().Get(1), Class: c.Args().Get(2)}
 	params := c.StringSlice("parameter")
 	for _, p := range params {
 		data := strings.Split(p, "=")
 		param := model.Parameter{Key: data[0], Value: data[1]}
 		detector.Parameters = append(detector.Parameters, param)
 	}
-	detectors, err := getDetectors()
-	if err != nil {
-		return err
-	}
-	err = isDetectorValid(detector, detectors)
-	if err != nil {
-		return err
-	}
-	jsonBytes, _ := json.Marshal(detector)
-	return rest.Instance.Post("/rest/foreignSources/"+foreignSource+"/detectors", jsonBytes)
+	return fs.SetDetector(c.Args().Get(0), detector)
 }
 
 func applyDetector(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Foreign source name required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Foreign source %s doesn't exist", foreignSource)
-	}
 	data, err := common.ReadInput(c, 1)
 	if err != nil {
 		return err
 	}
-	detector := &model.Detector{}
-	yaml.Unmarshal(data, detector)
-	detectors, err := getDetectors()
-	if err != nil {
-		return err
-	}
-	err = isDetectorValid(*detector, detectors)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Updating detector %s...\n", detector.Name)
-	jsonBytes, _ := json.Marshal(detector)
-	return rest.Instance.Post("/rest/foreignSources/"+foreignSource+"/detectors", jsonBytes)
+	detector := model.Detector{}
+	yaml.Unmarshal(data, &detector)
+	return fs.SetDetector(c.Args().Get(0), detector)
 }
 
 func deleteDetector(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Foreign source name and detector name required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Foreign source %s doesn't exist", foreignSource)
-	}
-	detector := c.Args().Get(1)
-	if detector == "" {
-		return fmt.Errorf("Detector name required")
-	}
-	return rest.Instance.Delete("/rest/foreignSources/" + foreignSource + "/detectors/" + detector)
-}
-
-func getDetectors() (model.PluginList, error) {
-	detectors := model.PluginList{}
-	jsonData, err := rest.Instance.Get("/rest/foreignSourcesConfig/detectors")
-	if err != nil {
-		return detectors, fmt.Errorf("Cannot retrieve detector list")
-	}
-	json.Unmarshal(jsonData, &detectors)
-	return detectors, nil
-}
-
-func isDetectorValid(detector model.Detector, config model.PluginList) error {
-	if err := detector.IsValid(); err != nil {
-		return err
-	}
-	plugin := config.FindPlugin(detector.Class)
-	if plugin == nil {
-		return fmt.Errorf("Cannot find detector with class %s", detector.Class)
-	}
-	if err := plugin.VerifyParameters(detector.Parameters); err != nil {
-		return err
-	}
-	return nil
+	return fs.DeleteDetector(c.Args().Get(0), c.Args().Get(1))
 }
