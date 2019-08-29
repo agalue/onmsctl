@@ -1,17 +1,18 @@
 package snmp
 
 import (
-	"encoding/json"
 	"fmt"
-	"net"
 
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/model"
 	"github.com/OpenNMS/onmsctl/rest"
+	"github.com/OpenNMS/onmsctl/services"
 	"github.com/urfave/cli"
 
 	"gopkg.in/yaml.v2"
 )
+
+var api = services.GetSnmpAPI(rest.Instance)
 
 // SNMPVersions the SNMP version enumeration
 var SNMPVersions = &model.EnumValue{
@@ -146,31 +147,16 @@ var CliCommand = cli.Command{
 }
 
 func showSnmpConfig(c *cli.Context) error {
-	ipAddress, err := getIPAddress(c)
+	snmp, err := api.GetConfig(c.Args().Get(0), c.String("location"))
 	if err != nil {
 		return err
 	}
-	url := "/rest/snmpConfig/" + ipAddress
-	location := c.String("location")
-	if location != "" {
-		url += "?location=" + location
-	}
-	jsonString, err := rest.Instance.Get(url)
-	if err != nil {
-		return err
-	}
-	snmp := model.SnmpInfo{}
-	json.Unmarshal(jsonString, &snmp)
 	data, _ := yaml.Marshal(&snmp)
 	fmt.Println(string(data))
 	return nil
 }
 
 func setSnmpConfig(c *cli.Context) error {
-	ipAddress, err := getIPAddress(c)
-	if err != nil {
-		return err
-	}
 	snmp := model.SnmpInfo{
 		Version:         c.String("version"),
 		Location:        c.String("location"),
@@ -192,46 +178,15 @@ func setSnmpConfig(c *cli.Context) error {
 		MaxRepetitions:  c.Int("maxRepetitions"),
 		MaxVarsPerPdu:   c.Int("maxVarsPerPdu"),
 	}
-	err = snmp.IsValid()
-	if err != nil {
-		return err
-	}
-	jsonBytes, _ := json.Marshal(snmp)
-	return rest.Instance.Put("/rest/snmpConfig/"+ipAddress, jsonBytes, "application/json")
+	return api.SetConfig(c.Args().Get(0), snmp)
 }
 
 func applySnmpConfig(c *cli.Context) error {
-	ipAddress, err := getIPAddress(c)
-	if err != nil {
-		return err
-	}
 	data, err := common.ReadInput(c, 1)
 	if err != nil {
 		return err
 	}
 	snmp := model.SnmpInfo{}
 	yaml.Unmarshal(data, &snmp)
-	err = snmp.IsValid()
-	if err != nil {
-		return err
-	}
-	jsonBytes, _ := json.Marshal(snmp)
-	return rest.Instance.Put("/rest/snmpConfig/"+ipAddress, jsonBytes, "application/json")
-}
-
-func getIPAddress(c *cli.Context) (string, error) {
-	ipAddress := c.Args().Get(0)
-	if ipAddress == "" {
-		return "", fmt.Errorf("IP Address or FQDN required")
-	}
-	ip := net.ParseIP(ipAddress)
-	if ip == nil {
-		addresses, err := net.LookupIP(ipAddress)
-		if err != nil || len(addresses) == 0 {
-			return "", fmt.Errorf("Cannot parse address from %s (invalid IP or FQDN); %s", ipAddress, err)
-		}
-		fmt.Printf("%s translates to %s\n", ipAddress, addresses[0].String())
-		ipAddress = addresses[0].String()
-	}
-	return ipAddress, nil
+	return api.SetConfig(c.Args().Get(0), snmp)
 }

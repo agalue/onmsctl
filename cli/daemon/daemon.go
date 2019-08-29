@@ -1,15 +1,17 @@
 package daemon
 
 import (
-	"encoding/json"
 	"fmt"
 	"sort"
 	"strings"
 
 	"github.com/OpenNMS/onmsctl/model"
 	"github.com/OpenNMS/onmsctl/rest"
+	"github.com/OpenNMS/onmsctl/services"
 	"github.com/urfave/cli"
 )
+
+var api = services.GetEventsAPI(rest.Instance)
 
 // CorrelatorPrefix the prefix for correlation engines
 const CorrelatorPrefix = "correlation"
@@ -89,8 +91,7 @@ func reloadDaemon(c *cli.Context) error {
 	if configFile != "" {
 		event.AddParameter("configFile", configFile)
 	}
-	jsonBytes, _ := json.Marshal(event)
-	return rest.Instance.Post("/rest/events", jsonBytes)
+	return api.SendEvent(event)
 }
 
 func showReloadableDaemons(c *cli.Context) error {
