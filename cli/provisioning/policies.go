@@ -91,7 +91,7 @@ func listPolicies(c *cli.Context) error {
 }
 
 func enumeratePolicyClasses(c *cli.Context) error {
-	policies, err := fs.GetAvailablePolicies()
+	policies, err := utils.GetAvailablePolicies()
 	if err != nil {
 		return err
 	}

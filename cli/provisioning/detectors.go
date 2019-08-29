@@ -91,7 +91,7 @@ func listDetectors(c *cli.Context) error {
 }
 
 func enumerateDetectorClasses(c *cli.Context) error {
-	detectors, err := fs.GetAvailableDetectors()
+	detectors, err := utils.GetAvailableDetectors()
 	if err != nil {
 		return err
 	}

@@ -9,20 +9,20 @@ import (
 )
 
 type foreignSourcesAPI struct {
-	rest api.RestAPI
-	req  api.RequisitionsAPI
+	rest  api.RestAPI
+	utils api.ProvisioningUtilsAPI
 }
 
 // GetForeignSourcesAPI Obtain an implementation of the Foreign Source Definitions API
-func GetForeignSourcesAPI(rest api.RestAPI, req api.RequisitionsAPI) api.ForeignSourcesAPI {
-	return &foreignSourcesAPI{rest, req}
+func GetForeignSourcesAPI(rest api.RestAPI) api.ForeignSourcesAPI {
+	return &foreignSourcesAPI{rest, GetProvisioningUtilsAPI(rest)}
 }
 
 func (api foreignSourcesAPI) GetForeignSourceDef(foreignSource string) (*model.ForeignSourceDef, error) {
 	if foreignSource == "" {
 		return nil, fmt.Errorf("Requisition name required")
 	}
-	if foreignSource != "default" && !api.req.RequisitionExists(foreignSource) {
+	if foreignSource != "default" && !api.utils.RequisitionExists(foreignSource) {
 		return nil, fmt.Errorf("Foreign source %s doesn't exist", foreignSource)
 	}
 	fsDef := &model.ForeignSourceDef{}
@@ -60,7 +60,7 @@ func (api foreignSourcesAPI) DeleteForeignSourceDef(foreignSource string) error 
 	if foreignSource == "" {
 		return fmt.Errorf("Requisition name required")
 	}
-	if foreignSource != "default" && !api.req.RequisitionExists(foreignSource) {
+	if foreignSource != "default" && !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Foreign source %s doesn't exist", foreignSource)
 	}
 	err := api.rest.Delete("/rest/foreignSources/deployed/" + foreignSource)
@@ -74,38 +74,8 @@ func (api foreignSourcesAPI) DeleteForeignSourceDef(foreignSource string) error 
 	return nil
 }
 
-func (api foreignSourcesAPI) GetAvailableAssets() (*model.ElementList, error) {
-	assets := &model.ElementList{}
-	jsonAssets, err := api.rest.Get("/rest/foreignSourcesConfig/assets")
-	if err != nil {
-		return nil, fmt.Errorf("Cannot retrieve asset names list")
-	}
-	json.Unmarshal(jsonAssets, &assets)
-	return assets, nil
-}
-
-func (api foreignSourcesAPI) GetAvailableDetectors() (*model.PluginList, error) {
-	detectors := &model.PluginList{}
-	jsonData, err := api.rest.Get("/rest/foreignSourcesConfig/detectors")
-	if err != nil {
-		return nil, fmt.Errorf("Cannot retrieve detector list")
-	}
-	json.Unmarshal(jsonData, detectors)
-	return detectors, nil
-}
-
-func (api foreignSourcesAPI) GetAvailablePolicies() (*model.PluginList, error) {
-	policies := &model.PluginList{}
-	jsonData, err := api.rest.Get("/rest/foreignSourcesConfig/policies")
-	if err != nil {
-		return nil, fmt.Errorf("Cannot retrieve policy list")
-	}
-	json.Unmarshal(jsonData, policies)
-	return policies, nil
-}
-
 func (api foreignSourcesAPI) IsPolicyValid(policy model.Policy) error {
-	config, err := api.GetAvailablePolicies()
+	config, err := api.utils.GetAvailablePolicies()
 	if err != nil {
 		return nil
 	}
@@ -127,7 +97,7 @@ func (api foreignSourcesAPI) isPolicyValid(config model.PluginList, policy model
 }
 
 func (api foreignSourcesAPI) IsDetectorValid(detector model.Detector) error {
-	config, err := api.GetAvailableDetectors()
+	config, err := api.utils.GetAvailableDetectors()
 	if err != nil {
 		return nil
 	}
@@ -153,7 +123,7 @@ func (api foreignSourcesAPI) IsForeignSourceValid(fsDef model.ForeignSourceDef) 
 		return err
 	}
 	if len(fsDef.Policies) > 0 {
-		policiesConfig, err := api.GetAvailablePolicies()
+		policiesConfig, err := api.utils.GetAvailablePolicies()
 		if err != nil {
 			return err
 		}
@@ -164,7 +134,7 @@ func (api foreignSourcesAPI) IsForeignSourceValid(fsDef model.ForeignSourceDef) 
 		}
 	}
 	if len(fsDef.Detectors) > 0 {
-		detectorsConfig, err := api.GetAvailableDetectors()
+		detectorsConfig, err := api.utils.GetAvailableDetectors()
 		if err != nil {
 			return err
 		}
@@ -181,7 +151,7 @@ func (api foreignSourcesAPI) GetDetectorConfig(detectorID string) (*model.Plugin
 	if detectorID == "" {
 		return nil, fmt.Errorf("Detector name or class required")
 	}
-	detectors, err := api.GetAvailableDetectors()
+	detectors, err := api.utils.GetAvailableDetectors()
 	if err != nil {
 		return nil, err
 	}
@@ -209,7 +179,7 @@ func (api foreignSourcesAPI) SetDetector(foreignSource string, detector model.De
 	if foreignSource == "" {
 		return fmt.Errorf("Requisition name required")
 	}
-	if foreignSource != "default" && !api.req.RequisitionExists(foreignSource) {
+	if foreignSource != "default" && !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Foreign source %s doesn't exist", foreignSource)
 	}
 	if err := api.IsDetectorValid(detector); err != nil {
@@ -226,7 +196,7 @@ func (api foreignSourcesAPI) DeleteDetector(foreignSource string, detectorName s
 	if detectorName == "" {
 		return fmt.Errorf("Detector name required")
 	}
-	if foreignSource != "default" && !api.req.RequisitionExists(foreignSource) {
+	if foreignSource != "default" && !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Foreign source %s doesn't exist", foreignSource)
 	}
 	return api.rest.Delete("/rest/foreignSources/" + foreignSource + "/detectors/" + detectorName)
@@ -236,7 +206,7 @@ func (api foreignSourcesAPI) GetPolicyConfig(policyID string) (*model.Plugin, er
 	if policyID == "" {
 		return nil, fmt.Errorf("Policy name or class required")
 	}
-	policies, err := api.GetAvailablePolicies()
+	policies, err := api.utils.GetAvailablePolicies()
 	if err != nil {
 		return nil, err
 	}
@@ -264,7 +234,7 @@ func (api foreignSourcesAPI) SetPolicy(foreignSource string, policy model.Policy
 	if foreignSource == "" {
 		return fmt.Errorf("Requisition name required")
 	}
-	if foreignSource != "default" && !api.req.RequisitionExists(foreignSource) {
+	if foreignSource != "default" && !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Foreign source %s doesn't exist", foreignSource)
 	}
 	if err := api.IsPolicyValid(policy); err != nil {
@@ -281,7 +251,7 @@ func (api foreignSourcesAPI) DeletePolicy(foreignSource string, policyName strin
 	if policyName == "" {
 		return fmt.Errorf("Policy name required")
 	}
-	if foreignSource != "default" && !api.req.RequisitionExists(foreignSource) {
+	if foreignSource != "default" && !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Foreign source %s doesn't exist", foreignSource)
 	}
 	return api.rest.Delete("/rest/foreignSources/" + foreignSource + "/policies/" + policyName)

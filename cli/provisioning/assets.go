@@ -57,7 +57,7 @@ func listAssets(c *cli.Context) error {
 }
 
 func enumerateAssets(c *cli.Context) error {
-	assets, err := fs.GetAvailableAssets()
+	assets, err := utils.GetAvailableAssets()
 	if err != nil {
 		return err
 	}

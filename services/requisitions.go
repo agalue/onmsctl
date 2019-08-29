@@ -9,22 +9,13 @@ import (
 )
 
 type requisitionsAPI struct {
-	rest api.RestAPI
+	rest  api.RestAPI
+	utils api.ProvisioningUtilsAPI
 }
 
 // GetRequisitionsAPI Obtain an implementation of the Requisitions API
 func GetRequisitionsAPI(rest api.RestAPI) api.RequisitionsAPI {
-	return &requisitionsAPI{rest}
-}
-
-func (api requisitionsAPI) GetRequisitionNames() (*model.RequisitionsList, error) {
-	jsonRequisitions, err := api.rest.Get("/rest/requisitionNames")
-	if err != nil {
-		return nil, fmt.Errorf("Cannot retrieve requisition names: %s", err)
-	}
-	requisitions := &model.RequisitionsList{}
-	json.Unmarshal(jsonRequisitions, requisitions)
-	return requisitions, nil
+	return &requisitionsAPI{rest, GetProvisioningUtilsAPI(rest)}
 }
 
 func (api requisitionsAPI) GetRequisitionsStats() (*model.RequisitionsStats, error) {
@@ -40,26 +31,11 @@ func (api requisitionsAPI) GetRequisitionsStats() (*model.RequisitionsStats, err
 	return stats, nil
 }
 
-func (api requisitionsAPI) RequisitionExists(foreignSource string) bool {
-	requisitions, err := api.GetRequisitionNames()
-	if err != nil {
-		return false
-	}
-	var found = false
-	for _, fs := range requisitions.ForeignSources {
-		if fs == foreignSource {
-			found = true
-			break
-		}
-	}
-	return found
-}
-
 func (api requisitionsAPI) CreateRequisition(foreignSource string) error {
 	if foreignSource == "" {
 		return fmt.Errorf("Requisition name required")
 	}
-	if api.RequisitionExists(foreignSource) {
+	if api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s already exist", foreignSource)
 	}
 	jsonBytes, _ := json.Marshal(model.Requisition{Name: foreignSource})
@@ -91,7 +67,7 @@ func (api requisitionsAPI) DeleteRequisition(foreignSource string) error {
 	if foreignSource == "" {
 		return fmt.Errorf("Requisition name required")
 	}
-	if !api.RequisitionExists(foreignSource) {
+	if !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
 	// Delete all nodes from requisition
@@ -129,7 +105,7 @@ func (api requisitionsAPI) ImportRequisition(foreignSource string, rescanExistin
 	if foreignSource == "" {
 		return fmt.Errorf("Requisition name required")
 	}
-	if !api.RequisitionExists(foreignSource) {
+	if !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
 	return api.rest.Put("/rest/requisitions/"+foreignSource+"/import?rescanExisting="+rescanExisting, nil, "application/json")
@@ -142,7 +118,7 @@ func (api requisitionsAPI) GetNode(foreignSource string, foreignID string) (*mod
 	if foreignID == "" {
 		return nil, fmt.Errorf("Foreign ID required")
 	}
-	if !api.RequisitionExists(foreignSource) {
+	if !api.utils.RequisitionExists(foreignSource) {
 		return nil, fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
 	jsonBytes, err := api.rest.Get("/rest/requisitions/" + foreignSource + "/nodes/" + foreignID)
@@ -158,14 +134,14 @@ func (api requisitionsAPI) SetNode(foreignSource string, node model.RequisitionN
 	if foreignSource == "" {
 		return fmt.Errorf("Requisition name required")
 	}
-	if !api.RequisitionExists(foreignSource) {
+	if !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
 	err := node.IsValid()
 	if err != nil {
 		return err
 	}
-	if node.ParentForeignSource != "" && !api.RequisitionExists(node.ParentForeignSource) {
+	if node.ParentForeignSource != "" && !api.utils.RequisitionExists(node.ParentForeignSource) {
 		return fmt.Errorf("Cannot set parent foreign source as requisition %s doesn't exist", node.ParentForeignSource)
 	}
 	jsonBytes, _ := json.Marshal(node)
@@ -179,7 +155,7 @@ func (api requisitionsAPI) DeleteNode(foreignSource string, foreignID string) er
 	if foreignID == "" {
 		return fmt.Errorf("Foreign ID required")
 	}
-	if !api.RequisitionExists(foreignSource) {
+	if !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
 	return api.rest.Delete("/rest/requisitions/" + foreignSource + "/nodes/" + foreignID)
@@ -195,7 +171,7 @@ func (api requisitionsAPI) GetInterface(foreignSource string, foreignID string, 
 	if ipAddress == "" {
 		return nil, fmt.Errorf("IP Address required")
 	}
-	if !api.RequisitionExists(foreignSource) {
+	if !api.utils.RequisitionExists(foreignSource) {
 		return nil, fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
 	jsonString, err := api.rest.Get("/rest/requisitions/" + foreignSource + "/nodes/" + foreignID + "/interfaces/" + ipAddress)
@@ -214,7 +190,7 @@ func (api requisitionsAPI) SetInterface(foreignSource string, foreignID string, 
 	if foreignID == "" {
 		return fmt.Errorf("Foreign ID required")
 	}
-	if !api.RequisitionExists(foreignSource) {
+	if !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
 	err := intf.IsValid()
@@ -235,7 +211,7 @@ func (api requisitionsAPI) DeleteInterface(foreignSource string, foreignID strin
 	if ipAddress == "" {
 		return fmt.Errorf("IP Address required")
 	}
-	if !api.RequisitionExists(foreignSource) {
+	if !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
 	return api.rest.Delete("/rest/requisitions/" + foreignSource + "/nodes/" + foreignID + "/interfaces/" + ipAddress)
@@ -252,7 +228,7 @@ func (api requisitionsAPI) SetService(foreignSource string, foreignID string, ip
 	if ipAddress == "" {
 		return fmt.Errorf("IP Address required")
 	}
-	if !api.RequisitionExists(foreignSource) {
+	if !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
 	err := svc.IsValid()
@@ -276,7 +252,7 @@ func (api requisitionsAPI) DeleteService(foreignSource string, foreignID string,
 	if serviceName == "" {
 		return fmt.Errorf("Service name required")
 	}
-	if !api.RequisitionExists(foreignSource) {
+	if !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
 	return api.rest.Delete("/rest/requisitions/" + foreignSource + "/nodes/" + foreignID + "/interfaces/" + ipAddress + "/services/" + serviceName)
@@ -289,7 +265,7 @@ func (api requisitionsAPI) SetCategory(foreignSource string, foreignID string, c
 	if foreignID == "" {
 		return fmt.Errorf("Foreign ID required")
 	}
-	if !api.RequisitionExists(foreignSource) {
+	if !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
 	err := category.IsValid()
@@ -310,7 +286,7 @@ func (api requisitionsAPI) DeleteCategory(foreignSource string, foreignID string
 	if categoryName == "" {
 		return fmt.Errorf("Category name required")
 	}
-	if !api.RequisitionExists(foreignSource) {
+	if !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
 	return api.rest.Delete("/rest/requisitions/" + foreignSource + "/nodes/" + foreignID + "/categories/" + categoryName)
@@ -323,14 +299,14 @@ func (api requisitionsAPI) SetAsset(foreignSource string, foreignID string, asse
 	if foreignID == "" {
 		return fmt.Errorf("Foreign ID required")
 	}
-	if !api.RequisitionExists(foreignSource) {
+	if !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
 	err := asset.IsValid()
 	if err != nil {
 		return err
 	}
-	assets, err := GetForeignSourcesAPI(api.rest, api).GetAvailableAssets()
+	assets, err := api.utils.GetAvailableAssets()
 	if err != nil {
 		return err
 	}
@@ -358,7 +334,7 @@ func (api requisitionsAPI) DeleteAsset(foreignSource string, foreignID string, a
 	if assetName == "" {
 		return fmt.Errorf("Asset name required")
 	}
-	if !api.RequisitionExists(foreignSource) {
+	if !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
 	return api.rest.Delete("/rest/requisitions/" + foreignSource + "/nodes/" + foreignID + "/assets/" + assetName)

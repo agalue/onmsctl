@@ -16,7 +16,8 @@ func TestEnumPolicies(t *testing.T) {
 	app, server := test.InitializeMocks(t, PoliciesCliCommand)
 	defer server.Close()
 	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance, api)
+	fs = services.GetForeignSourcesAPI(rest.Instance)
+	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "policy", "enum"})
 	assert.NilError(t, err)
@@ -27,7 +28,8 @@ func TestDescribePolicy(t *testing.T) {
 	app, server := test.InitializeMocks(t, PoliciesCliCommand)
 	defer server.Close()
 	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance, api)
+	fs = services.GetForeignSourcesAPI(rest.Instance)
+	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "policy", "desc"})
 	assert.Error(t, err, "Policy name or class required")
@@ -41,7 +43,8 @@ func TestListPolicy(t *testing.T) {
 	app, server := test.InitializeMocks(t, PoliciesCliCommand)
 	defer server.Close()
 	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance, api)
+	fs = services.GetForeignSourcesAPI(rest.Instance)
+	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "policy", "list"})
 	assert.Error(t, err, "Requisition name required")
@@ -55,7 +58,8 @@ func TestGetPolicy(t *testing.T) {
 	app, server := test.InitializeMocks(t, PoliciesCliCommand)
 	defer server.Close()
 	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance, api)
+	fs = services.GetForeignSourcesAPI(rest.Instance)
+	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "policy", "get"})
 	assert.Error(t, err, "Requisition name required")
@@ -72,7 +76,8 @@ func TestDeletePolicy(t *testing.T) {
 	app, server := test.InitializeMocks(t, PoliciesCliCommand)
 	defer server.Close()
 	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance, api)
+	fs = services.GetForeignSourcesAPI(rest.Instance)
+	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "policy", "del"})
 	assert.Error(t, err, "Requisition name required")
@@ -89,7 +94,8 @@ func TestApplyPolicy(t *testing.T) {
 	app, server := test.InitializeMocks(t, PoliciesCliCommand)
 	defer server.Close()
 	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance, api)
+	fs = services.GetForeignSourcesAPI(rest.Instance)
+	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "policy", "apply"})
 	assert.Error(t, err, "Content cannot be empty")
@@ -148,7 +154,8 @@ func TestSetPolicy(t *testing.T) {
 	app, server := test.InitializeMocks(t, PoliciesCliCommand)
 	defer server.Close()
 	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance, api)
+	fs = services.GetForeignSourcesAPI(rest.Instance)
+	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "policy", "set"})
 	assert.Error(t, err, "Requisition name required")

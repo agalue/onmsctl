@@ -1,14 +1,10 @@
 package api
 
-import (
-	"github.com/OpenNMS/onmsctl/model"
-)
+import "github.com/OpenNMS/onmsctl/model"
 
 // RequisitionsAPI the API to manipulate Requisitions
 type RequisitionsAPI interface {
-	GetRequisitionNames() (*model.RequisitionsList, error)
 	GetRequisitionsStats() (*model.RequisitionsStats, error)
-	RequisitionExists(foreignSource string) bool
 
 	CreateRequisition(foreignSource string) error
 	GetRequisition(foreignSource string) (*model.Requisition, error)

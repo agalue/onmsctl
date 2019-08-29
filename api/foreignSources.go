@@ -1,8 +1,6 @@
 package api
 
-import (
-	"github.com/OpenNMS/onmsctl/model"
-)
+import "github.com/OpenNMS/onmsctl/model"
 
 // ForeignSourcesAPI the API to manipulate Foreign Source definitions
 type ForeignSourcesAPI interface {
@@ -10,10 +8,6 @@ type ForeignSourcesAPI interface {
 	SetForeignSourceDef(fs model.ForeignSourceDef) error
 	SetScanInterval(foreignSource string, scanInterval string) error
 	DeleteForeignSourceDef(foreignSource string) error
-
-	GetAvailableAssets() (*model.ElementList, error)
-	GetAvailableDetectors() (*model.PluginList, error)
-	GetAvailablePolicies() (*model.PluginList, error)
 
 	IsForeignSourceValid(fsDef model.ForeignSourceDef) error
 	IsPolicyValid(policy model.Policy) error

@@ -115,7 +115,7 @@ var RequisitionsCliCommand = cli.Command{
 }
 
 func listRequisitions(c *cli.Context) error {
-	requisitions, err := api.GetRequisitionNames()
+	requisitions, err := utils.GetRequisitionNames()
 	if err != nil {
 		return err
 	}

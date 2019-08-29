@@ -16,7 +16,8 @@ func TestGetForeignSource(t *testing.T) {
 	app, server := test.InitializeMocks(t, ForeignSourcesCliCommand)
 	defer server.Close()
 	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance, api)
+	fs = services.GetForeignSourcesAPI(rest.Instance)
+	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "fs", "get"})
 	assert.Error(t, err, "Requisition name required")
@@ -30,7 +31,8 @@ func TestSetScanInterval(t *testing.T) {
 	app, server := test.InitializeMocks(t, ForeignSourcesCliCommand)
 	defer server.Close()
 	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance, api)
+	fs = services.GetForeignSourcesAPI(rest.Instance)
+	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "fs", "int"})
 	assert.Error(t, err, "Requisition name required")
@@ -50,7 +52,8 @@ func TestDeleteForeignSource(t *testing.T) {
 	app, server := test.InitializeMocks(t, ForeignSourcesCliCommand)
 	defer server.Close()
 	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance, api)
+	fs = services.GetForeignSourcesAPI(rest.Instance)
+	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "fs", "del"})
 	assert.Error(t, err, "Requisition name required")
@@ -64,7 +67,8 @@ func TestApplyForeignSource(t *testing.T) {
 	app, server := test.InitializeMocks(t, ForeignSourcesCliCommand)
 	defer server.Close()
 	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance, api)
+	fs = services.GetForeignSourcesAPI(rest.Instance)
+	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "fs", "apply"})
 	assert.Error(t, err, "Content cannot be empty")

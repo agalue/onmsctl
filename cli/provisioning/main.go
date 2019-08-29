@@ -9,4 +9,5 @@ import (
 var Formats = []string{"xml", "json", "yaml"}
 
 var api = services.GetRequisitionsAPI(rest.Instance)
-var fs = services.GetForeignSourcesAPI(rest.Instance, api)
+var fs = services.GetForeignSourcesAPI(rest.Instance)
+var utils = services.GetProvisioningUtilsAPI(rest.Instance)
