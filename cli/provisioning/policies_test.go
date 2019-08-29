@@ -11,7 +11,8 @@ import (
 
 func TestEnumPolicies(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, PoliciesCliCommand)
+	app := test.CreateCli(PoliciesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "policy", "enum"})
@@ -20,7 +21,8 @@ func TestEnumPolicies(t *testing.T) {
 
 func TestDescribePolicy(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, PoliciesCliCommand)
+	app := test.CreateCli(PoliciesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "policy", "desc"})
@@ -32,7 +34,8 @@ func TestDescribePolicy(t *testing.T) {
 
 func TestListPolicy(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, PoliciesCliCommand)
+	app := test.CreateCli(PoliciesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "policy", "list"})
@@ -44,7 +47,8 @@ func TestListPolicy(t *testing.T) {
 
 func TestGetPolicy(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, PoliciesCliCommand)
+	app := test.CreateCli(PoliciesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "policy", "get"})
@@ -59,7 +63,8 @@ func TestGetPolicy(t *testing.T) {
 
 func TestDeletePolicy(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, PoliciesCliCommand)
+	app := test.CreateCli(PoliciesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "policy", "del"})
@@ -74,7 +79,8 @@ func TestDeletePolicy(t *testing.T) {
 
 func TestApplyPolicy(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, PoliciesCliCommand)
+	app := test.CreateCli(PoliciesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "policy", "apply"})
@@ -131,7 +137,8 @@ func TestApplyPolicy(t *testing.T) {
 
 func TestSetPolicy(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, PoliciesCliCommand)
+	app := test.CreateCli(PoliciesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "policy", "set"})

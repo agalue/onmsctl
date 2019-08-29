@@ -11,7 +11,8 @@ import (
 
 func TestListNodes(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, NodesCliCommand)
+	app := test.CreateCli(NodesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "node", "list"})
@@ -23,7 +24,8 @@ func TestListNodes(t *testing.T) {
 
 func TestGetNode(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, NodesCliCommand)
+	app := test.CreateCli(NodesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "node", "get"})
@@ -38,7 +40,8 @@ func TestGetNode(t *testing.T) {
 
 func TestAddNode(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, NodesCliCommand)
+	app := test.CreateCli(NodesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "node", "add"})
@@ -53,7 +56,8 @@ func TestAddNode(t *testing.T) {
 
 func TestDeleteNode(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, NodesCliCommand)
+	app := test.CreateCli(NodesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "node", "delete"})
@@ -68,7 +72,8 @@ func TestDeleteNode(t *testing.T) {
 
 func TestApplyNode(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, NodesCliCommand)
+	app := test.CreateCli(NodesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "node", "apply"})

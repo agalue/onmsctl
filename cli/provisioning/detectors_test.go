@@ -11,7 +11,8 @@ import (
 
 func TestEnumDetectors(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, DetectorsCliCommand)
+	app := test.CreateCli(DetectorsCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "detector", "enum"})
@@ -20,7 +21,8 @@ func TestEnumDetectors(t *testing.T) {
 
 func TestDescribeDetector(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, DetectorsCliCommand)
+	app := test.CreateCli(DetectorsCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "detector", "desc"})
@@ -32,7 +34,8 @@ func TestDescribeDetector(t *testing.T) {
 
 func TestListDetectors(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, DetectorsCliCommand)
+	app := test.CreateCli(DetectorsCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "detector", "list"})
@@ -44,7 +47,8 @@ func TestListDetectors(t *testing.T) {
 
 func TestGetDetector(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, DetectorsCliCommand)
+	app := test.CreateCli(DetectorsCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "detector", "get"})
@@ -59,7 +63,8 @@ func TestGetDetector(t *testing.T) {
 
 func TestDeleteDetector(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, DetectorsCliCommand)
+	app := test.CreateCli(DetectorsCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "detector", "del"})
@@ -74,7 +79,8 @@ func TestDeleteDetector(t *testing.T) {
 
 func TestApplyDetector(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, DetectorsCliCommand)
+	app := test.CreateCli(DetectorsCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "detector", "apply"})
@@ -102,7 +108,8 @@ func TestApplyDetector(t *testing.T) {
 
 func TestSetDetector(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, DetectorsCliCommand)
+	app := test.CreateCli(DetectorsCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "detector", "set"})

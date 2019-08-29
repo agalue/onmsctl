@@ -11,7 +11,8 @@ import (
 
 func TestListRequisitions(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, RequisitionsCliCommand)
+	app := test.CreateCli(RequisitionsCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "req", "list"})
@@ -20,7 +21,8 @@ func TestListRequisitions(t *testing.T) {
 
 func TestGetRequisition(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, RequisitionsCliCommand)
+	app := test.CreateCli(RequisitionsCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "req", "get"})
@@ -32,7 +34,8 @@ func TestGetRequisition(t *testing.T) {
 
 func TestAddRequisition(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, RequisitionsCliCommand)
+	app := test.CreateCli(RequisitionsCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "req", "add"})
@@ -44,7 +47,8 @@ func TestAddRequisition(t *testing.T) {
 
 func TestDeleteRequisition(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, RequisitionsCliCommand)
+	app := test.CreateCli(RequisitionsCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "req", "delete"})
@@ -56,7 +60,8 @@ func TestDeleteRequisition(t *testing.T) {
 
 func TestApplyRequisition(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, RequisitionsCliCommand)
+	app := test.CreateCli(RequisitionsCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "req", "apply"})

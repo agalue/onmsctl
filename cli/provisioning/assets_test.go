@@ -9,7 +9,8 @@ import (
 
 func TestListAssets(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, AssetsCliCommand)
+	app := test.CreateCli(AssetsCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "asset", "list"})
@@ -24,7 +25,8 @@ func TestListAssets(t *testing.T) {
 
 func TestAddAsset(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, AssetsCliCommand)
+	app := test.CreateCli(AssetsCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "asset", "set"})
@@ -45,7 +47,8 @@ func TestAddAsset(t *testing.T) {
 
 func TestDeleteAsset(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, AssetsCliCommand)
+	app := test.CreateCli(AssetsCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "asset", "delete"})

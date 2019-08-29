@@ -9,7 +9,8 @@ import (
 
 func TestListCategories(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, CategoriesCliCommand)
+	app := test.CreateCli(CategoriesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "cat", "list"})
@@ -24,7 +25,8 @@ func TestListCategories(t *testing.T) {
 
 func TestAddCategory(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, CategoriesCliCommand)
+	app := test.CreateCli(CategoriesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "cat", "add"})
@@ -42,7 +44,8 @@ func TestAddCategory(t *testing.T) {
 
 func TestDeleteCategory(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, CategoriesCliCommand)
+	app := test.CreateCli(CategoriesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "cat", "delete"})

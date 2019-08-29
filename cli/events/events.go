@@ -30,7 +30,7 @@ var CliCommand = cli.Command{
 			ArgsUsage: "<uei>",
 			Action:    sendEvent,
 			Flags: []cli.Flag{
-				cli.StringFlag{
+				cli.Int64Flag{
 					Name:  "nodeid, n",
 					Usage: "The numeric node identifier",
 				},
@@ -42,7 +42,7 @@ var CliCommand = cli.Command{
 					Name:  "service, s",
 					Usage: "Service name",
 				},
-				cli.StringFlag{
+				cli.IntFlag{
 					Name:  "ifindex, f",
 					Usage: "ifIndex of the interface",
 				},

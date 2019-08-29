@@ -28,13 +28,16 @@ type SnmpInfo struct {
 }
 
 // IsValid returns an error if the service is invalid
-func (s SnmpInfo) IsValid() error {
+func (s *SnmpInfo) IsValid() error {
 	if s.Community == "" {
 		return fmt.Errorf("SNMP Community String cannot be null")
 	}
 	if s.SecurityLevel != 0 {
 		if s.SecurityLevel < 0 || s.SecurityLevel > 3 {
 			return fmt.Errorf("Invalid Security Level. Allowed values: 1, 2, or 3")
+		}
+		if s.Version != "v3" {
+			s.SecurityLevel = 0
 		}
 	}
 	if s.Version != "" {

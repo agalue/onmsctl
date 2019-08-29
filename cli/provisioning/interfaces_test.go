@@ -9,7 +9,8 @@ import (
 
 func TestListInterfaces(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, InterfacesCliCommand)
+	app := test.CreateCli(InterfacesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "intf", "list"})
@@ -24,7 +25,8 @@ func TestListInterfaces(t *testing.T) {
 
 func TestGetInterface(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, InterfacesCliCommand)
+	app := test.CreateCli(InterfacesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "intf", "get"})
@@ -42,7 +44,8 @@ func TestGetInterface(t *testing.T) {
 
 func TestAddInterface(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, InterfacesCliCommand)
+	app := test.CreateCli(InterfacesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "intf", "add"})
@@ -60,7 +63,8 @@ func TestAddInterface(t *testing.T) {
 
 func TestDeleteInterface(t *testing.T) {
 	var err error
-	app, server := test.InitializeMocks(t, InterfacesCliCommand)
+	app := test.CreateCli(InterfacesCliCommand)
+	server := createTestServer(t)
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "intf", "delete"})

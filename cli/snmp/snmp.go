@@ -61,24 +61,29 @@ var CliCommand = cli.Command{
 					Name:  "location, l",
 					Usage: "Minion Location",
 				},
-				cli.StringFlag{
+				cli.IntFlag{
 					Name:  "port, p",
+					Value: 161,
 					Usage: "The UDP Port of the SNMP agent",
 				},
-				cli.StringFlag{
+				cli.IntFlag{
 					Name:  "retry, r",
+					Value: 2,
 					Usage: "The number of retries before giving up",
 				},
-				cli.StringFlag{
+				cli.IntFlag{
 					Name:  "timeout, t",
+					Value: 1800,
 					Usage: "Timeout in milliseconds",
 				},
-				cli.StringFlag{
+				cli.IntFlag{
 					Name:  "maxRepetitions, mr",
+					Value: 2,
 					Usage: "Maximum repetitions",
 				},
-				cli.StringFlag{
+				cli.IntFlag{
 					Name:  "maxVarsPerPdu, mvpp",
+					Value: 10,
 					Usage: "Maximum variables per PDU",
 				},
 				cli.StringFlag{
@@ -89,9 +94,9 @@ var CliCommand = cli.Command{
 					Name:  "securityName, sn",
 					Usage: "SNMPv3 Security Name",
 				},
-				cli.StringFlag{
+				cli.IntFlag{
 					Name:  "securityLevel, sl",
-					Value: "1",
+					Value: 1,
 					Usage: "SNMPv3 Security Level: 1 noAuthNoPriv, 2: authNoPriv, 3: authPriv",
 				},
 				cli.GenericFlag{
@@ -160,7 +165,7 @@ func setSnmpConfig(c *cli.Context) error {
 		Version:         c.String("version"),
 		Location:        c.String("location"),
 		Port:            c.Int("port"),
-		Retries:         c.Int("retries"),
+		Retries:         c.Int("retry"),
 		Timeout:         c.Int("timeout"),
 		Community:       c.String("community"),
 		ContextName:     c.String("contextName"),

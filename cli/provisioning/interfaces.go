@@ -48,9 +48,9 @@ var InterfacesCliCommand = cli.Command{
 					},
 					Usage: "Primary Interface Flag: P (primary), S (secondary), N (Not Elegible)",
 				},
-				cli.StringFlag{
+				cli.IntFlag{
 					Name:  "status, s",
-					Value: "1",
+					Value: 1,
 					Usage: "Interface Status: 1 for managed, 3 for unmanaged (yes, I know)",
 				},
 				cli.StringSliceFlag{
