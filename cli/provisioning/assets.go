@@ -43,7 +43,7 @@ var AssetsCliCommand = cli.Command{
 }
 
 func listAssets(c *cli.Context) error {
-	node, err := api.GetNode(c.Args().Get(0), c.Args().Get(1))
+	node, err := getReqAPI().GetNode(c.Args().Get(0), c.Args().Get(1))
 	if err != nil {
 		return err
 	}
@@ -57,7 +57,7 @@ func listAssets(c *cli.Context) error {
 }
 
 func enumerateAssets(c *cli.Context) error {
-	assets, err := utils.GetAvailableAssets()
+	assets, err := getUtilsAPI().GetAvailableAssets()
 	if err != nil {
 		return err
 	}
@@ -72,9 +72,9 @@ func enumerateAssets(c *cli.Context) error {
 
 func setAsset(c *cli.Context) error {
 	asset := model.RequisitionAsset{Name: c.Args().Get(2), Value: c.Args().Get(3)}
-	return api.SetAsset(c.Args().Get(0), c.Args().Get(1), asset)
+	return getReqAPI().SetAsset(c.Args().Get(0), c.Args().Get(1), asset)
 }
 
 func deleteAsset(c *cli.Context) error {
-	return api.DeleteAsset(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
+	return getReqAPI().DeleteAsset(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
 }

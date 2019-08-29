@@ -11,8 +11,6 @@ import (
 	"github.com/urfave/cli"
 )
 
-var api = services.GetEventsAPI(rest.Instance)
-
 // CorrelatorPrefix the prefix for correlation engines
 const CorrelatorPrefix = "correlation"
 
@@ -91,7 +89,7 @@ func reloadDaemon(c *cli.Context) error {
 	if configFile != "" {
 		event.AddParameter("configFile", configFile)
 	}
-	return api.SendEvent(event)
+	return services.GetEventsAPI(rest.Instance).SendEvent(event)
 }
 
 func showReloadableDaemons(c *cli.Context) error {

@@ -30,7 +30,9 @@ func (api foreignSourcesAPI) GetForeignSourceDef(foreignSource string) (*model.F
 	if err != nil {
 		return nil, fmt.Errorf("Cannot retrieve foreign source definition %s", foreignSource)
 	}
-	json.Unmarshal(jsonBytes, fsDef)
+	if err := json.Unmarshal(jsonBytes, fsDef); err != nil {
+		return nil, err
+	}
 	return fsDef, nil
 }
 
@@ -38,7 +40,10 @@ func (api foreignSourcesAPI) SetForeignSourceDef(fs model.ForeignSourceDef) erro
 	if err := fs.IsValid(); err != nil {
 		return err
 	}
-	jsonBytes, _ := json.Marshal(fs)
+	jsonBytes, err := json.Marshal(fs)
+	if err != nil {
+		return err
+	}
 	return api.rest.Post("/rest/foreignSources", jsonBytes)
 }
 
@@ -185,7 +190,10 @@ func (api foreignSourcesAPI) SetDetector(foreignSource string, detector model.De
 	if err := api.IsDetectorValid(detector); err != nil {
 		return err
 	}
-	jsonBytes, _ := json.Marshal(detector)
+	jsonBytes, err := json.Marshal(detector)
+	if err != nil {
+		return err
+	}
 	return api.rest.Post("/rest/foreignSources/"+foreignSource+"/detectors", jsonBytes)
 }
 
@@ -240,7 +248,10 @@ func (api foreignSourcesAPI) SetPolicy(foreignSource string, policy model.Policy
 	if err := api.IsPolicyValid(policy); err != nil {
 		return err
 	}
-	jsonBytes, _ := json.Marshal(policy)
+	jsonBytes, err := json.Marshal(policy)
+	if err != nil {
+		return err
+	}
 	return api.rest.Post("/rest/foreignSources/"+foreignSource+"/policies", jsonBytes)
 }
 

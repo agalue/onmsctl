@@ -20,6 +20,9 @@ func (api eventsAPI) SendEvent(event model.Event) error {
 	if err := event.IsValid(); err != nil {
 		return err
 	}
-	jsonBytes, _ := json.Marshal(event)
+	jsonBytes, err := json.Marshal(event)
+	if err != nil {
+		return err
+	}
 	return api.rest.Post("/rest/events", jsonBytes)
 }

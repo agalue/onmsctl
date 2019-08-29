@@ -38,7 +38,7 @@ var CategoriesCliCommand = cli.Command{
 }
 
 func listCategories(c *cli.Context) error {
-	node, err := api.GetNode(c.Args().Get(0), c.Args().Get(1))
+	node, err := getReqAPI().GetNode(c.Args().Get(0), c.Args().Get(1))
 	if err != nil {
 		return err
 	}
@@ -53,9 +53,9 @@ func listCategories(c *cli.Context) error {
 
 func addCategory(c *cli.Context) error {
 	cat := model.RequisitionCategory{Name: c.Args().Get(2)}
-	return api.SetCategory(c.Args().Get(0), c.Args().Get(1), cat)
+	return getReqAPI().SetCategory(c.Args().Get(0), c.Args().Get(1), cat)
 }
 
 func deleteCategory(c *cli.Context) error {
-	return api.DeleteCategory(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
+	return getReqAPI().DeleteCategory(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
 }

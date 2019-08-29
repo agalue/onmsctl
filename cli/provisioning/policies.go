@@ -77,7 +77,7 @@ var PoliciesCliCommand = cli.Command{
 }
 
 func listPolicies(c *cli.Context) error {
-	fsDef, err := fs.GetForeignSourceDef(c.Args().Get(0))
+	fsDef, err := getFsAPI().GetForeignSourceDef(c.Args().Get(0))
 	if err != nil {
 		return err
 	}
@@ -91,7 +91,7 @@ func listPolicies(c *cli.Context) error {
 }
 
 func enumeratePolicyClasses(c *cli.Context) error {
-	policies, err := utils.GetAvailablePolicies()
+	policies, err := getUtilsAPI().GetAvailablePolicies()
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,7 @@ func enumeratePolicyClasses(c *cli.Context) error {
 }
 
 func describePolicyClass(c *cli.Context) error {
-	plugin, err := fs.GetPolicyConfig(c.Args().Get(0))
+	plugin, err := getFsAPI().GetPolicyConfig(c.Args().Get(0))
 	if err != nil {
 		return err
 	}
@@ -115,7 +115,7 @@ func describePolicyClass(c *cli.Context) error {
 }
 
 func getPolicy(c *cli.Context) error {
-	detector, err := fs.GetPolicy(c.Args().Get(0), c.Args().Get(1))
+	detector, err := getFsAPI().GetPolicy(c.Args().Get(0), c.Args().Get(1))
 	if err != nil {
 		return err
 	}
@@ -132,7 +132,7 @@ func setPolicy(c *cli.Context) error {
 		param := model.Parameter{Key: data[0], Value: data[1]}
 		policy.Parameters = append(policy.Parameters, param)
 	}
-	return fs.SetPolicy(c.Args().Get(0), policy)
+	return getFsAPI().SetPolicy(c.Args().Get(0), policy)
 }
 
 func applyPolicy(c *cli.Context) error {
@@ -142,9 +142,9 @@ func applyPolicy(c *cli.Context) error {
 	}
 	policy := model.Policy{}
 	yaml.Unmarshal(data, &policy)
-	return fs.SetPolicy(c.Args().Get(0), policy)
+	return getFsAPI().SetPolicy(c.Args().Get(0), policy)
 }
 
 func deletePolicy(c *cli.Context) error {
-	return fs.DeletePolicy(c.Args().Get(0), c.Args().Get(1))
+	return getFsAPI().DeletePolicy(c.Args().Get(0), c.Args().Get(1))
 }

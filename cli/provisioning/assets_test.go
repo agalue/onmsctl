@@ -3,8 +3,6 @@ package provisioning
 import (
 	"testing"
 
-	"github.com/OpenNMS/onmsctl/rest"
-	"github.com/OpenNMS/onmsctl/services"
 	"github.com/OpenNMS/onmsctl/test"
 	"gotest.tools/assert"
 )
@@ -13,7 +11,6 @@ func TestListAssets(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, AssetsCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "asset", "list"})
 	assert.Error(t, err, "Requisition name required")
@@ -29,7 +26,6 @@ func TestAddAsset(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, AssetsCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "asset", "set"})
 	assert.Error(t, err, "Requisition name required")
@@ -51,7 +47,6 @@ func TestDeleteAsset(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, AssetsCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "asset", "delete"})
 	assert.Error(t, err, "Requisition name required")

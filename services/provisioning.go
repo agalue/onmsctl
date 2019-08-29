@@ -23,7 +23,9 @@ func (api provisioningUtilsAPI) GetRequisitionNames() (*model.RequisitionsList, 
 		return nil, fmt.Errorf("Cannot retrieve requisition names: %s", err)
 	}
 	requisitions := &model.RequisitionsList{}
-	json.Unmarshal(jsonRequisitions, requisitions)
+	if err := json.Unmarshal(jsonRequisitions, requisitions); err != nil {
+		return nil, err
+	}
 	return requisitions, nil
 }
 
@@ -48,7 +50,9 @@ func (api provisioningUtilsAPI) GetAvailableAssets() (*model.ElementList, error)
 	if err != nil {
 		return nil, fmt.Errorf("Cannot retrieve asset names list")
 	}
-	json.Unmarshal(jsonAssets, &assets)
+	if err := json.Unmarshal(jsonAssets, assets); err != nil {
+		return nil, err
+	}
 	return assets, nil
 }
 
@@ -58,7 +62,9 @@ func (api provisioningUtilsAPI) GetAvailableDetectors() (*model.PluginList, erro
 	if err != nil {
 		return nil, fmt.Errorf("Cannot retrieve detector list")
 	}
-	json.Unmarshal(jsonData, detectors)
+	if err := json.Unmarshal(jsonData, detectors); err != nil {
+		return nil, err
+	}
 	return detectors, nil
 }
 
@@ -68,6 +74,8 @@ func (api provisioningUtilsAPI) GetAvailablePolicies() (*model.PluginList, error
 	if err != nil {
 		return nil, fmt.Errorf("Cannot retrieve policy list")
 	}
-	json.Unmarshal(jsonData, policies)
+	if err := json.Unmarshal(jsonData, policies); err != nil {
+		return nil, err
+	}
 	return policies, nil
 }

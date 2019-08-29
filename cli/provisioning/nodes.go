@@ -93,7 +93,7 @@ var NodesCliCommand = cli.Command{
 }
 
 func listNodes(c *cli.Context) error {
-	requisition, err := api.GetRequisition(c.Args().Get(0))
+	requisition, err := getReqAPI().GetRequisition(c.Args().Get(0))
 	if err != nil {
 		return err
 	}
@@ -111,7 +111,7 @@ func listNodes(c *cli.Context) error {
 }
 
 func showNode(c *cli.Context) error {
-	node, err := api.GetNode(c.Args().Get(0), c.Args().Get(1))
+	node, err := getReqAPI().GetNode(c.Args().Get(0), c.Args().Get(1))
 	if err != nil {
 		return err
 	}
@@ -136,7 +136,7 @@ func setNode(c *cli.Context) error {
 		data := strings.Split(p, "=")
 		node.AddMetaData(data[0], data[1])
 	}
-	return api.SetNode(c.Args().Get(0), node)
+	return getReqAPI().SetNode(c.Args().Get(0), node)
 }
 
 func applyNode(c *cli.Context) error {
@@ -146,9 +146,9 @@ func applyNode(c *cli.Context) error {
 	}
 	node := model.RequisitionNode{}
 	yaml.Unmarshal(data, &node)
-	return api.SetNode(c.Args().Get(0), node)
+	return getReqAPI().SetNode(c.Args().Get(0), node)
 }
 
 func deleteNode(c *cli.Context) error {
-	return api.DeleteNode(c.Args().Get(0), c.Args().Get(1))
+	return getReqAPI().DeleteNode(c.Args().Get(0), c.Args().Get(1))
 }

@@ -4,8 +4,6 @@ import (
 	"testing"
 
 	"github.com/OpenNMS/onmsctl/model"
-	"github.com/OpenNMS/onmsctl/rest"
-	"github.com/OpenNMS/onmsctl/services"
 	"github.com/OpenNMS/onmsctl/test"
 	"gopkg.in/yaml.v2"
 	"gotest.tools/assert"
@@ -15,7 +13,6 @@ func TestSendEvent(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, CliCommand)
 	defer server.Close()
-	api = services.GetEventsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "events", "send"})
 	assert.Error(t, err, "UEI required")
@@ -28,7 +25,6 @@ func TestApplyEvent(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, CliCommand)
 	defer server.Close()
-	api = services.GetEventsAPI(rest.Instance)
 
 	event := &model.Event{
 		UEI:       "uei.opennms.org/test",

@@ -47,7 +47,10 @@ func (api snmpAPI) SetConfig(ipAddress string, config model.SnmpInfo) error {
 	if err != nil {
 		return err
 	}
-	jsonBytes, _ := json.Marshal(config)
+	jsonBytes, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
 	return api.rest.Put("/rest/snmpConfig/"+ipAddress, jsonBytes, "application/json")
 }
 

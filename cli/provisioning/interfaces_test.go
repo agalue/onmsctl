@@ -3,8 +3,6 @@ package provisioning
 import (
 	"testing"
 
-	"github.com/OpenNMS/onmsctl/rest"
-	"github.com/OpenNMS/onmsctl/services"
 	"github.com/OpenNMS/onmsctl/test"
 	"gotest.tools/assert"
 )
@@ -13,7 +11,6 @@ func TestListInterfaces(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, InterfacesCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "intf", "list"})
 	assert.Error(t, err, "Requisition name required")
@@ -29,7 +26,6 @@ func TestGetInterface(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, InterfacesCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "intf", "get"})
 	assert.Error(t, err, "Requisition name required")
@@ -48,7 +44,6 @@ func TestAddInterface(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, InterfacesCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "intf", "add"})
 	assert.Error(t, err, "Requisition name required")
@@ -67,7 +62,6 @@ func TestDeleteInterface(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, InterfacesCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "intf", "delete"})
 	assert.Error(t, err, "Requisition name required")

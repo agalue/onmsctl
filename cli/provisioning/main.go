@@ -1,6 +1,7 @@
 package provisioning
 
 import (
+	"github.com/OpenNMS/onmsctl/api"
 	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/OpenNMS/onmsctl/services"
 )
@@ -8,6 +9,14 @@ import (
 // Formats the available file formats for requisitions and foreign source definitions
 var Formats = []string{"xml", "json", "yaml"}
 
-var api = services.GetRequisitionsAPI(rest.Instance)
-var fs = services.GetForeignSourcesAPI(rest.Instance)
-var utils = services.GetProvisioningUtilsAPI(rest.Instance)
+func getReqAPI() api.RequisitionsAPI {
+	return services.GetRequisitionsAPI(rest.Instance)
+}
+
+func getFsAPI() api.ForeignSourcesAPI {
+	return services.GetForeignSourcesAPI(rest.Instance)
+}
+
+func getUtilsAPI() api.ProvisioningUtilsAPI {
+	return services.GetProvisioningUtilsAPI(rest.Instance)
+}

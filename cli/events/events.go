@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/OpenNMS/onmsctl/api"
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/model"
 	"github.com/OpenNMS/onmsctl/rest"
@@ -12,8 +13,6 @@ import (
 
 	"gopkg.in/yaml.v2"
 )
-
-var api = services.GetEventsAPI(rest.Instance)
 
 // Severities list of valid event severities
 var Severities = &model.EnumValue{
@@ -97,7 +96,7 @@ func sendEvent(c *cli.Context) error {
 		data := strings.Split(p, "=")
 		event.AddParameter(data[0], data[1])
 	}
-	return api.SendEvent(event)
+	return getAPI().SendEvent(event)
 }
 
 func applyEvent(c *cli.Context) error {
@@ -111,5 +110,9 @@ func applyEvent(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return api.SendEvent(event)
+	return getAPI().SendEvent(event)
+}
+
+func getAPI() api.EventsAPI {
+	return services.GetEventsAPI(rest.Instance)
 }

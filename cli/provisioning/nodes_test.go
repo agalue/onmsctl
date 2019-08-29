@@ -4,8 +4,6 @@ import (
 	"testing"
 
 	"github.com/OpenNMS/onmsctl/model"
-	"github.com/OpenNMS/onmsctl/rest"
-	"github.com/OpenNMS/onmsctl/services"
 	"github.com/OpenNMS/onmsctl/test"
 	"gopkg.in/yaml.v2"
 	"gotest.tools/assert"
@@ -15,7 +13,6 @@ func TestListNodes(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, NodesCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "node", "list"})
 	assert.Error(t, err, "Requisition name required")
@@ -28,7 +25,6 @@ func TestGetNode(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, NodesCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "node", "get"})
 	assert.Error(t, err, "Requisition name required")
@@ -44,7 +40,6 @@ func TestAddNode(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, NodesCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "node", "add"})
 	assert.Error(t, err, "Requisition name required")
@@ -60,7 +55,6 @@ func TestDeleteNode(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, NodesCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "node", "delete"})
 	assert.Error(t, err, "Requisition name required")
@@ -76,7 +70,6 @@ func TestApplyNode(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, NodesCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "node", "apply"})
 	assert.Error(t, err, "Content cannot be empty")

@@ -77,7 +77,7 @@ var DetectorsCliCommand = cli.Command{
 }
 
 func listDetectors(c *cli.Context) error {
-	fsDef, err := fs.GetForeignSourceDef(c.Args().Get(0))
+	fsDef, err := getFsAPI().GetForeignSourceDef(c.Args().Get(0))
 	if err != nil {
 		return err
 	}
@@ -91,7 +91,7 @@ func listDetectors(c *cli.Context) error {
 }
 
 func enumerateDetectorClasses(c *cli.Context) error {
-	detectors, err := utils.GetAvailableDetectors()
+	detectors, err := getUtilsAPI().GetAvailableDetectors()
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,7 @@ func enumerateDetectorClasses(c *cli.Context) error {
 }
 
 func describeDetectorClass(c *cli.Context) error {
-	plugin, err := fs.GetDetectorConfig(c.Args().Get(0))
+	plugin, err := getFsAPI().GetDetectorConfig(c.Args().Get(0))
 	if err != nil {
 		return err
 	}
@@ -115,7 +115,7 @@ func describeDetectorClass(c *cli.Context) error {
 }
 
 func getDetector(c *cli.Context) error {
-	detector, err := fs.GetDetector(c.Args().Get(0), c.Args().Get(1))
+	detector, err := getFsAPI().GetDetector(c.Args().Get(0), c.Args().Get(1))
 	if err != nil {
 		return err
 	}
@@ -132,7 +132,7 @@ func setDetector(c *cli.Context) error {
 		param := model.Parameter{Key: data[0], Value: data[1]}
 		detector.Parameters = append(detector.Parameters, param)
 	}
-	return fs.SetDetector(c.Args().Get(0), detector)
+	return getFsAPI().SetDetector(c.Args().Get(0), detector)
 }
 
 func applyDetector(c *cli.Context) error {
@@ -142,9 +142,9 @@ func applyDetector(c *cli.Context) error {
 	}
 	detector := model.Detector{}
 	yaml.Unmarshal(data, &detector)
-	return fs.SetDetector(c.Args().Get(0), detector)
+	return getFsAPI().SetDetector(c.Args().Get(0), detector)
 }
 
 func deleteDetector(c *cli.Context) error {
-	return fs.DeleteDetector(c.Args().Get(0), c.Args().Get(1))
+	return getFsAPI().DeleteDetector(c.Args().Get(0), c.Args().Get(1))
 }

@@ -3,8 +3,6 @@ package provisioning
 import (
 	"testing"
 
-	"github.com/OpenNMS/onmsctl/rest"
-	"github.com/OpenNMS/onmsctl/services"
 	"github.com/OpenNMS/onmsctl/test"
 	"gotest.tools/assert"
 )
@@ -13,7 +11,6 @@ func TestListCategories(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, CategoriesCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "cat", "list"})
 	assert.Error(t, err, "Requisition name required")
@@ -29,7 +26,6 @@ func TestAddCategory(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, CategoriesCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "cat", "add"})
 	assert.Error(t, err, "Requisition name required")
@@ -48,7 +44,6 @@ func TestDeleteCategory(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, CategoriesCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "cat", "delete"})
 	assert.Error(t, err, "Requisition name required")

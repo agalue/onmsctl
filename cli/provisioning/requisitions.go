@@ -115,11 +115,11 @@ var RequisitionsCliCommand = cli.Command{
 }
 
 func listRequisitions(c *cli.Context) error {
-	requisitions, err := utils.GetRequisitionNames()
+	requisitions, err := getUtilsAPI().GetRequisitionNames()
 	if err != nil {
 		return err
 	}
-	statistics, err := api.GetRequisitionsStats()
+	statistics, err := getReqAPI().GetRequisitionsStats()
 	if err != nil {
 		return err
 	}
@@ -134,7 +134,7 @@ func listRequisitions(c *cli.Context) error {
 }
 
 func showRequisition(c *cli.Context) error {
-	requisition, err := api.GetRequisition(c.Args().First())
+	requisition, err := getReqAPI().GetRequisition(c.Args().First())
 	if err != nil {
 		return err
 	}
@@ -144,7 +144,7 @@ func showRequisition(c *cli.Context) error {
 }
 
 func addRequisition(c *cli.Context) error {
-	return api.CreateRequisition(c.Args().First())
+	return getReqAPI().CreateRequisition(c.Args().First())
 }
 
 func applyRequisition(c *cli.Context) error {
@@ -152,7 +152,7 @@ func applyRequisition(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return api.SetRequisition(*requisition)
+	return getReqAPI().SetRequisition(*requisition)
 }
 
 func validateRequisition(c *cli.Context) error {
@@ -165,11 +165,11 @@ func validateRequisition(c *cli.Context) error {
 }
 
 func importRequisition(c *cli.Context) error {
-	return api.ImportRequisition(c.Args().First(), c.String("rescanExisting"))
+	return getReqAPI().ImportRequisition(c.Args().First(), c.String("rescanExisting"))
 }
 
 func deleteRequisition(c *cli.Context) error {
-	return api.DeleteRequisition(c.Args().First())
+	return getReqAPI().DeleteRequisition(c.Args().First())
 }
 
 func getDisplayTime(lastImport *model.Time) string {

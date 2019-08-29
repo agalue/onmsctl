@@ -3,6 +3,7 @@ package snmp
 import (
 	"fmt"
 
+	"github.com/OpenNMS/onmsctl/api"
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/model"
 	"github.com/OpenNMS/onmsctl/rest"
@@ -11,8 +12,6 @@ import (
 
 	"gopkg.in/yaml.v2"
 )
-
-var api = services.GetSnmpAPI(rest.Instance)
 
 // SNMPVersions the SNMP version enumeration
 var SNMPVersions = &model.EnumValue{
@@ -147,7 +146,7 @@ var CliCommand = cli.Command{
 }
 
 func showSnmpConfig(c *cli.Context) error {
-	snmp, err := api.GetConfig(c.Args().Get(0), c.String("location"))
+	snmp, err := getAPI().GetConfig(c.Args().Get(0), c.String("location"))
 	if err != nil {
 		return err
 	}
@@ -178,7 +177,7 @@ func setSnmpConfig(c *cli.Context) error {
 		MaxRepetitions:  c.Int("maxRepetitions"),
 		MaxVarsPerPdu:   c.Int("maxVarsPerPdu"),
 	}
-	return api.SetConfig(c.Args().Get(0), snmp)
+	return getAPI().SetConfig(c.Args().Get(0), snmp)
 }
 
 func applySnmpConfig(c *cli.Context) error {
@@ -188,5 +187,9 @@ func applySnmpConfig(c *cli.Context) error {
 	}
 	snmp := model.SnmpInfo{}
 	yaml.Unmarshal(data, &snmp)
-	return api.SetConfig(c.Args().Get(0), snmp)
+	return getAPI().SetConfig(c.Args().Get(0), snmp)
+}
+
+func getAPI() api.SnmpAPI {
+	return services.GetSnmpAPI(rest.Instance)
 }

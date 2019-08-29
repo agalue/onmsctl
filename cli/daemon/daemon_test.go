@@ -3,8 +3,6 @@ package daemon
 import (
 	"testing"
 
-	"github.com/OpenNMS/onmsctl/rest"
-	"github.com/OpenNMS/onmsctl/services"
 	"github.com/OpenNMS/onmsctl/test"
 	"gotest.tools/assert"
 )
@@ -23,7 +21,6 @@ func TestListDaemon(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, CliCommand)
 	defer server.Close()
-	api = services.GetEventsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "daemon", "list"})
 	assert.NilError(t, err)
@@ -33,7 +30,6 @@ func TestReloadDaemon(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, CliCommand)
 	defer server.Close()
-	api = services.GetEventsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "daemon", "reload"})
 	assert.Error(t, err, "Daemon name required")

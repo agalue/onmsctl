@@ -46,7 +46,7 @@ var ServicesCliCommand = cli.Command{
 }
 
 func listServices(c *cli.Context) error {
-	intf, err := api.GetInterface(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
+	intf, err := getReqAPI().GetInterface(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
 	if err != nil {
 		return err
 	}
@@ -66,9 +66,9 @@ func setService(c *cli.Context) error {
 		data := strings.Split(p, "=")
 		svc.AddMetaData(data[0], data[1])
 	}
-	return api.SetService(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2), svc)
+	return getReqAPI().SetService(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2), svc)
 }
 
 func deleteService(c *cli.Context) error {
-	return api.DeleteService(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2), c.Args().Get(3))
+	return getReqAPI().DeleteService(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2), c.Args().Get(3))
 }

@@ -77,7 +77,7 @@ var InterfacesCliCommand = cli.Command{
 }
 
 func listInterfaces(c *cli.Context) error {
-	node, err := api.GetNode(c.Args().Get(0), c.Args().Get(1))
+	node, err := getReqAPI().GetNode(c.Args().Get(0), c.Args().Get(1))
 	if err != nil {
 		return err
 	}
@@ -95,7 +95,7 @@ func listInterfaces(c *cli.Context) error {
 }
 
 func showInterface(c *cli.Context) error {
-	intf, err := api.GetInterface(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
+	intf, err := getReqAPI().GetInterface(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
 	if err != nil {
 		return err
 	}
@@ -116,7 +116,7 @@ func setInterface(c *cli.Context) error {
 		data := strings.Split(p, "=")
 		intf.AddMetaData(data[0], data[1])
 	}
-	return api.SetInterface(c.Args().Get(0), c.Args().Get(1), intf)
+	return getReqAPI().SetInterface(c.Args().Get(0), c.Args().Get(1), intf)
 }
 
 func applyInterface(c *cli.Context) error {
@@ -126,9 +126,9 @@ func applyInterface(c *cli.Context) error {
 	}
 	intf := model.RequisitionInterface{}
 	yaml.Unmarshal(data, &intf)
-	return api.SetInterface(c.Args().Get(0), c.Args().Get(1), intf)
+	return getReqAPI().SetInterface(c.Args().Get(0), c.Args().Get(1), intf)
 }
 
 func deleteInterface(c *cli.Context) error {
-	return api.DeleteInterface(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
+	return getReqAPI().DeleteInterface(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
 }

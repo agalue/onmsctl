@@ -4,8 +4,6 @@ import (
 	"testing"
 
 	"github.com/OpenNMS/onmsctl/model"
-	"github.com/OpenNMS/onmsctl/rest"
-	"github.com/OpenNMS/onmsctl/services"
 	"github.com/OpenNMS/onmsctl/test"
 	"gopkg.in/yaml.v2"
 	"gotest.tools/assert"
@@ -15,9 +13,6 @@ func TestEnumDetectors(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, DetectorsCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance)
-	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "detector", "enum"})
 	assert.NilError(t, err)
@@ -27,9 +22,6 @@ func TestDescribeDetector(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, DetectorsCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance)
-	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "detector", "desc"})
 	assert.Error(t, err, "Detector name or class required")
@@ -42,9 +34,6 @@ func TestListDetectors(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, DetectorsCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance)
-	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "detector", "list"})
 	assert.Error(t, err, "Requisition name required")
@@ -57,9 +46,6 @@ func TestGetDetector(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, DetectorsCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance)
-	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "detector", "get"})
 	assert.Error(t, err, "Requisition name required")
@@ -75,9 +61,6 @@ func TestDeleteDetector(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, DetectorsCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance)
-	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "detector", "del"})
 	assert.Error(t, err, "Requisition name required")
@@ -93,9 +76,6 @@ func TestApplyDetector(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, DetectorsCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance)
-	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "detector", "apply"})
 	assert.Error(t, err, "Content cannot be empty")
@@ -124,9 +104,6 @@ func TestSetDetector(t *testing.T) {
 	var err error
 	app, server := test.InitializeMocks(t, DetectorsCliCommand)
 	defer server.Close()
-	api = services.GetRequisitionsAPI(rest.Instance)
-	fs = services.GetForeignSourcesAPI(rest.Instance)
-	utils = services.GetProvisioningUtilsAPI(rest.Instance)
 
 	err = app.Run([]string{app.Name, "detector", "set"})
 	assert.Error(t, err, "Requisition name required")

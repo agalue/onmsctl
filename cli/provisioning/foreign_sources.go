@@ -85,7 +85,7 @@ var ForeignSourcesCliCommand = cli.Command{
 }
 
 func showForeignSource(c *cli.Context) error {
-	fsDef, err := fs.GetForeignSourceDef(c.Args().Get(0))
+	fsDef, err := getFsAPI().GetForeignSourceDef(c.Args().Get(0))
 	if err != nil {
 		return err
 	}
@@ -95,7 +95,7 @@ func showForeignSource(c *cli.Context) error {
 }
 
 func setScanInterval(c *cli.Context) error {
-	return fs.SetScanInterval(c.Args().Get(0), c.Args().Get(1))
+	return getFsAPI().SetScanInterval(c.Args().Get(0), c.Args().Get(1))
 }
 
 func applyForeignSource(c *cli.Context) error {
@@ -103,7 +103,7 @@ func applyForeignSource(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return fs.SetForeignSourceDef(*fsDef)
+	return getFsAPI().SetForeignSourceDef(*fsDef)
 }
 
 func validateForeignSource(c *cli.Context) error {
@@ -116,7 +116,7 @@ func validateForeignSource(c *cli.Context) error {
 }
 
 func deleteForeignSource(c *cli.Context) error {
-	return fs.DeleteForeignSourceDef(c.Args().Get(0))
+	return getFsAPI().DeleteForeignSourceDef(c.Args().Get(0))
 }
 
 func parseForeignSourceDefinition(c *cli.Context) (*model.ForeignSourceDef, error) {
@@ -136,5 +136,5 @@ func parseForeignSourceDefinition(c *cli.Context) (*model.ForeignSourceDef, erro
 	if err != nil {
 		return fsDef, err
 	}
-	return fsDef, fs.IsForeignSourceValid(*fsDef)
+	return fsDef, getFsAPI().IsForeignSourceValid(*fsDef)
 }
