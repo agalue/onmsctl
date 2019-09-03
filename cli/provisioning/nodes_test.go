@@ -12,8 +12,8 @@ import (
 func TestListNodes(t *testing.T) {
 	var err error
 	app := test.CreateCli(NodesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	server := createTestServer(t)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "node", "list"})
 	assert.Error(t, err, "Requisition name required")
@@ -25,11 +25,11 @@ func TestListNodes(t *testing.T) {
 func TestGetNode(t *testing.T) {
 	var err error
 	app := test.CreateCli(NodesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	server := createTestServer(t)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "node", "get"})
-	assert.Error(t, err, "Requisition name and foreign ID required")
+	assert.Error(t, err, "Requisition name required")
 
 	err = app.Run([]string{app.Name, "node", "get", "Test"})
 	assert.Error(t, err, "Foreign ID required")
@@ -41,14 +41,14 @@ func TestGetNode(t *testing.T) {
 func TestAddNode(t *testing.T) {
 	var err error
 	app := test.CreateCli(NodesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	server := createTestServer(t)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "node", "add"})
-	assert.Error(t, err, "Requisition name and foreign ID required")
+	assert.Error(t, err, "Requisition name required")
 
 	err = app.Run([]string{app.Name, "node", "add", "Test"})
-	assert.Error(t, err, "Foreign ID required")
+	assert.Error(t, err, "Foreign ID cannot be empty")
 
 	err = app.Run([]string{app.Name, "node", "add", "Test", "n2"})
 	assert.NilError(t, err)
@@ -57,11 +57,11 @@ func TestAddNode(t *testing.T) {
 func TestDeleteNode(t *testing.T) {
 	var err error
 	app := test.CreateCli(NodesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	server := createTestServer(t)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "node", "delete"})
-	assert.Error(t, err, "Requisition name and foreign ID required")
+	assert.Error(t, err, "Requisition name required")
 
 	err = app.Run([]string{app.Name, "node", "delete", "Test"})
 	assert.Error(t, err, "Foreign ID required")
@@ -73,11 +73,11 @@ func TestDeleteNode(t *testing.T) {
 func TestApplyNode(t *testing.T) {
 	var err error
 	app := test.CreateCli(NodesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	server := createTestServer(t)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "node", "apply"})
-	assert.Error(t, err, "Requisition name required")
+	assert.Error(t, err, "Content cannot be empty")
 
 	err = app.Run([]string{app.Name, "node", "apply", "Test"})
 	assert.Error(t, err, "Content cannot be empty")

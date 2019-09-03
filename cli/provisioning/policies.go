@@ -1,13 +1,11 @@
 package provisioning
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/model"
-	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 
 	"gopkg.in/yaml.v2"
@@ -79,7 +77,7 @@ var PoliciesCliCommand = cli.Command{
 }
 
 func listPolicies(c *cli.Context) error {
-	fsDef, err := GetForeignSourceDef(c)
+	fsDef, err := getFsAPI().GetForeignSourceDef(c.Args().Get(0))
 	if err != nil {
 		return err
 	}
@@ -93,7 +91,7 @@ func listPolicies(c *cli.Context) error {
 }
 
 func enumeratePolicyClasses(c *cli.Context) error {
-	policies, err := getPolicies()
+	policies, err := getUtilsAPI().GetAvailablePolicies()
 	if err != nil {
 		return err
 	}
@@ -107,140 +105,46 @@ func enumeratePolicyClasses(c *cli.Context) error {
 }
 
 func describePolicyClass(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Policy name or class required")
-	}
-	src := c.Args().Get(0)
-	policies, err := getPolicies()
+	plugin, err := getFsAPI().GetPolicyConfig(c.Args().Get(0))
 	if err != nil {
 		return err
 	}
-	for _, plugin := range policies.Plugins {
-		if plugin.Class == src || plugin.Name == src {
-			data, _ := yaml.Marshal(&plugin)
-			fmt.Println(string(data))
-			return nil
-		}
-	}
-	return fmt.Errorf("Cannot find policy for %s", src)
+	data, _ := yaml.Marshal(plugin)
+	fmt.Println(string(data))
+	return nil
 }
 
 func getPolicy(c *cli.Context) error {
-	fsDef, err := GetForeignSourceDef(c)
+	detector, err := getFsAPI().GetPolicy(c.Args().Get(0), c.Args().Get(1))
 	if err != nil {
 		return err
 	}
-	src := c.Args().Get(1)
-	if src == "" {
-		return fmt.Errorf("Policy name or class required")
-	}
-	for _, policy := range fsDef.Policies {
-		if policy.Class == src || policy.Name == src {
-			data, _ := yaml.Marshal(&policy)
-			fmt.Println(string(data))
-			return nil
-		}
-	}
-	return fmt.Errorf("Cannot find policy for %s", src)
+	data, _ := yaml.Marshal(detector)
+	fmt.Println(string(data))
+	return nil
 }
 
 func setPolicy(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Foreign source name, policy name and class required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Foreign source %s doesn't exist", foreignSource)
-	}
-	policyName := c.Args().Get(1)
-	if policyName == "" {
-		return fmt.Errorf("Policy name required")
-	}
-	policyClass := c.Args().Get(2)
-	if policyClass == "" {
-		return fmt.Errorf("Policy class required")
-	}
-	policy := model.Policy{Name: policyName, Class: policyClass}
+	policy := model.Policy{Name: c.Args().Get(1), Class: c.Args().Get(2)}
 	params := c.StringSlice("parameter")
 	for _, p := range params {
 		data := strings.Split(p, "=")
 		param := model.Parameter{Key: data[0], Value: data[1]}
 		policy.Parameters = append(policy.Parameters, param)
 	}
-	policies, err := getPolicies()
-	if err != nil {
-		return err
-	}
-	err = isPolicyValid(policy, policies)
-	if err != nil {
-		return err
-	}
-	jsonBytes, _ := json.Marshal(policy)
-	return rest.Instance.Post("/rest/foreignSources/"+foreignSource+"/policies", jsonBytes)
+	return getFsAPI().SetPolicy(c.Args().Get(0), policy)
 }
 
 func applyPolicy(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Foreign source name required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Foreign source %s doesn't exist", foreignSource)
-	}
 	data, err := common.ReadInput(c, 1)
 	if err != nil {
 		return err
 	}
-	policy := &model.Policy{}
-	yaml.Unmarshal(data, policy)
-	policies, err := getPolicies()
-	if err != nil {
-		return err
-	}
-	err = isPolicyValid(*policy, policies)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Updating policy %s...\n", policy.Name)
-	jsonBytes, _ := json.Marshal(policy)
-	return rest.Instance.Post("/rest/foreignSources/"+foreignSource+"/policies", jsonBytes)
+	policy := model.Policy{}
+	yaml.Unmarshal(data, &policy)
+	return getFsAPI().SetPolicy(c.Args().Get(0), policy)
 }
 
 func deletePolicy(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Foreign source name and policy name required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Foreign source %s doesn't exist", foreignSource)
-	}
-	detector := c.Args().Get(1)
-	if detector == "" {
-		return fmt.Errorf("Policy name required")
-	}
-	return rest.Instance.Delete("/rest/foreignSources/" + foreignSource + "/policies/" + detector)
-}
-
-func getPolicies() (model.PluginList, error) {
-	detectors := model.PluginList{}
-	jsonData, err := rest.Instance.Get("/rest/foreignSourcesConfig/policies")
-	if err != nil {
-		return detectors, fmt.Errorf("Cannot retrieve policy list")
-	}
-	json.Unmarshal(jsonData, &detectors)
-	return detectors, nil
-}
-
-func isPolicyValid(policy model.Policy, config model.PluginList) error {
-	if err := policy.IsValid(); err != nil {
-		return err
-	}
-	plugin := config.FindPlugin(policy.Class)
-	if plugin == nil {
-		return fmt.Errorf("Cannot find policy with class %s", policy.Class)
-	}
-	if err := plugin.VerifyParameters(policy.Parameters); err != nil {
-		return err
-	}
-	return nil
+	return getFsAPI().DeletePolicy(c.Args().Get(0), c.Args().Get(1))
 }

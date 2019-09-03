@@ -1,13 +1,14 @@
 package events
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 
+	"github.com/OpenNMS/onmsctl/api"
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/model"
 	"github.com/OpenNMS/onmsctl/rest"
+	"github.com/OpenNMS/onmsctl/services"
 	"github.com/urfave/cli"
 
 	"gopkg.in/yaml.v2"
@@ -29,7 +30,7 @@ var CliCommand = cli.Command{
 			ArgsUsage: "<uei>",
 			Action:    sendEvent,
 			Flags: []cli.Flag{
-				cli.StringFlag{
+				cli.Int64Flag{
 					Name:  "nodeid, n",
 					Usage: "The numeric node identifier",
 				},
@@ -41,7 +42,7 @@ var CliCommand = cli.Command{
 					Name:  "service, s",
 					Usage: "Service name",
 				},
-				cli.StringFlag{
+				cli.IntFlag{
 					Name:  "ifindex, f",
 					Usage: "ifIndex of the interface",
 				},
@@ -95,8 +96,7 @@ func sendEvent(c *cli.Context) error {
 		data := strings.Split(p, "=")
 		event.AddParameter(data[0], data[1])
 	}
-	jsonBytes, _ := json.Marshal(event)
-	return rest.Instance.Post("/rest/events", jsonBytes)
+	return getAPI().SendEvent(event)
 }
 
 func applyEvent(c *cli.Context) error {
@@ -110,6 +110,9 @@ func applyEvent(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	jsonBytes, _ := json.Marshal(event)
-	return rest.Instance.Post("/rest/events", jsonBytes)
+	return getAPI().SendEvent(event)
+}
+
+func getAPI() api.EventsAPI {
+	return services.GetEventsAPI(rest.Instance)
 }

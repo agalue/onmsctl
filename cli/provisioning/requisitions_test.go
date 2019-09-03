@@ -12,8 +12,8 @@ import (
 func TestListRequisitions(t *testing.T) {
 	var err error
 	app := test.CreateCli(RequisitionsCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	server := createTestServer(t)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "req", "list"})
 	assert.NilError(t, err)
@@ -22,8 +22,8 @@ func TestListRequisitions(t *testing.T) {
 func TestGetRequisition(t *testing.T) {
 	var err error
 	app := test.CreateCli(RequisitionsCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	server := createTestServer(t)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "req", "get"})
 	assert.Error(t, err, "Requisition name required")
@@ -35,8 +35,8 @@ func TestGetRequisition(t *testing.T) {
 func TestAddRequisition(t *testing.T) {
 	var err error
 	app := test.CreateCli(RequisitionsCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	server := createTestServer(t)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "req", "add"})
 	assert.Error(t, err, "Requisition name required")
@@ -48,8 +48,8 @@ func TestAddRequisition(t *testing.T) {
 func TestDeleteRequisition(t *testing.T) {
 	var err error
 	app := test.CreateCli(RequisitionsCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	server := createTestServer(t)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "req", "delete"})
 	assert.Error(t, err, "Requisition name required")
@@ -61,8 +61,8 @@ func TestDeleteRequisition(t *testing.T) {
 func TestApplyRequisition(t *testing.T) {
 	var err error
 	app := test.CreateCli(RequisitionsCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	server := createTestServer(t)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "req", "apply"})
 	assert.Error(t, err, "Content cannot be empty")

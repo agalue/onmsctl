@@ -1,13 +1,11 @@
 package provisioning
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/model"
-	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 )
 
@@ -48,27 +46,10 @@ var ServicesCliCommand = cli.Command{
 }
 
 func listServices(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name, foreign ID and IP address required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	foreignID := c.Args().Get(1)
-	if foreignID == "" {
-		return fmt.Errorf("ForeignID is required")
-	}
-	ipAddress := c.Args().Get(2)
-	if ipAddress == "" {
-		return fmt.Errorf("IP Address required")
-	}
-	jsonBytes, err := rest.Instance.Get("/rest/requisitions/" + foreignSource + "/nodes/" + foreignID + "/interfaces/" + ipAddress)
+	intf, err := getReqAPI().GetInterface(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
 	if err != nil {
-		return fmt.Errorf("Cannot retrieve interfaces")
+		return err
 	}
-	intf := model.RequisitionInterface{}
-	json.Unmarshal(jsonBytes, &intf)
 	writer := common.NewTableWriter()
 	fmt.Fprintln(writer, "Service Name")
 	for _, svc := range intf.Services {
@@ -79,54 +60,15 @@ func listServices(c *cli.Context) error {
 }
 
 func setService(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name, foreign ID, IP address and service name required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	foreignID := c.Args().Get(1)
-	if foreignID == "" {
-		return fmt.Errorf("Foreign ID required")
-	}
-	ipAddress := c.Args().Get(2)
-	if ipAddress == "" {
-		return fmt.Errorf("IP Address required")
-	}
-	service := c.Args().Get(3)
-	if service == "" {
-		return fmt.Errorf("Service name required")
-	}
-	svc := model.RequisitionMonitoredService{Name: service}
+	svc := model.RequisitionMonitoredService{Name: c.Args().Get(3)}
 	metaData := c.StringSlice("metaData")
 	for _, p := range metaData {
 		data := strings.Split(p, "=")
 		svc.AddMetaData(data[0], data[1])
 	}
-	jsonBytes, _ := json.Marshal(svc)
-	return rest.Instance.Post("/rest/requisitions/"+foreignSource+"/nodes/"+foreignID+"/interfaces/"+ipAddress+"/services", jsonBytes)
+	return getReqAPI().SetService(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2), svc)
 }
 
 func deleteService(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name, foreign ID, IP address and service name required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	foreignID := c.Args().Get(1)
-	if foreignID == "" {
-		return fmt.Errorf("Foreign ID required")
-	}
-	ipAddress := c.Args().Get(2)
-	if ipAddress == "" {
-		return fmt.Errorf("IP Address required")
-	}
-	service := c.Args().Get(3)
-	if service == "" {
-		return fmt.Errorf("Service name required")
-	}
-	return rest.Instance.Delete("/rest/requisitions/" + foreignSource + "/nodes/" + foreignID + "/interfaces/" + ipAddress + "/services/" + service)
+	return getReqAPI().DeleteService(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2), c.Args().Get(3))
 }

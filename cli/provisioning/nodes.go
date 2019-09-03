@@ -1,13 +1,11 @@
 package provisioning
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/model"
-	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 
 	"gopkg.in/yaml.v2"
@@ -95,19 +93,10 @@ var NodesCliCommand = cli.Command{
 }
 
 func listNodes(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name required")
-	}
-	foreignSource := c.Args().First()
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	jsonBytes, err := rest.Instance.Get("/rest/requisitions/" + foreignSource)
+	requisition, err := getReqAPI().GetRequisition(c.Args().Get(0))
 	if err != nil {
-		return fmt.Errorf("Cannot retrieve nodes from requisition %s", foreignSource)
+		return err
 	}
-	requisition := model.Requisition{}
-	json.Unmarshal(jsonBytes, &requisition)
 	writer := common.NewTableWriter()
 	fmt.Fprintln(writer, "Foreign ID\tLabel\tLocation\tInterfaces\tAssets\tCategories")
 	for _, node := range requisition.Nodes {
@@ -122,7 +111,7 @@ func listNodes(c *cli.Context) error {
 }
 
 func showNode(c *cli.Context) error {
-	node, err := GetNode(c)
+	node, err := getReqAPI().GetNode(c.Args().Get(0), c.Args().Get(1))
 	if err != nil {
 		return err
 	}
@@ -132,19 +121,8 @@ func showNode(c *cli.Context) error {
 }
 
 func setNode(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name and foreign ID required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	foreignID := c.Args().Get(1)
-	if foreignID == "" {
-		return fmt.Errorf("Foreign ID required")
-	}
 	node := model.RequisitionNode{
-		ForeignID:           foreignID,
+		ForeignID:           c.Args().Get(1),
 		NodeLabel:           c.String("label"),
 		Location:            c.String("location"),
 		City:                c.String("city"),
@@ -158,51 +136,19 @@ func setNode(c *cli.Context) error {
 		data := strings.Split(p, "=")
 		node.AddMetaData(data[0], data[1])
 	}
-	err := node.IsValid()
-	if err != nil {
-		return err
-	}
-	if node.ParentForeignSource != "" && !RequisitionExists(node.ParentForeignSource) {
-		return fmt.Errorf("Cannot set parent foreign source as requisition %s doesn't exist", node.ParentForeignSource)
-	}
-	jsonBytes, _ := json.Marshal(node)
-	return rest.Instance.Post("/rest/requisitions/"+foreignSource+"/nodes", jsonBytes)
+	return getReqAPI().SetNode(c.Args().Get(0), node)
 }
 
 func applyNode(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
 	data, err := common.ReadInput(c, 1)
 	if err != nil {
 		return err
 	}
-	node := &model.RequisitionNode{}
-	yaml.Unmarshal(data, node)
-	err = node.IsValid()
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Adding node %s to requisition %s...\n", node.ForeignID, foreignSource)
-	jsonBytes, _ := json.Marshal(node)
-	return rest.Instance.Post("/rest/requisitions/"+foreignSource+"/nodes", jsonBytes)
+	node := model.RequisitionNode{}
+	yaml.Unmarshal(data, &node)
+	return getReqAPI().SetNode(c.Args().Get(0), node)
 }
 
 func deleteNode(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name and foreign ID required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	foreignID := c.Args().Get(1)
-	if foreignID == "" {
-		return fmt.Errorf("Foreign ID required")
-	}
-	return rest.Instance.Delete("/rest/requisitions/" + foreignSource + "/nodes/" + foreignID)
+	return getReqAPI().DeleteNode(c.Args().Get(0), c.Args().Get(1))
 }

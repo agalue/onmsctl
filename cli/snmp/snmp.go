@@ -1,13 +1,13 @@
 package snmp
 
 import (
-	"encoding/json"
 	"fmt"
-	"net"
 
+	"github.com/OpenNMS/onmsctl/api"
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/model"
 	"github.com/OpenNMS/onmsctl/rest"
+	"github.com/OpenNMS/onmsctl/services"
 	"github.com/urfave/cli"
 
 	"gopkg.in/yaml.v2"
@@ -61,24 +61,29 @@ var CliCommand = cli.Command{
 					Name:  "location, l",
 					Usage: "Minion Location",
 				},
-				cli.StringFlag{
+				cli.IntFlag{
 					Name:  "port, p",
+					Value: 161,
 					Usage: "The UDP Port of the SNMP agent",
 				},
-				cli.StringFlag{
+				cli.IntFlag{
 					Name:  "retry, r",
+					Value: 2,
 					Usage: "The number of retries before giving up",
 				},
-				cli.StringFlag{
+				cli.IntFlag{
 					Name:  "timeout, t",
+					Value: 1800,
 					Usage: "Timeout in milliseconds",
 				},
-				cli.StringFlag{
+				cli.IntFlag{
 					Name:  "maxRepetitions, mr",
+					Value: 2,
 					Usage: "Maximum repetitions",
 				},
-				cli.StringFlag{
+				cli.IntFlag{
 					Name:  "maxVarsPerPdu, mvpp",
+					Value: 10,
 					Usage: "Maximum variables per PDU",
 				},
 				cli.StringFlag{
@@ -89,9 +94,9 @@ var CliCommand = cli.Command{
 					Name:  "securityName, sn",
 					Usage: "SNMPv3 Security Name",
 				},
-				cli.StringFlag{
+				cli.IntFlag{
 					Name:  "securityLevel, sl",
-					Value: "1",
+					Value: 1,
 					Usage: "SNMPv3 Security Level: 1 noAuthNoPriv, 2: authNoPriv, 3: authPriv",
 				},
 				cli.GenericFlag{
@@ -146,36 +151,21 @@ var CliCommand = cli.Command{
 }
 
 func showSnmpConfig(c *cli.Context) error {
-	ipAddress, err := getIPAddress(c)
+	snmp, err := getAPI().GetConfig(c.Args().Get(0), c.String("location"))
 	if err != nil {
 		return err
 	}
-	url := "/rest/snmpConfig/" + ipAddress
-	location := c.String("location")
-	if location != "" {
-		url += "?location=" + location
-	}
-	jsonString, err := rest.Instance.Get(url)
-	if err != nil {
-		return err
-	}
-	snmp := model.SnmpInfo{}
-	json.Unmarshal(jsonString, &snmp)
 	data, _ := yaml.Marshal(&snmp)
 	fmt.Println(string(data))
 	return nil
 }
 
 func setSnmpConfig(c *cli.Context) error {
-	ipAddress, err := getIPAddress(c)
-	if err != nil {
-		return err
-	}
 	snmp := model.SnmpInfo{
 		Version:         c.String("version"),
 		Location:        c.String("location"),
 		Port:            c.Int("port"),
-		Retries:         c.Int("retries"),
+		Retries:         c.Int("retry"),
 		Timeout:         c.Int("timeout"),
 		Community:       c.String("community"),
 		ContextName:     c.String("contextName"),
@@ -192,46 +182,19 @@ func setSnmpConfig(c *cli.Context) error {
 		MaxRepetitions:  c.Int("maxRepetitions"),
 		MaxVarsPerPdu:   c.Int("maxVarsPerPdu"),
 	}
-	err = snmp.IsValid()
-	if err != nil {
-		return err
-	}
-	jsonBytes, _ := json.Marshal(snmp)
-	return rest.Instance.Put("/rest/snmpConfig/"+ipAddress, jsonBytes, "application/json")
+	return getAPI().SetConfig(c.Args().Get(0), snmp)
 }
 
 func applySnmpConfig(c *cli.Context) error {
-	ipAddress, err := getIPAddress(c)
-	if err != nil {
-		return err
-	}
 	data, err := common.ReadInput(c, 1)
 	if err != nil {
 		return err
 	}
 	snmp := model.SnmpInfo{}
 	yaml.Unmarshal(data, &snmp)
-	err = snmp.IsValid()
-	if err != nil {
-		return err
-	}
-	jsonBytes, _ := json.Marshal(snmp)
-	return rest.Instance.Put("/rest/snmpConfig/"+ipAddress, jsonBytes, "application/json")
+	return getAPI().SetConfig(c.Args().Get(0), snmp)
 }
 
-func getIPAddress(c *cli.Context) (string, error) {
-	ipAddress := c.Args().Get(0)
-	if ipAddress == "" {
-		return "", fmt.Errorf("IP Address or FQDN required")
-	}
-	ip := net.ParseIP(ipAddress)
-	if ip == nil {
-		addresses, err := net.LookupIP(ipAddress)
-		if err != nil || len(addresses) == 0 {
-			return "", fmt.Errorf("Cannot parse address from %s (invalid IP or FQDN); %s", ipAddress, err)
-		}
-		fmt.Printf("%s translates to %s\n", ipAddress, addresses[0].String())
-		ipAddress = addresses[0].String()
-	}
-	return ipAddress, nil
+func getAPI() api.SnmpAPI {
+	return services.GetSnmpAPI(rest.Instance)
 }

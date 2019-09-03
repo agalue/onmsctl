@@ -9,7 +9,6 @@ import (
 
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/model"
-	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 
 	"gopkg.in/yaml.v2"
@@ -116,20 +115,18 @@ var RequisitionsCliCommand = cli.Command{
 }
 
 func listRequisitions(c *cli.Context) error {
-	requisitions, err := GetRequisitionNames()
+	requisitions, err := getUtilsAPI().GetRequisitionNames()
 	if err != nil {
 		return err
 	}
-	jsonStats, err := rest.Instance.Get("/rest/requisitions/deployed/stats")
+	statistics, err := getReqAPI().GetRequisitionsStats()
 	if err != nil {
-		return fmt.Errorf("Cannot retrieve requisition statistics")
+		return err
 	}
-	stats := model.RequisitionsStats{}
-	json.Unmarshal(jsonStats, &stats)
 	writer := common.NewTableWriter()
 	fmt.Fprintln(writer, "Requisition\tNodes in DB\tLast Import")
 	for _, req := range requisitions.ForeignSources {
-		stats := getStats(stats, req)
+		stats := statistics.GetRequisitionStats(req)
 		fmt.Fprintf(writer, "%s\t%d\t%s\n", req, len(stats.ForeignIDs), getDisplayTime(stats.LastImport))
 	}
 	writer.Flush()
@@ -137,31 +134,17 @@ func listRequisitions(c *cli.Context) error {
 }
 
 func showRequisition(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name required")
-	}
-	foreignSource := c.Args().First()
-	jsonString, err := rest.Instance.Get("/rest/requisitions/" + foreignSource)
+	requisition, err := getReqAPI().GetRequisition(c.Args().First())
 	if err != nil {
 		return err
 	}
-	requisition := model.Requisition{}
-	json.Unmarshal(jsonString, &requisition)
-	data, _ := yaml.Marshal(&requisition)
+	data, _ := yaml.Marshal(requisition)
 	fmt.Println(string(data))
 	return nil
 }
 
 func addRequisition(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name required")
-	}
-	foreignSource := c.Args().First()
-	if RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s already exist", foreignSource)
-	}
-	jsonBytes, _ := json.Marshal(model.Requisition{Name: foreignSource})
-	return rest.Instance.Post("/rest/requisitions", jsonBytes)
+	return getReqAPI().CreateRequisition(c.Args().First())
 }
 
 func applyRequisition(c *cli.Context) error {
@@ -169,9 +152,7 @@ func applyRequisition(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Updating requisition %s...\n", requisition.Name)
-	jsonBytes, _ := json.Marshal(requisition)
-	return rest.Instance.Post("/rest/requisitions", jsonBytes)
+	return getReqAPI().SetRequisition(*requisition)
 }
 
 func validateRequisition(c *cli.Context) error {
@@ -184,64 +165,11 @@ func validateRequisition(c *cli.Context) error {
 }
 
 func importRequisition(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name required")
-	}
-	foreignSource := c.Args().First()
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	rescanExisting := c.String("rescanExisting")
-	fmt.Printf("Importing requisition %s (rescanExisting? %s)...\n", foreignSource, rescanExisting)
-	return rest.Instance.Put("/rest/requisitions/"+foreignSource+"/import?rescanExisting="+rescanExisting, nil, "application/json")
+	return getReqAPI().ImportRequisition(c.Args().First(), c.String("rescanExisting"))
 }
 
 func deleteRequisition(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name required")
-	}
-	foreignSource := c.Args().First()
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	// Delete all nodes from requisition
-	jsonBytes, _ := json.Marshal(model.Requisition{Name: foreignSource})
-	err := rest.Instance.Post("/rest/requisitions", jsonBytes)
-	if err != nil {
-		return err
-	}
-	// Import requisition to remove nodes from the database
-	err = rest.Instance.Put("/rest/requisitions/"+foreignSource+"/import?rescanExisting=false", nil, "application/json")
-	if err != nil {
-		return err
-	}
-	// Delete requisition and foreign-source definitions
-	err = rest.Instance.Delete("/rest/requisitions/deployed/" + foreignSource)
-	if err != nil {
-		return err
-	}
-	err = rest.Instance.Delete("/rest/requisitions/" + foreignSource)
-	if err != nil {
-		return err
-	}
-	err = rest.Instance.Delete("/rest/foreignSources/deployed/" + foreignSource)
-	if err != nil {
-		return err
-	}
-	err = rest.Instance.Delete("/rest/foreignSources/" + foreignSource)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func getStats(stats model.RequisitionsStats, foreignSource string) model.RequisitionStats {
-	for _, req := range stats.ForeignSources {
-		if req.Name == foreignSource {
-			return req
-		}
-	}
-	return model.RequisitionStats{}
+	return getReqAPI().DeleteRequisition(c.Args().First())
 }
 
 func getDisplayTime(lastImport *model.Time) string {

@@ -1,11 +1,11 @@
 package resources
 
 import (
-	"encoding/json"
 	"fmt"
 
-	"github.com/OpenNMS/onmsctl/model"
+	"github.com/OpenNMS/onmsctl/api"
 	"github.com/OpenNMS/onmsctl/rest"
+	"github.com/OpenNMS/onmsctl/services"
 	"github.com/urfave/cli"
 
 	"gopkg.in/yaml.v2"
@@ -44,57 +44,40 @@ var CliCommand = cli.Command{
 }
 
 func showResources(c *cli.Context) error {
-	jsonInfo, err := rest.Instance.Get("/rest/resources")
+	resourceList, err := getAPI().GetResources()
 	if err != nil {
 		return err
 	}
-	resourceList := model.ResourceList{}
-	json.Unmarshal(jsonInfo, &resourceList)
 	resourceList.Enumerate("")
 	return nil
 }
 
 func showResource(c *cli.Context) error {
-	resourceID := c.Args().Get(0)
-	if resourceID == "" {
-		return fmt.Errorf("Resource ID required")
-	}
-	jsonInfo, err := rest.Instance.Get("/rest/resources/" + resourceID)
+	resource, err := getAPI().GetResource(c.Args().Get(0))
 	if err != nil {
 		return err
 	}
-	resource := model.Resource{}
-	json.Unmarshal(jsonInfo, &resource)
-	data, _ := yaml.Marshal(&resource)
+	data, _ := yaml.Marshal(resource)
 	fmt.Println(string(data))
 	return nil
 }
 
 func showNode(c *cli.Context) error {
-	nodeCriteria := c.Args().Get(0)
-	if nodeCriteria == "" {
-		return fmt.Errorf("Node ID or Foreign-Source:Foreign-ID combination required")
-	}
-	jsonInfo, err := rest.Instance.Get("/rest/resources/fornode/" + nodeCriteria)
+	resource, err := getAPI().GetResourceForNode(c.Args().Get(0))
 	if err != nil {
 		return err
 	}
-	resource := model.Resource{}
-	json.Unmarshal(jsonInfo, &resource)
-	data, _ := yaml.Marshal(&resource)
+	data, _ := yaml.Marshal(resource)
 	fmt.Println(string(data))
 	return nil
 }
 
 func deleteResource(c *cli.Context) error {
-	resourceID := c.Args().Get(0)
-	if resourceID == "" {
-		return fmt.Errorf("Resource ID required")
-	}
-	err := rest.Instance.Delete("/rest/resources/" + resourceID)
-	if err != nil {
-		return err
-	}
+	getAPI().DeleteResource(c.Args().Get(0))
 	fmt.Println("Resource has been deleted.")
 	return nil
+}
+
+func getAPI() api.ResourcesAPI {
+	return services.GetResourcesAPI(rest.Instance)
 }

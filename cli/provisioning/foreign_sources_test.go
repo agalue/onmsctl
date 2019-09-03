@@ -12,11 +12,11 @@ import (
 func TestGetForeignSource(t *testing.T) {
 	var err error
 	app := test.CreateCli(ForeignSourcesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	server := createTestServer(t)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "fs", "get"})
-	assert.Error(t, err, "Foreign source name required")
+	assert.Error(t, err, "Requisition name required")
 
 	err = app.Run([]string{app.Name, "fs", "get", "Test"})
 	assert.NilError(t, err)
@@ -25,11 +25,11 @@ func TestGetForeignSource(t *testing.T) {
 func TestSetScanInterval(t *testing.T) {
 	var err error
 	app := test.CreateCli(ForeignSourcesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	server := createTestServer(t)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "fs", "int"})
-	assert.Error(t, err, "Foreign source name and scan interval are required")
+	assert.Error(t, err, "Requisition name required")
 
 	err = app.Run([]string{app.Name, "fs", "int", "Test"})
 	assert.Error(t, err, "Scan interval required")
@@ -44,11 +44,11 @@ func TestSetScanInterval(t *testing.T) {
 func TestDeleteForeignSource(t *testing.T) {
 	var err error
 	app := test.CreateCli(ForeignSourcesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	server := createTestServer(t)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "fs", "del"})
-	assert.Error(t, err, "Foreign source name required")
+	assert.Error(t, err, "Requisition name required")
 
 	err = app.Run([]string{app.Name, "fs", "del", "Local"})
 	assert.NilError(t, err)
@@ -57,8 +57,8 @@ func TestDeleteForeignSource(t *testing.T) {
 func TestApplyForeignSource(t *testing.T) {
 	var err error
 	app := test.CreateCli(ForeignSourcesCliCommand)
-	testServer := test.CreateTestServer(t)
-	defer testServer.Close()
+	server := createTestServer(t)
+	defer server.Close()
 
 	err = app.Run([]string{app.Name, "fs", "apply"})
 	assert.Error(t, err, "Content cannot be empty")

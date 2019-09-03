@@ -1,12 +1,10 @@
 package provisioning
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/OpenNMS/onmsctl/common"
 	"github.com/OpenNMS/onmsctl/model"
-	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/urfave/cli"
 )
 
@@ -40,7 +38,7 @@ var CategoriesCliCommand = cli.Command{
 }
 
 func listCategories(c *cli.Context) error {
-	node, err := GetNode(c)
+	node, err := getReqAPI().GetNode(c.Args().Get(0), c.Args().Get(1))
 	if err != nil {
 		return err
 	}
@@ -54,41 +52,10 @@ func listCategories(c *cli.Context) error {
 }
 
 func addCategory(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name, foreign ID, category name required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	foreignID := c.Args().Get(1)
-	if foreignID == "" {
-		return fmt.Errorf("Foreign ID required")
-	}
-	category := c.Args().Get(2)
-	if category == "" {
-		return fmt.Errorf("Category name required")
-	}
-	cat := model.RequisitionCategory{Name: category}
-	jsonBytes, _ := json.Marshal(cat)
-	return rest.Instance.Post("/rest/requisitions/"+foreignSource+"/nodes/"+foreignID+"/categories", jsonBytes)
+	cat := model.RequisitionCategory{Name: c.Args().Get(2)}
+	return getReqAPI().SetCategory(c.Args().Get(0), c.Args().Get(1), cat)
 }
 
 func deleteCategory(c *cli.Context) error {
-	if !c.Args().Present() {
-		return fmt.Errorf("Requisition name, foreign ID and category name required")
-	}
-	foreignSource := c.Args().Get(0)
-	if !RequisitionExists(foreignSource) {
-		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
-	}
-	foreignID := c.Args().Get(1)
-	if foreignID == "" {
-		return fmt.Errorf("Foreign ID required")
-	}
-	category := c.Args().Get(2)
-	if category == "" {
-		return fmt.Errorf("Category name required")
-	}
-	return rest.Instance.Delete("/rest/requisitions/" + foreignSource + "/nodes/" + foreignID + "/categories/" + category)
+	return getReqAPI().DeleteCategory(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
 }
