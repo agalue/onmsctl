@@ -118,8 +118,7 @@ func (e Event) IsValid() error {
 		}
 	}
 	if e.Severity != "" {
-		err := Severities.Set(e.Severity)
-		if err != nil {
+		if err := Severities.Set(e.Severity); err != nil {
 			return err
 		}
 	}

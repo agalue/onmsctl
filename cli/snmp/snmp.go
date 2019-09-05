@@ -13,22 +13,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// SNMPVersions the SNMP version enumeration
-var SNMPVersions = &model.EnumValue{
-	Enum:    []string{"v1", "v2c", "v3"},
-	Default: "v2c",
-}
-
-// SNMPPrivProtocols the Private Protocols enumeration
-var SNMPPrivProtocols = &model.EnumValue{
-	Enum: []string{"DES", "AES", "AES192", "AES256"},
-}
-
-// SNMPAuthProtocols the Authentication Protocols enumeration
-var SNMPAuthProtocols = &model.EnumValue{
-	Enum: []string{"MD5", "SHA"},
-}
-
 // CliCommand the CLI command to provide server information
 var CliCommand = cli.Command{
 	Name:  "snmp",
@@ -54,8 +38,8 @@ var CliCommand = cli.Command{
 			Flags: []cli.Flag{
 				cli.GenericFlag{
 					Name:  "version, v",
-					Value: SNMPVersions,
-					Usage: "SNMP Version: " + SNMPVersions.EnumAsString(),
+					Value: model.SNMPVersions,
+					Usage: "SNMP Version: " + model.SNMPVersions.EnumAsString(),
 				},
 				cli.StringFlag{
 					Name:  "location, l",
@@ -101,8 +85,8 @@ var CliCommand = cli.Command{
 				},
 				cli.GenericFlag{
 					Name:  "privProtocol, pp",
-					Value: SNMPPrivProtocols,
-					Usage: "SNMPv3 Privacy Protocol: " + SNMPPrivProtocols.EnumAsString(),
+					Value: model.SNMPPrivProtocols,
+					Usage: "SNMPv3 Privacy Protocol: " + model.SNMPPrivProtocols.EnumAsString(),
 				},
 				cli.StringFlag{
 					Name:  "privPassPhrase, ppp",
@@ -110,8 +94,8 @@ var CliCommand = cli.Command{
 				},
 				cli.GenericFlag{
 					Name:  "authProtocol, ap",
-					Value: SNMPAuthProtocols,
-					Usage: "SNMPv3 Authentication Protocol: " + SNMPAuthProtocols.EnumAsString(),
+					Value: model.SNMPAuthProtocols,
+					Usage: "SNMPv3 Authentication Protocol: " + model.SNMPAuthProtocols.EnumAsString(),
 				},
 				cli.StringFlag{
 					Name:  "authPassPhrase, app",

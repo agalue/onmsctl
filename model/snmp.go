@@ -4,6 +4,22 @@ import (
 	"fmt"
 )
 
+// SNMPVersions the SNMP version enumeration
+var SNMPVersions = &EnumValue{
+	Enum:    []string{"v1", "v2c", "v3"},
+	Default: "v2c",
+}
+
+// SNMPPrivProtocols the Private Protocols enumeration
+var SNMPPrivProtocols = &EnumValue{
+	Enum: []string{"DES", "AES", "AES192", "AES256"},
+}
+
+// SNMPAuthProtocols the Authentication Protocols enumeration
+var SNMPAuthProtocols = &EnumValue{
+	Enum: []string{"MD5", "SHA"},
+}
+
 // SnmpInfo SNMP Configuration for a give IP Interface
 type SnmpInfo struct {
 	Version         string `json:"version,omitempty" yaml:"version,omitempty"`
@@ -41,18 +57,18 @@ func (s *SnmpInfo) IsValid() error {
 		}
 	}
 	if s.Version != "" {
-		if s.Version != "v1" && s.Version != "v2c" && s.Version != "v3" {
-			return fmt.Errorf("Invalid SNMP Version. Allowed values: v1, v2c, or v3")
+		if err := SNMPVersions.Set(s.Version); err != nil {
+			return fmt.Errorf("Invalid SNMP Version. Allowed values: %s", SNMPVersions.EnumAsString())
 		}
 	}
 	if s.PrivProtocol != "" {
-		if s.PrivProtocol != "DES" && s.PrivProtocol != "AES" && s.PrivProtocol != "AES192" && s.PrivProtocol != "AES256" {
-			return fmt.Errorf("Invalid Priv Protocol. Allowed values: DES, AES, AES192, AES256")
+		if err := SNMPPrivProtocols.Set(s.PrivProtocol); err != nil {
+			return fmt.Errorf("Invalid Priv Protocol. Allowed values: %s", SNMPPrivProtocols.EnumAsString())
 		}
 	}
 	if s.AuthProtocol != "" {
-		if s.AuthProtocol != "MD5" && s.AuthProtocol != "SHA" {
-			return fmt.Errorf("Invalid Auth Protocol. Allowed values: MD5, SHA")
+		if err := SNMPAuthProtocols.Set(s.AuthProtocol); err != nil {
+			return fmt.Errorf("Invalid Auth Protocol. Allowed values: %s", SNMPAuthProtocols.EnumAsString())
 		}
 	}
 	return nil
