@@ -55,5 +55,6 @@ func TestResources(t *testing.T) {
 	assert.Equal(t, "ifInDiscards.jrb", resource.NumericAttributes["ifInDiscards"].RrdFile)
 
 	yamlBytes, err := yaml.Marshal(resource)
+	assert.NilError(t, err)
 	fmt.Println(string(yamlBytes))
 }

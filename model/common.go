@@ -36,6 +36,7 @@ func (e EnumValue) String() string {
 	return e.selected
 }
 
+// EnumAsString gets a CSV with all the values on the enum
 func (e EnumValue) EnumAsString() string {
 	return strings.Join(e.Enum, ", ")
 }

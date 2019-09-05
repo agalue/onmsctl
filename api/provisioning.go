@@ -2,6 +2,7 @@ package api
 
 import "github.com/OpenNMS/onmsctl/model"
 
+// ProvisioningUtilsAPI The API for common Provisioning operations
 type ProvisioningUtilsAPI interface {
 	GetRequisitionNames() (*model.RequisitionsList, error)
 	RequisitionExists(foreignSource string) bool
