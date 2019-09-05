@@ -58,7 +58,7 @@ func (api mockForeignSourcesRest) Get(path string) ([]byte, error) {
 	case "/rest/foreignSources/default":
 		return json.Marshal(mockForeignSource)
 	}
-	return nil, fmt.Errorf("GET: sould not be called with path %s", path)
+	return nil, fmt.Errorf("GET: should not be called with path %s", path)
 }
 
 func (api mockForeignSourcesRest) Post(path string, jsonBytes []byte) error {
@@ -85,7 +85,7 @@ func (api mockForeignSourcesRest) Post(path string, jsonBytes []byte) error {
 		assert.Equal(api.t, "Production", policy.Name)
 		return nil
 	}
-	return fmt.Errorf("POST: sould not be called with %s", path)
+	return fmt.Errorf("POST: should not be called with %s", path)
 }
 
 func (api mockForeignSourcesRest) Delete(path string) error {
@@ -99,7 +99,7 @@ func (api mockForeignSourcesRest) Delete(path string) error {
 	case "/rest/foreignSources/default/policies/Production":
 		return nil
 	}
-	return fmt.Errorf("DELETE: sould not be called with %s", path)
+	return fmt.Errorf("DELETE: should not be called with %s", path)
 }
 
 func (api mockForeignSourcesRest) Put(path string, jsonBytes []byte, contentType string) error {
@@ -108,7 +108,7 @@ func (api mockForeignSourcesRest) Put(path string, jsonBytes []byte, contentType
 		assert.Equal(api.t, "scan-interval=3d", string(jsonBytes))
 		return nil
 	}
-	return fmt.Errorf("PUT: sould not be called with %s", path)
+	return fmt.Errorf("PUT: should not be called with %s", path)
 }
 
 func TestGetForeignSourceDef(t *testing.T) {

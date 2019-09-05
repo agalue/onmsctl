@@ -31,11 +31,11 @@ func (api *mockSnmpInfoRest) Get(path string) ([]byte, error) {
 }
 
 func (api mockSnmpInfoRest) Post(path string, jsonBytes []byte) error {
-	return fmt.Errorf("sould not be called")
+	return fmt.Errorf("should not be called")
 }
 
 func (api mockSnmpInfoRest) Delete(path string) error {
-	return fmt.Errorf("sould not be called")
+	return fmt.Errorf("should not be called")
 }
 
 func (api mockSnmpInfoRest) Put(path string, jsonBytes []byte, contentType string) error {

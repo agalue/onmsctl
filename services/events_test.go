@@ -28,7 +28,7 @@ type mockEventRest struct {
 }
 
 func (api mockEventRest) Get(path string) ([]byte, error) {
-	return nil, fmt.Errorf("sould not be called")
+	return nil, fmt.Errorf("should not be called")
 }
 
 func (api mockEventRest) Post(path string, jsonBytes []byte) error {
@@ -40,11 +40,11 @@ func (api mockEventRest) Post(path string, jsonBytes []byte) error {
 }
 
 func (api mockEventRest) Delete(path string) error {
-	return fmt.Errorf("sould not be called")
+	return fmt.Errorf("should not be called")
 }
 
 func (api mockEventRest) Put(path string, jsonBytes []byte, contentType string) error {
-	return fmt.Errorf("sould not be called")
+	return fmt.Errorf("should not be called")
 }
 
 func TestSendEvent(t *testing.T) {

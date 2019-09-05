@@ -41,18 +41,18 @@ func (api mockResourceRest) Get(path string) ([]byte, error) {
 }
 
 func (api mockResourceRest) Post(path string, jsonBytes []byte) error {
-	return fmt.Errorf("sould not be called")
+	return fmt.Errorf("should not be called")
 }
 
 func (api mockResourceRest) Delete(path string) error {
 	if path == "/rest/resources/node[1].nodeSnmp[]" {
 		return nil
 	}
-	return fmt.Errorf("sould not be called")
+	return fmt.Errorf("should not be called")
 }
 
 func (api mockResourceRest) Put(path string, jsonBytes []byte, contentType string) error {
-	return fmt.Errorf("sould not be called")
+	return fmt.Errorf("should not be called")
 }
 
 func TestGetResources(t *testing.T) {

@@ -23,19 +23,19 @@ func (api mockProvisioningRest) Get(path string) ([]byte, error) {
 	case "/rest/foreignSourcesConfig/detectors":
 		return []byte(test.DetectorsJSON), nil
 	}
-	return nil, fmt.Errorf("sould not be called")
+	return nil, fmt.Errorf("should not be called")
 }
 
 func (api mockProvisioningRest) Post(path string, jsonBytes []byte) error {
-	return fmt.Errorf("sould not be called")
+	return fmt.Errorf("should not be called")
 }
 
 func (api mockProvisioningRest) Delete(path string) error {
-	return fmt.Errorf("sould not be called")
+	return fmt.Errorf("should not be called")
 }
 
 func (api mockProvisioningRest) Put(path string, jsonBytes []byte, contentType string) error {
-	return fmt.Errorf("sould not be called")
+	return fmt.Errorf("should not be called")
 }
 
 func TestGetRequisitionNames(t *testing.T) {

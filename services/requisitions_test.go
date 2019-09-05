@@ -61,7 +61,7 @@ func (api mockRequisitionsRest) Get(path string) ([]byte, error) {
 	case "/rest/requisitions/Test1/nodes/n1/interfaces/10.0.0.1":
 		return json.Marshal(mockRequisition.Nodes[0].Interfaces[0])
 	}
-	return nil, fmt.Errorf("GET: sould not be called with path %s", path)
+	return nil, fmt.Errorf("GET: should not be called with path %s", path)
 }
 
 func (api mockRequisitionsRest) Post(path string, jsonBytes []byte) error {
@@ -109,7 +109,7 @@ func (api mockRequisitionsRest) Post(path string, jsonBytes []byte) error {
 		assert.Assert(api.t, asset.Name != "")
 		return nil
 	}
-	return fmt.Errorf("POST: sould not be called with %s", path)
+	return fmt.Errorf("POST: should not be called with %s", path)
 }
 
 func (api mockRequisitionsRest) Delete(path string) error {
@@ -133,7 +133,7 @@ func (api mockRequisitionsRest) Delete(path string) error {
 	case "/rest/requisitions/Test1/nodes/n1/assets/city":
 		return nil
 	}
-	return fmt.Errorf("DELETE: sould not be called with %s", path)
+	return fmt.Errorf("DELETE: should not be called with %s", path)
 }
 
 func (api mockRequisitionsRest) Put(path string, jsonBytes []byte, contentType string) error {
@@ -141,7 +141,7 @@ func (api mockRequisitionsRest) Put(path string, jsonBytes []byte, contentType s
 	case "/rest/requisitions/Test1/import?rescanExisting=false":
 		return nil
 	}
-	return fmt.Errorf("PUT: sould not be called with %s", path)
+	return fmt.Errorf("PUT: should not be called with %s", path)
 }
 
 func TestGetRequisitionsStats(t *testing.T) {

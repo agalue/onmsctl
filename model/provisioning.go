@@ -432,7 +432,7 @@ func (fs ForeignSourceDef) GetPolicy(policyID string) (*Policy, error) {
 	return nil, fmt.Errorf("Cannot find policy for %s", policyID)
 }
 
-// Plugin a definiton class for a detector or a policy
+// Plugin a definition class for a detector or a policy
 type Plugin struct {
 	Name       string        `json:"name" yaml:"name"`
 	Class      string        `json:"class" yaml:"class"`
