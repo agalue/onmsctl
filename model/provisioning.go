@@ -133,6 +133,21 @@ func (i *RequisitionInterface) IsValid() error {
 	if i.SnmpPrimary != "P" && i.SnmpPrimary != "S" && i.SnmpPrimary != "N" {
 		return fmt.Errorf("Invalid SnmpPrimary: %s", i.SnmpPrimary)
 	}
+	if err := i.validateIP(); err != nil {
+		return err
+	}
+	if err := i.validateServices(); err != nil {
+		return err
+	}
+	for _, m := range i.MetaData {
+		if err := m.IsValid(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (i *RequisitionInterface) validateIP() error {
 	ip := net.ParseIP(i.IPAddress)
 	if ip == nil {
 		if AllowFqdnOnRequisitionedInterfaces {
@@ -146,10 +161,13 @@ func (i *RequisitionInterface) IsValid() error {
 			return fmt.Errorf("%s is not a valid IPv4 or IPv6 address", i.IPAddress)
 		}
 	}
+	return nil
+}
+
+func (i *RequisitionInterface) validateServices() error {
 	serviceMap := make(map[string]int)
 	for _, s := range i.Services {
-		err := s.IsValid()
-		if err != nil {
+		if err := s.IsValid(); err != nil {
 			return err
 		}
 		serviceMap[s.Name]++
@@ -157,12 +175,6 @@ func (i *RequisitionInterface) IsValid() error {
 	for service, count := range serviceMap {
 		if count > 1 {
 			return fmt.Errorf("Service %s is defined more than once on IP %s", service, i.IPAddress)
-		}
-	}
-	for _, m := range i.MetaData {
-		err := m.IsValid()
-		if err != nil {
-			return err
 		}
 	}
 	return nil
@@ -210,6 +222,28 @@ func (n *RequisitionNode) IsValid() error {
 	if n.ParentForeignID == n.ForeignID {
 		return fmt.Errorf("The parent node cannot be the node itself. The parent-foreign-id has to be different than the foreign-id")
 	}
+	if err := n.validateInterfaces(); err != nil {
+		return err
+	}
+	for _, c := range n.Categories {
+		if err := c.IsValid(); err != nil {
+			return err
+		}
+	}
+	for _, a := range n.Assets {
+		if err := a.IsValid(); err != nil {
+			return err
+		}
+	}
+	for _, m := range n.MetaData {
+		if err := m.IsValid(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (n *RequisitionNode) validateInterfaces() error {
 	primaryCount := 0
 	intfMap := make(map[string]int)
 	for i := range n.Interfaces {
@@ -218,35 +252,16 @@ func (n *RequisitionNode) IsValid() error {
 		if intf.SnmpPrimary == "P" {
 			primaryCount++
 		}
-		err := intf.IsValid()
-		if err != nil {
+		if err := intf.IsValid(); err != nil {
 			return err
-		}
-	}
-	for ipAddr, count := range intfMap {
-		if count > 1 {
-			return fmt.Errorf("IP Address %s is defined more than once on node %s", ipAddr, n.NodeLabel)
 		}
 	}
 	if primaryCount > 1 {
 		return fmt.Errorf("Node %s cannot have more than one primary interface", n.NodeLabel)
 	}
-	for _, c := range n.Categories {
-		err := c.IsValid()
-		if err != nil {
-			return err
-		}
-	}
-	for _, a := range n.Assets {
-		err := a.IsValid()
-		if err != nil {
-			return err
-		}
-	}
-	for _, m := range n.MetaData {
-		err := m.IsValid()
-		if err != nil {
-			return err
+	for ipAddr, count := range intfMap {
+		if count > 1 {
+			return fmt.Errorf("IP Address %s is defined more than once on node %s", ipAddr, n.NodeLabel)
 		}
 	}
 	return nil
