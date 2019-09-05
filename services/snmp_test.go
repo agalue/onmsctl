@@ -62,7 +62,7 @@ func TestGetConfig(t *testing.T) {
 	snmp, err = api.GetConfig("localhost", "")
 	assert.NilError(t, err)
 	assert.Assert(t, cmp.Equal(mockSnmpInfo, snmp))
-	assert.Equal(t, "/rest/snmpConfig/127.0.0.1", rest.lastPath)
+	assert.Assert(t, rest.lastPath == "/rest/snmpConfig/127.0.0.1" || rest.lastPath == "/rest/snmpConfig/::1")
 
 	snmp, err = api.GetConfig("127.0.0.1", "Apex")
 	assert.NilError(t, err)
