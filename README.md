@@ -1,4 +1,4 @@
-# onmsctl
+# onmsctl [![Go Report Card](https://goreportcard.com/badge/github.com/OpenNMS/onmsctl)](https://goreportcard.com/report/github.com/OpenNMS/onmsctl)
 
 A CLI tool for OpenNMS.
 
