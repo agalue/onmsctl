@@ -14,9 +14,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// Severities list of valid event severities
-var Severities = &model.EnumValue{
-	Enum: []string{"Indeterminate", "Normal", "Warning", "Minor", "Major", "Critical"},
+var severities = &model.EnumValue{
+	Enum: model.Severities.Enum,
 }
 
 // CliCommand the CLI command to manage events
@@ -52,8 +51,8 @@ var CliCommand = cli.Command{
 				},
 				cli.GenericFlag{
 					Name:  "severity, x",
-					Value: Severities,
-					Usage: "The severity of the event: " + Severities.EnumAsString(),
+					Value: severities,
+					Usage: "The severity of the event: " + severities.EnumAsString(),
 				},
 				cli.StringSliceFlag{
 					Name:  "parm, p",
