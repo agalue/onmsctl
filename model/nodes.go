@@ -173,7 +173,7 @@ type OnmsSnmpInterfaceList struct {
 
 // OnmsNode an entity that represents an OpenNMS node
 type OnmsNode struct {
-	ID             int              `json:"id" yaml:"id"`
+	ID             string           `json:"id" yaml:"id"` // TODO the JSON returns a string instead of an integer
 	Label          string           `json:"label,omitempty" yaml:"label,omitempty"`
 	LabelSource    string           `json:"labelSource,omitempty" yaml:"labelSource,omitempty"`
 	ForeignSource  string           `json:"foreignSource,omitempty" yaml:"foreignSource,omitempty"`

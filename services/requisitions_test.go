@@ -231,6 +231,7 @@ func TestSetService(t *testing.T) {
 	api := GetRequisitionsAPI(&mockRequisitionsRest{t})
 	n := mockRequisition.Nodes[0]
 	s := model.RequisitionMonitoredService{Name: "HTTP"}
+	s.AddMetaData("owner", "agalue")
 	err := api.SetService(mockRequisition.Name, n.ForeignID, n.Interfaces[0].IPAddress, s)
 	assert.NilError(t, err)
 }

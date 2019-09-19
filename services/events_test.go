@@ -49,6 +49,10 @@ func (api mockEventRest) Put(path string, jsonBytes []byte, contentType string) 
 
 func TestSendEvent(t *testing.T) {
 	api := GetEventsAPI(&mockEventRest{t})
+
 	err := api.SendEvent(*mockEvent)
 	assert.NilError(t, err)
+
+	err = api.SendEvent(model.Event{NodeID: 10})
+	assert.ErrorContains(t, err, "UEI")
 }

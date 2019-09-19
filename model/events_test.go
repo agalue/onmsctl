@@ -11,7 +11,8 @@ import (
 func TestSetTime(t *testing.T) {
 	e := Event{}
 	dateTxt := "Mon Jan 2 15:04:05 -0700 MST 2006"
-	date, _ := time.Parse(dateTxt, dateTxt)
+	date, err := time.Parse(dateTxt, dateTxt)
+	assert.NilError(t, err)
 	fmt.Println(date)
 	fmt.Println(date.UTC())
 	e.SetTime(date)

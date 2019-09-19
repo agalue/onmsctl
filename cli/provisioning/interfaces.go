@@ -33,7 +33,7 @@ var InterfacesCliCommand = cli.Command{
 		{
 			Name:      "set",
 			ShortName: "add",
-			Usage:     "Adds or update an IP interface from a given node",
+			Usage:     "Adds or update an IP interface from a given node, overriding any existing content",
 			ArgsUsage: "<foreignSource> <foreignId> <ipAddress|fqdn>",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -62,7 +62,7 @@ var InterfacesCliCommand = cli.Command{
 		},
 		{
 			Name:      "apply",
-			Usage:     "Creates or updates an IP interface on a given node from a external YAML file",
+			Usage:     "Creates or updates an IP interface on a given node from a external YAML file, overriding any existing content",
 			ArgsUsage: "<foreignSource> <foreignId> <yaml>",
 			Action:    applyInterface,
 		},

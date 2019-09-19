@@ -39,7 +39,7 @@ func TestAddAsset(t *testing.T) {
 	assert.Error(t, err, "Asset name cannot be empty")
 
 	err = app.Run([]string{app.Name, "asset", "set", "Test", "n1", "state"})
-	assert.Error(t, err, "Asset value cannot be empty")
+	assert.Error(t, err, "Asset value for state cannot be empty")
 
 	err = app.Run([]string{app.Name, "asset", "set", "Test", "n1", "state", "NC"})
 	assert.NilError(t, err)

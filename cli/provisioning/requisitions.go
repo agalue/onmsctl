@@ -40,7 +40,7 @@ var RequisitionsCliCommand = cli.Command{
 		},
 		{
 			Name:   "apply",
-			Usage:  "Creates or updates a requisition from a external file",
+			Usage:  "Creates or updates a requisition from a external file, overriding any existing content",
 			Action: applyRequisition,
 			Flags: []cli.Flag{
 				cli.GenericFlag{

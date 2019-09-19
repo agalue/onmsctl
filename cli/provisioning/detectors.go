@@ -44,7 +44,7 @@ var DetectorsCliCommand = cli.Command{
 		},
 		{
 			Name:      "set",
-			Usage:     "Adds or update a detector for a given foreign source definition",
+			Usage:     "Adds or update a detector for a given foreign source definition, overriding any existing content",
 			ArgsUsage: "<foreignSource> <detectorName> <className>",
 			Action:    setDetector,
 			Flags: []cli.Flag{
@@ -56,7 +56,7 @@ var DetectorsCliCommand = cli.Command{
 		},
 		{
 			Name:   "apply",
-			Usage:  "Creates or updates a detector from a external YAML file",
+			Usage:  "Creates or updates a detector from a external YAML file, overriding any existing content",
 			Action: applyDetector,
 			Flags: []cli.Flag{
 				cli.StringFlag{

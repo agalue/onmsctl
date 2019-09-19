@@ -134,7 +134,7 @@ func (api foreignSourcesAPI) IsForeignSourceValid(fsDef model.ForeignSourceDef) 
 		}
 		for _, policy := range fsDef.Policies {
 			if err := api.isPolicyValid(*policiesConfig, policy); err != nil {
-				return err
+				return fmt.Errorf("Problem with foreign source %s: %s", fsDef.Name, err.Error())
 			}
 		}
 	}
@@ -145,7 +145,7 @@ func (api foreignSourcesAPI) IsForeignSourceValid(fsDef model.ForeignSourceDef) 
 		}
 		for _, detector := range fsDef.Detectors {
 			if err := api.isDetectorValid(*detectorsConfig, detector); err != nil {
-				return err
+				return fmt.Errorf("Problem with foreign source %s: %s", fsDef.Name, err.Error())
 			}
 		}
 	}

@@ -119,7 +119,7 @@ func TestApplyPolicy(t *testing.T) {
 	}
 	policyYaml, _ = yaml.Marshal(testPolicy)
 	err = app.Run([]string{app.Name, "policy", "apply", "Test", string(policyYaml)})
-	assert.Error(t, err, "Missing required parameter matchBehavior")
+	assert.Error(t, err, "Missing required parameter matchBehavior on org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy")
 
 	testPolicy.Parameters = append(testPolicy.Parameters, model.Parameter{
 		Key:   "matchBehavior",
@@ -127,7 +127,7 @@ func TestApplyPolicy(t *testing.T) {
 	})
 	policyYaml, _ = yaml.Marshal(testPolicy)
 	err = app.Run([]string{app.Name, "policy", "apply", "Test", string(policyYaml)})
-	assert.Error(t, err, "Invalid parameter value matchBehavior. Valid values are: [ALL_PARAMETERS ANY_PARAMETER NO_PARAMETERS]")
+	assert.Error(t, err, "Invalid parameter value matchBehavior on org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy. Valid values are: [ALL_PARAMETERS ANY_PARAMETER NO_PARAMETERS]")
 
 	testPolicy.Parameters[1].Value = "NO_PARAMETERS"
 	policyYaml, _ = yaml.Marshal(testPolicy)
@@ -151,10 +151,10 @@ func TestSetPolicy(t *testing.T) {
 	assert.Error(t, err, "Policy class cannot be empty")
 
 	err = app.Run([]string{app.Name, "policy", "set", "Test", "Switches", "org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy"})
-	assert.Error(t, err, "Missing required parameter category")
+	assert.Error(t, err, "Missing required parameter category on org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy")
 
 	err = app.Run([]string{app.Name, "policy", "set", "-p", "category=Switches", "Test", "Switches", "org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy"})
-	assert.Error(t, err, "Missing required parameter matchBehavior")
+	assert.Error(t, err, "Missing required parameter matchBehavior on org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy")
 
 	err = app.Run([]string{app.Name, "policy", "set", "-p", "category=Switches", "-p", "matchBehavior=NO_PARAMETERS", "Test", "Switches", "org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy"})
 	assert.NilError(t, err)

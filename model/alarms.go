@@ -53,7 +53,7 @@ type OnmsAlarm struct {
 	LastAutomationTime    *Time      `json:"lastAutomationTime,omitempty" yaml:"lastAutomationTime,omitempty"`
 	FirstEventTime        *Time      `json:"firstEventTime,omitempty" yaml:"firstEventTime,omitempty"`
 	LastEventTime         *Time      `json:"lastEventTime,omitempty" yaml:"lastEventTime,omitempty"`
-	LastEvent             *OnmsEvent `json:"lastEvent,omitempty" yaml:"lastEvent,omitempty"`
+	LastEvent             *OnmsEvent `json:"lastEvent,omitempty" yaml:"-"`
 }
 
 // OnmsAlarmList a list of alarms

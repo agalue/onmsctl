@@ -32,7 +32,7 @@ var NodesCliCommand = cli.Command{
 		{
 			Name:      "set",
 			ShortName: "add",
-			Usage:     "Adds or updates a node from a given requisition",
+			Usage:     "Adds or updates a node from a given requisition, overriding any existing content",
 			ArgsUsage: "<foreignSource> <foreignId>",
 			Action:    setNode,
 			Flags: []cli.Flag{
@@ -72,7 +72,7 @@ var NodesCliCommand = cli.Command{
 		},
 		{
 			Name:  "apply",
-			Usage: "Creates or updates a node on a given requisition from a external YAML file",
+			Usage: "Creates or updates a node on a given requisition from a external YAML file, overriding any existing content",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "file, f",

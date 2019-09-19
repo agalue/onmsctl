@@ -25,7 +25,7 @@ var ServicesCliCommand = cli.Command{
 		{
 			Name:      "set",
 			ShortName: "add",
-			Usage:     "Adds or update a monitored service to a given IP interface",
+			Usage:     "Adds or update a monitored service to a given IP interface, overriding any existing content",
 			ArgsUsage: "<foreignSource> <foreignId> <ipAddress> <serviceName>",
 			Action:    setService,
 			Flags: []cli.Flag{

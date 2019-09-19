@@ -15,8 +15,8 @@ type OnmsOutage struct {
 	SuppressedTime       *Time                 `json:"suppressedTime,omitempty" yaml:"suppressedTime,omitempty"`
 	ServiceLostTime      *Time                 `json:"ifLostService,omitempty" yaml:"ifLostService,omitempty"`
 	ServiceRegainedTime  *Time                 `json:"ifRegainedService,omitempty" yaml:"ifRegainedService,omitempty"`
-	ServiceLostEvent     *OnmsEvent            `json:"serviceLostEvent,omitempty" yaml:"serviceLostEvent,omitempty"`
-	ServiceRegainedEvent *OnmsEvent            `json:"serviceRegainedEvent,omitempty" yaml:"serviceRegainedEvent,omitempty"`
+	ServiceLostEvent     *OnmsEvent            `json:"serviceLostEvent,omitempty" yaml:"-"`
+	ServiceRegainedEvent *OnmsEvent            `json:"serviceRegainedEvent,omitempty" yaml:"-"`
 }
 
 // OnmsOutageList a list of outages

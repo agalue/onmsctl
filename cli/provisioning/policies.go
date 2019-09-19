@@ -44,7 +44,7 @@ var PoliciesCliCommand = cli.Command{
 		},
 		{
 			Name:      "set",
-			Usage:     "Adds or update a policy for a given foreign source definition",
+			Usage:     "Adds or update a policy for a given foreign source definition, overriding any existing content",
 			ArgsUsage: "<foreignSource> <policyName> <className>",
 			Action:    setPolicy,
 			Flags: []cli.Flag{
@@ -56,7 +56,7 @@ var PoliciesCliCommand = cli.Command{
 		},
 		{
 			Name:   "apply",
-			Usage:  "Creates or updates a policy from a external YAML file",
+			Usage:  "Creates or updates a policy from a external YAML file, overriding any existing content",
 			Action: applyPolicy,
 			Flags: []cli.Flag{
 				cli.StringFlag{

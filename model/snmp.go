@@ -20,7 +20,8 @@ var SNMPAuthProtocols = &EnumValue{
 	Enum: []string{"MD5", "SHA"},
 }
 
-// SnmpInfo SNMP Configuration for a give IP Interface
+// SnmpInfo SNMP Configuration for a give IP Interface;
+// it provides partial information compared with what's available on snmp-config.xml
 type SnmpInfo struct {
 	Version         string `json:"version,omitempty" yaml:"version,omitempty"`
 	Location        string `json:"location,omitempty" yaml:"location,omitempty"`
@@ -41,6 +42,8 @@ type SnmpInfo struct {
 	MaxRequestSize  int    `json:"maxRequestSize,omitempty" yaml:"maxRequestSize,omitempty"`
 	MaxRepetitions  int    `json:"maxRepetitions,omitempty" yaml:"maxRepetitions,omitempty"`
 	MaxVarsPerPdu   int    `json:"maxVarsPerPdu,omitempty" yaml:"maxVarsPerPdu,omitempty"`
+	ProxyHost       string `json:"proxyHost,omitempty" yaml:"proxyHost,omitempty"`
+	TTL             int    `json:"ttl,omitempty" yaml:"ttl,omitempty"`
 }
 
 // IsValid returns an error if the service is invalid

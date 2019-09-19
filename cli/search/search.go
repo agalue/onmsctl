@@ -57,6 +57,10 @@ var CliCommand = cli.Command{
 		if err != nil {
 			return err
 		}
+		if len(jsonBytes) == 0 {
+			fmt.Printf("There is no data for %s\n", entity)
+			return nil
+		}
 		var data interface{}
 		switch entity {
 		case "nodes":

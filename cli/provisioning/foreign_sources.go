@@ -35,7 +35,7 @@ var ForeignSourcesCliCommand = cli.Command{
 		},
 		{
 			Name:   "apply",
-			Usage:  "Creates or updates a foreign source definition from a external YAML file",
+			Usage:  "Creates or updates a foreign source definition from a external file, overriding any existing content",
 			Action: applyForeignSource,
 			Flags: []cli.Flag{
 				cli.GenericFlag{
