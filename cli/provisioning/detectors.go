@@ -13,9 +13,10 @@ import (
 
 // DetectorsCliCommand the CLI command configuration for managing foreign source detectors
 var DetectorsCliCommand = cli.Command{
-	Name:     "detector",
-	Usage:    "Manage foreign source detectors",
-	Category: "Foreign Source Definitions",
+	Name:      "detector",
+	ShortName: "d",
+	Usage:     "Manage foreign source detectors",
+	Category:  "Foreign Source Definitions",
 	Subcommands: []cli.Command{
 		{
 			Name:      "list",
@@ -80,6 +81,10 @@ func listDetectors(c *cli.Context) error {
 	fsDef, err := getFsAPI().GetForeignSourceDef(c.Args().Get(0))
 	if err != nil {
 		return err
+	}
+	if len(fsDef.Detectors) == 0 {
+		fmt.Println("There are no detectors on the chosen foreign source definition")
+		return nil
 	}
 	writer := common.NewTableWriter()
 	fmt.Fprintln(writer, "Detector Name\tDetector Class")

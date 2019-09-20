@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -25,7 +26,15 @@ var testNode = model.RequisitionNode{
 			IPAddress:   "10.0.0.1",
 			SnmpPrimary: "P",
 			Services: []model.RequisitionMonitoredService{
-				{Name: "HTTP"},
+				{
+					Name: "HTTP",
+					MetaData: []model.RequisitionMetaData{
+						{Key: "url", Value: "/index.html"},
+					},
+				},
+			},
+			MetaData: []model.RequisitionMetaData{
+				{Key: "mpls", Value: "false"},
 			},
 		},
 	},
@@ -162,7 +171,7 @@ func createTestServer(t *testing.T) *httptest.Server {
 			}
 
 		case "/rest/requisitions/Test/nodes/n2":
-			assert.Equal(t, http.MethodDelete, req.Method)
+			assert.Assert(t, http.MethodDelete == req.Method || http.MethodGet == req.Method)
 
 		case "/rest/requisitions/Test/nodes/n1/interfaces":
 			assert.Equal(t, http.MethodPost, req.Method)
@@ -170,14 +179,25 @@ func createTestServer(t *testing.T) *httptest.Server {
 			bytes, err := ioutil.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &intf)
-			assert.Equal(t, "10.0.0.10", intf.IPAddress)
+			assert.Assert(t, strings.HasPrefix(intf.IPAddress, "10.0.0.1"))
+			if intf.IPAddress == "10.0.0.1" {
+				switch len(intf.MetaData) {
+				case 1:
+					assert.Equal(t, "false", intf.MetaData[0].Value)
+					break
+				case 2:
+					assert.Equal(t, "false", intf.MetaData[0].Value)
+					assert.Equal(t, "active", intf.MetaData[1].Key)
+					break
+				}
+			}
 
 		case "/rest/requisitions/Test/nodes/n1/interfaces/10.0.0.1":
 			assert.Equal(t, http.MethodGet, req.Method)
 			sendData(res, testNode.Interfaces[0])
 
 		case "/rest/requisitions/Test/nodes/n1/interfaces/10.0.0.10":
-			assert.Equal(t, http.MethodDelete, req.Method)
+			assert.Assert(t, http.MethodDelete == req.Method || http.MethodGet == req.Method)
 
 		case "/rest/requisitions/Test/nodes/n1/assets":
 			assert.Equal(t, http.MethodPost, req.Method)

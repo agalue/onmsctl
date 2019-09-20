@@ -10,9 +10,10 @@ import (
 
 // AssetsCliCommand the CLI command configuration for managing categories for requisitioned nodes
 var AssetsCliCommand = cli.Command{
-	Name:     "asset",
-	Usage:    "Manage node asset fields",
-	Category: "Requisitions",
+	Name:      "asset",
+	ShortName: "a",
+	Usage:     "Manage node asset fields",
+	Category:  "Requisitions",
 	Subcommands: []cli.Command{
 		{
 			Name:      "list",
@@ -46,6 +47,10 @@ func listAssets(c *cli.Context) error {
 	node, err := getReqAPI().GetNode(c.Args().Get(0), c.Args().Get(1))
 	if err != nil {
 		return err
+	}
+	if len(node.Assets) == 0 {
+		fmt.Println("There are no assets on the chosen node")
+		return nil
 	}
 	writer := common.NewTableWriter()
 	fmt.Fprintln(writer, "Asset Name\tAsset Value")

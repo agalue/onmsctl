@@ -42,6 +42,10 @@ func listCategories(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	if len(node.Categories) == 0 {
+		fmt.Println("There are no categories on the chosen node")
+		return nil
+	}
 	writer := common.NewTableWriter()
 	fmt.Fprintln(writer, "Category Name")
 	for _, cat := range node.Categories {

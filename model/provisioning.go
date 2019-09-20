@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net"
 	"regexp"
+
+	"github.com/imdario/mergo"
 )
 
 // AllowFqdnOnRequisitionedInterfaces when this is true, if the content of an IP Address is a FQDN it will be translated into a valid IPv4
@@ -41,7 +43,36 @@ type RequisitionMonitoredService struct {
 
 // AddMetaData adds a meta-data entry to the node
 func (s *RequisitionMonitoredService) AddMetaData(key string, value string) {
-	s.MetaData = append(s.MetaData, RequisitionMetaData{Key: key, Value: value})
+	s.MetaData = append(s.MetaData, RequisitionMetaData{Context: "requisition", Key: key, Value: value})
+}
+
+// SetMetaData adds or updates an existing meta-data entry on the service
+func (s *RequisitionMonitoredService) SetMetaData(key string, value string) {
+	var found *RequisitionMetaData
+	for i := range s.MetaData {
+		m := &s.MetaData[i]
+		if m.Key == key {
+			found = m
+		}
+	}
+	if found == nil {
+		s.AddMetaData(key, value)
+	} else {
+		found.Value = value
+	}
+}
+
+// DeleteMetaData deletes an existing meta-data entry from the service
+func (s *RequisitionMonitoredService) DeleteMetaData(key string) {
+	var found int
+	for i, m := range s.MetaData {
+		if m.Key == key {
+			found = i
+		}
+	}
+	if len(s.MetaData) > 0 {
+		s.MetaData = append(s.MetaData[:found], s.MetaData[found+1:]...)
+	}
 }
 
 // IsValid returns an error if the service is invalid
@@ -113,7 +144,53 @@ type RequisitionInterface struct {
 
 // AddMetaData adds a meta-data entry to the interface
 func (intf *RequisitionInterface) AddMetaData(key string, value string) {
-	intf.MetaData = append(intf.MetaData, RequisitionMetaData{Key: key, Value: value})
+	intf.MetaData = append(intf.MetaData, RequisitionMetaData{Context: "requisition", Key: key, Value: value})
+}
+
+// SetMetaData adds or updates an existing meta-data entry on the IP interface
+func (intf *RequisitionInterface) SetMetaData(key string, value string) {
+	var found *RequisitionMetaData
+	for i := range intf.MetaData {
+		m := &intf.MetaData[i]
+		if m.Key == key {
+			found = m
+		}
+	}
+	if found == nil {
+		intf.AddMetaData(key, value)
+	} else {
+		found.Value = value
+	}
+}
+
+// DeleteMetaData deletes an existing meta-data entry from the IP interface
+func (intf *RequisitionInterface) DeleteMetaData(key string) {
+	var found int
+	for i, m := range intf.MetaData {
+		if m.Key == key {
+			found = i
+		}
+	}
+	if len(intf.MetaData) > 0 {
+		intf.MetaData = append(intf.MetaData[:found], intf.MetaData[found+1:]...)
+	}
+}
+
+// GetService gets a given monitored service from the IP interface if exists
+func (intf *RequisitionInterface) GetService(serviceName string) *RequisitionMonitoredService {
+	var service *RequisitionMonitoredService
+	for _, svc := range intf.Services {
+		if svc.Name == serviceName {
+			service = &svc
+			break
+		}
+	}
+	return service
+}
+
+// AddService add an service to the IP interface
+func (intf *RequisitionInterface) AddService(svc *RequisitionMonitoredService) {
+	intf.Services = append(intf.Services, *svc)
 }
 
 // IsValid returns an error if the interface definition is invalid
@@ -146,6 +223,11 @@ func (intf *RequisitionInterface) IsValid() error {
 		}
 	}
 	return nil
+}
+
+// Merge merges the fields from the provided source
+func (intf *RequisitionInterface) Merge(source RequisitionInterface) error {
+	return mergo.Merge(intf, source, mergo.WithOverride)
 }
 
 func (intf *RequisitionInterface) validateIP() error {
@@ -201,7 +283,56 @@ type RequisitionNode struct {
 
 // AddMetaData adds a meta-data entry to the node
 func (n *RequisitionNode) AddMetaData(key string, value string) {
-	n.MetaData = append(n.MetaData, RequisitionMetaData{Key: key, Value: value})
+	n.MetaData = append(n.MetaData, RequisitionMetaData{Context: "requisition", Key: key, Value: value})
+}
+
+// SetMetaData adds or updates an existing meta-data entry on the node
+func (n *RequisitionNode) SetMetaData(key string, value string) {
+	var found *RequisitionMetaData
+	for i := range n.MetaData {
+		m := &n.MetaData[i]
+		if m.Key == key {
+			found = m
+		}
+	}
+	if found == nil {
+		n.AddMetaData(key, value)
+	} else {
+		found.Value = value
+	}
+}
+
+// DeleteMetaData deletes an existing meta-data entry from the node
+func (n *RequisitionNode) DeleteMetaData(key string) {
+	var found int
+	for i, m := range n.MetaData {
+		if m.Key == key {
+			found = i
+		}
+	}
+	if len(n.MetaData) > 0 {
+		n.MetaData = append(n.MetaData[:found], n.MetaData[found+1:]...)
+	}
+}
+
+// AddInterface add an  IP interface to the node
+func (n *RequisitionNode) AddInterface(intf *RequisitionInterface) {
+	n.Interfaces = append(n.Interfaces, *intf)
+}
+
+// GetInterface gets an existing IP interface from the node
+func (n *RequisitionNode) GetInterface(ipAddress string) *RequisitionInterface {
+	for _, intf := range n.Interfaces {
+		if intf.IPAddress == ipAddress {
+			return &intf
+		}
+	}
+	return nil
+}
+
+// Merge merges the fields from the provided source
+func (n *RequisitionNode) Merge(source RequisitionNode) error {
+	return mergo.Merge(n, source, mergo.WithOverride)
 }
 
 // IsValid returns an error if the node definition is invalid

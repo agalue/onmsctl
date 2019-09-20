@@ -33,7 +33,7 @@ var InterfacesCliCommand = cli.Command{
 		{
 			Name:      "set",
 			ShortName: "add",
-			Usage:     "Adds or update an IP interface from a given node, overriding any existing content",
+			Usage:     "Adds or update an IP interface from a given node",
 			ArgsUsage: "<foreignSource> <foreignId> <ipAddress|fqdn>",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -73,6 +73,31 @@ var InterfacesCliCommand = cli.Command{
 			ArgsUsage: "<foreignSource> <foreignId> <ipAddress>",
 			Action:    deleteInterface,
 		},
+		{
+			Name:      "meta",
+			ShortName: "m",
+			Usage:     "Manage meta-data",
+			Subcommands: []cli.Command{
+				{
+					Name:      "list",
+					Usage:     "Gets all meta-data for a given IP Interface",
+					ArgsUsage: "<foreignSource> <foreignId> <ipAddress>",
+					Action:    intfListMetaData,
+				},
+				{
+					Name:      "set",
+					Usage:     "Adds or updates a meta-data entry for a given IP Interface",
+					ArgsUsage: "<foreignSource> <foreignId> <ipAddress> <metaData-key> <metaData-value>",
+					Action:    intfSetMetaData,
+				},
+				{
+					Name:      "delete",
+					Usage:     "Deletes a meta-data entry from a given IP Interface",
+					ArgsUsage: "<foreignSource> <foreignId> <ipAddress> <metaData-key>",
+					Action:    intfDeleteMetaData,
+				},
+			},
+		},
 	},
 }
 
@@ -80,6 +105,10 @@ func listInterfaces(c *cli.Context) error {
 	node, err := getReqAPI().GetNode(c.Args().Get(0), c.Args().Get(1))
 	if err != nil {
 		return err
+	}
+	if len(node.Interfaces) == 0 {
+		fmt.Println("There are no IP interfaces on the chosen node")
+		return nil
 	}
 	writer := common.NewTableWriter()
 	fmt.Fprintln(writer, "IP Address\tDescription\tSNMP Primary\tServices")
@@ -111,12 +140,19 @@ func setInterface(c *cli.Context) error {
 		SnmpPrimary: c.String("snmpPrimary"),
 		Status:      c.Int("status"),
 	}
-	metaData := c.StringSlice("metaData")
-	for _, p := range metaData {
-		data := strings.Split(p, "=")
-		intf.AddMetaData(data[0], data[1])
+
+	api := getReqAPI()
+	current, err := api.GetInterface(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
+	if err != nil {
+		mergeInterfaceMetaData(c, &intf)
+		return api.SetInterface(c.Args().Get(0), c.Args().Get(1), intf)
 	}
-	return getReqAPI().SetInterface(c.Args().Get(0), c.Args().Get(1), intf)
+	err = current.Merge(intf)
+	if err != nil {
+		return err
+	}
+	mergeInterfaceMetaData(c, current)
+	return api.SetInterface(c.Args().Get(0), c.Args().Get(1), *current)
 }
 
 func applyInterface(c *cli.Context) error {
@@ -131,4 +167,54 @@ func applyInterface(c *cli.Context) error {
 
 func deleteInterface(c *cli.Context) error {
 	return getReqAPI().DeleteInterface(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
+}
+
+func intfListMetaData(c *cli.Context) error {
+	intf, err := getReqAPI().GetInterface(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
+	if err != nil {
+		return err
+	}
+	if len(intf.MetaData) == 0 {
+		fmt.Println("There is no meta-data for the chosen IP interface")
+		return nil
+	}
+	writer := common.NewTableWriter()
+	fmt.Fprintln(writer, "Context\tKey\tValue")
+	for _, m := range intf.MetaData {
+		fmt.Fprintf(writer, "%s\t%s\t%s\n", m.Context, m.Key, m.Value)
+	}
+	writer.Flush()
+	return nil
+}
+
+func intfSetMetaData(c *cli.Context) error {
+	intf, err := getReqAPI().GetInterface(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
+	if err != nil {
+		return err
+	}
+	intf.SetMetaData(c.Args().Get(3), c.Args().Get(4))
+	if err := intf.IsValid(); err != nil {
+		return err
+	}
+	return getReqAPI().SetInterface(c.Args().Get(0), c.Args().Get(1), *intf)
+}
+
+func intfDeleteMetaData(c *cli.Context) error {
+	intf, err := getReqAPI().GetInterface(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
+	if err != nil {
+		return err
+	}
+	intf.DeleteMetaData(c.Args().Get(3))
+	if err := intf.IsValid(); err != nil {
+		return err
+	}
+	return getReqAPI().SetInterface(c.Args().Get(0), c.Args().Get(1), *intf)
+}
+
+func mergeInterfaceMetaData(c *cli.Context, target *model.RequisitionInterface) {
+	metaData := c.StringSlice("metaData")
+	for _, p := range metaData {
+		data := strings.Split(p, "=")
+		target.AddMetaData(data[0], data[1])
+	}
 }

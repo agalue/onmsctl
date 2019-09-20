@@ -13,9 +13,10 @@ import (
 
 // PoliciesCliCommand the CLI command configuration for managing foreign source detectors
 var PoliciesCliCommand = cli.Command{
-	Name:     "policy",
-	Usage:    "Manage foreign source policies",
-	Category: "Foreign Source Definitions",
+	Name:      "policy",
+	ShortName: "p",
+	Usage:     "Manage foreign source policies",
+	Category:  "Foreign Source Definitions",
 	Subcommands: []cli.Command{
 		{
 			Name:      "list",
@@ -80,6 +81,10 @@ func listPolicies(c *cli.Context) error {
 	fsDef, err := getFsAPI().GetForeignSourceDef(c.Args().Get(0))
 	if err != nil {
 		return err
+	}
+	if len(fsDef.Policies) == 0 {
+		fmt.Println("There are no policies on the chosen foreign source definition")
+		return nil
 	}
 	writer := common.NewTableWriter()
 	fmt.Fprintln(writer, "Policy Name\tPolicy Class")

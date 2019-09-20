@@ -13,9 +13,10 @@ import (
 
 // NodesCliCommand the CLI command configuration for managing requisitioned nodes
 var NodesCliCommand = cli.Command{
-	Name:     "node",
-	Usage:    "Manage Nodes",
-	Category: "Requisitions",
+	Name:      "node",
+	ShortName: "n",
+	Usage:     "Manage Nodes",
+	Category:  "Requisitions",
 	Subcommands: []cli.Command{
 		{
 			Name:      "list",
@@ -32,7 +33,7 @@ var NodesCliCommand = cli.Command{
 		{
 			Name:      "set",
 			ShortName: "add",
-			Usage:     "Adds or updates a node from a given requisition, overriding any existing content",
+			Usage:     "Adds or updates a node from a given requisition",
 			ArgsUsage: "<foreignSource> <foreignId>",
 			Action:    setNode,
 			Flags: []cli.Flag{
@@ -89,6 +90,31 @@ var NodesCliCommand = cli.Command{
 			ArgsUsage: "<foreignSource> <foreignId>",
 			Action:    deleteNode,
 		},
+		{
+			Name:      "meta",
+			ShortName: "m",
+			Usage:     "Manage meta-data",
+			Subcommands: []cli.Command{
+				{
+					Name:      "list",
+					Usage:     "Gets all meta-data for a given node",
+					ArgsUsage: "<foreignSource> <foreignId>",
+					Action:    nodeListMetaData,
+				},
+				{
+					Name:      "set",
+					Usage:     "Adds or updates a meta-data entry for a given node",
+					ArgsUsage: "<foreignSource> <foreignId> <metaData-key> <metaData-value>",
+					Action:    nodeSetMetaData,
+				},
+				{
+					Name:      "delete",
+					Usage:     "Deletes a meta-data entry from a given node",
+					ArgsUsage: "<foreignSource> <foreignId> <metaData-key>",
+					Action:    nodeDeleteMetaData,
+				},
+			},
+		},
 	},
 }
 
@@ -96,6 +122,10 @@ func listNodes(c *cli.Context) error {
 	requisition, err := getReqAPI().GetRequisition(c.Args().Get(0))
 	if err != nil {
 		return err
+	}
+	if len(requisition.Nodes) == 0 {
+		fmt.Println("There are no nodes on the chosen requisition")
+		return nil
 	}
 	writer := common.NewTableWriter()
 	fmt.Fprintln(writer, "Foreign ID\tLabel\tLocation\tInterfaces\tAssets\tCategories")
@@ -131,12 +161,19 @@ func setNode(c *cli.Context) error {
 		ParentForeignID:     c.String("parentForeignID"),
 		ParentNodeLabel:     c.String("parentNodeLabel"),
 	}
-	metaData := c.StringSlice("metaData")
-	for _, p := range metaData {
-		data := strings.Split(p, "=")
-		node.AddMetaData(data[0], data[1])
+
+	api := getReqAPI()
+	current, err := api.GetNode(c.Args().Get(0), c.Args().Get(1))
+	if err != nil {
+		mergeNodeMetaData(c, &node)
+		return api.SetNode(c.Args().Get(0), node)
 	}
-	return getReqAPI().SetNode(c.Args().Get(0), node)
+	err = current.Merge(node)
+	if err != nil {
+		return err
+	}
+	mergeNodeMetaData(c, current)
+	return api.SetNode(c.Args().Get(0), *current)
 }
 
 func applyNode(c *cli.Context) error {
@@ -151,4 +188,54 @@ func applyNode(c *cli.Context) error {
 
 func deleteNode(c *cli.Context) error {
 	return getReqAPI().DeleteNode(c.Args().Get(0), c.Args().Get(1))
+}
+
+func nodeListMetaData(c *cli.Context) error {
+	node, err := getReqAPI().GetNode(c.Args().Get(0), c.Args().Get(1))
+	if err != nil {
+		return err
+	}
+	if len(node.MetaData) == 0 {
+		fmt.Println("There is no meta-data for the chosen node")
+		return nil
+	}
+	writer := common.NewTableWriter()
+	fmt.Fprintln(writer, "Context\tKey\tValue")
+	for _, m := range node.MetaData {
+		fmt.Fprintf(writer, "%s\t%s\t%s\n", m.Context, m.Key, m.Value)
+	}
+	writer.Flush()
+	return nil
+}
+
+func nodeSetMetaData(c *cli.Context) error {
+	node, err := getReqAPI().GetNode(c.Args().Get(0), c.Args().Get(1))
+	if err != nil {
+		return err
+	}
+	node.SetMetaData(c.Args().Get(2), c.Args().Get(3))
+	if err := node.IsValid(); err != nil {
+		return err
+	}
+	return getReqAPI().SetNode(c.Args().Get(0), *node)
+}
+
+func nodeDeleteMetaData(c *cli.Context) error {
+	node, err := getReqAPI().GetNode(c.Args().Get(0), c.Args().Get(1))
+	if err != nil {
+		return err
+	}
+	node.DeleteMetaData(c.Args().Get(2))
+	if err := node.IsValid(); err != nil {
+		return err
+	}
+	return getReqAPI().SetNode(c.Args().Get(0), *node)
+}
+
+func mergeNodeMetaData(c *cli.Context, target *model.RequisitionNode) {
+	metaData := c.StringSlice("metaData")
+	for _, p := range metaData {
+		data := strings.Split(p, "=")
+		target.AddMetaData(data[0], data[1])
+	}
 }

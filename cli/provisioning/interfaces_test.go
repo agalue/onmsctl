@@ -79,3 +79,16 @@ func TestDeleteInterface(t *testing.T) {
 	err = app.Run([]string{app.Name, "intf", "delete", "Test", "n1", "10.0.0.10"})
 	assert.NilError(t, err)
 }
+
+func TestInterfaceMetaData(t *testing.T) {
+	var err error
+	app := test.CreateCli(InterfacesCliCommand)
+	server := createTestServer(t)
+	defer server.Close()
+
+	err = app.Run([]string{app.Name, "intf", "meta", "set", "Test", "n1", "10.0.0.1", "active", "true"})
+	assert.NilError(t, err)
+
+	err = app.Run([]string{app.Name, "intf", "meta", "set", "Test", "n1", "10.0.0.1", "mpls", "false"})
+	assert.NilError(t, err)
+}

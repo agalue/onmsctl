@@ -11,37 +11,55 @@ import (
 	"gotest.tools/assert"
 )
 
+var testNode = RequisitionNode{
+	ForeignID: "opennms.com",
+	Interfaces: []RequisitionInterface{
+		{
+			IPAddress:   "www.opennms.com",
+			SnmpPrimary: "P",
+			Services: []RequisitionMonitoredService{
+				{
+					Name: "HTTPS",
+					MetaData: []RequisitionMetaData{
+						{
+							Key:   "url",
+							Value: "/index.html",
+						},
+					},
+				},
+			},
+			MetaData: []RequisitionMetaData{
+				{
+					Key:   "mpls",
+					Value: "false",
+				},
+			},
+		},
+	},
+	Assets: []RequisitionAsset{
+		{
+			Name:  "city",
+			Value: "Apex",
+		},
+	},
+	Categories: []RequisitionCategory{
+		{
+			Name: "Production",
+		},
+	},
+	MetaData: []RequisitionMetaData{
+		{
+			Key:   "owner",
+			Value: "agalue",
+		},
+	},
+}
+
 func TestRequisitionObject(t *testing.T) {
 	req := &Requisition{
 		Name:      "Test",
 		DateStamp: &Time{time.Now()},
-		Nodes: []RequisitionNode{
-			{
-				ForeignID: "opennms.com",
-				Interfaces: []RequisitionInterface{
-					{
-						IPAddress:   "www.opennms.com",
-						SnmpPrimary: "P",
-						Services: []RequisitionMonitoredService{
-							{
-								Name: "HTTPS",
-							},
-						},
-					},
-				},
-				Assets: []RequisitionAsset{
-					{
-						Name:  "city",
-						Value: "Apex",
-					},
-				},
-				Categories: []RequisitionCategory{
-					{
-						Name: "Production",
-					},
-				},
-			},
-		},
+		Nodes:     []RequisitionNode{testNode},
 	}
 	var err error
 
@@ -64,63 +82,6 @@ func TestRequisitionObject(t *testing.T) {
 	assert.NilError(t, err)
 	fmt.Println(string(bytes))
 	assert.NilError(t, yaml.Unmarshal(bytes, &Requisition{}))
-}
-
-func TestForeignSourceObject(t *testing.T) {
-	fsDef := &ForeignSourceDef{
-		Name: "Test",
-		Detectors: []Detector{
-			{
-				Name:  "ICMP",
-				Class: "org.opennms.netmgt.provision.detector.icmp.IcmpDetector",
-			},
-			{
-				Name:  "SNMP",
-				Class: "org.opennms.netmgt.provision.detector.snmp.SnmpDetector",
-			},
-		},
-		Policies: []Policy{
-			{
-				Name:  "Production",
-				Class: "org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy",
-				Parameters: []Parameter{
-					{
-						Key:   "category",
-						Value: "Production",
-					},
-					{
-						Key:   "matchBehavior",
-						Value: "NO_PARAMETERS",
-					},
-				},
-			},
-		},
-	}
-
-	var err error
-
-	fsDef.ScanInterval = "2YEARS" // This is wrong on purpose
-	err = fsDef.IsValid()
-	assert.ErrorContains(t, err, "Invalid scan interval")
-
-	fsDef.ScanInterval = "2w 1d"
-	err = fsDef.IsValid()
-	assert.NilError(t, err)
-
-	bytes, err := json.MarshalIndent(fsDef, "", "  ")
-	assert.NilError(t, err)
-	fmt.Println(string(bytes))
-	assert.NilError(t, json.Unmarshal(bytes, &ForeignSourceDef{}))
-
-	bytes, err = xml.MarshalIndent(fsDef, "", "  ")
-	assert.NilError(t, err)
-	fmt.Println(string(bytes))
-	assert.NilError(t, xml.Unmarshal(bytes, &ForeignSourceDef{}))
-
-	bytes, err = yaml.Marshal(fsDef)
-	assert.NilError(t, err)
-	fmt.Println(string(bytes))
-	assert.NilError(t, yaml.Unmarshal(bytes, &ForeignSourceDef{}))
 }
 
 func TestRequisitionXML(t *testing.T) {
@@ -178,4 +139,89 @@ func TestInvalidRequisitionXML(t *testing.T) {
 	AllowFqdnOnRequisitionedInterfaces = false
 	err = req.IsValid()
 	assert.ErrorContains(t, err, "not a valid IPv4")
+}
+
+func TestMetaData(t *testing.T) {
+	var err error
+
+	node := &RequisitionNode{
+		ForeignID: "n1",
+		NodeLabel: "n1",
+	}
+
+	node.AddMetaData("k1", "v1")
+	assert.Equal(t, 1, len(node.MetaData))
+	assert.Equal(t, "v1", node.MetaData[0].Value)
+
+	node.SetMetaData("k2", "v2")
+	assert.Equal(t, 2, len(node.MetaData))
+	assert.Equal(t, "v2", node.MetaData[1].Value)
+	node.SetMetaData("k2", "v20")
+	assert.Equal(t, "v20", node.MetaData[1].Value)
+
+	err = node.IsValid()
+	assert.NilError(t, err)
+
+	intf := &RequisitionInterface{
+		IPAddress: "10.0.0.1",
+	}
+
+	intf.AddMetaData("k3", "v3")
+	assert.Equal(t, 1, len(intf.MetaData))
+	assert.Equal(t, "v3", intf.MetaData[0].Value)
+
+	intf.SetMetaData("k4", "v4")
+	assert.Equal(t, 2, len(intf.MetaData))
+	assert.Equal(t, "v4", intf.MetaData[1].Value)
+	intf.SetMetaData("k4", "v40")
+	assert.Equal(t, "v40", intf.MetaData[1].Value)
+
+	err = intf.IsValid()
+	assert.NilError(t, err)
+
+	node.AddInterface(intf)
+
+	intfP := node.GetInterface("10.0.0.1")
+	assert.Assert(t, intfP != nil)
+
+	svc := &RequisitionMonitoredService{
+		Name: "HTTP",
+	}
+
+	svc.AddMetaData("k5", "v5")
+	assert.Equal(t, 1, len(svc.MetaData))
+	assert.Equal(t, "v5", svc.MetaData[0].Value)
+
+	svc.SetMetaData("k6", "v6")
+	assert.Equal(t, 2, len(svc.MetaData))
+	assert.Equal(t, "v6", svc.MetaData[1].Value)
+	svc.SetMetaData("k6", "v60")
+	assert.Equal(t, "v60", svc.MetaData[1].Value)
+
+	err = svc.IsValid()
+	assert.NilError(t, err)
+}
+
+func TestMergeNodes(t *testing.T) {
+	source := RequisitionNode{
+		ParentForeignSource: "Switch",
+		ParentForeignID:     "SW01",
+		MetaData: []RequisitionMetaData{
+			{
+				Key:   "important",
+				Value: "true",
+			},
+		},
+	}
+
+	assert.Equal(t, "", testNode.ParentForeignSource)
+	assert.Equal(t, "", testNode.ParentForeignID)
+	assert.Equal(t, "owner", testNode.MetaData[0].Key)
+
+	testNode.Merge(source)
+
+	assert.Equal(t, "opennms.com", testNode.ForeignID)
+	assert.Equal(t, "Switch", testNode.ParentForeignSource)
+	assert.Equal(t, "SW01", testNode.ParentForeignID)
+	assert.Equal(t, "important", testNode.MetaData[0].Key)
 }

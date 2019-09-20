@@ -119,6 +119,10 @@ func listRequisitions(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	if len(requisitions.ForeignSources) == 0 {
+		fmt.Println("There are no requisitions")
+		return nil
+	}
 	statistics, err := getReqAPI().GetRequisitionsStats()
 	if err != nil {
 		return err

@@ -48,6 +48,9 @@ func (api requisitionsAPI) GetRequisition(foreignSource string) (*model.Requisit
 	if foreignSource == "" {
 		return nil, fmt.Errorf("Requisition name required")
 	}
+	if !api.utils.RequisitionExists(foreignSource) {
+		return nil, fmt.Errorf("Requisition %s doesn't exist", foreignSource)
+	}
 	jsonString, err := api.rest.Get("/rest/requisitions/" + foreignSource)
 	if err != nil {
 		return nil, err
