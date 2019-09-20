@@ -22,7 +22,10 @@ var CliCommand = cli.Command{
 		}
 		info := model.OnmsInfo{}
 		json.Unmarshal(jsonInfo, &info)
-		data, _ := yaml.Marshal(&info)
+		data, err := yaml.Marshal(&info)
+		if err != nil {
+			return err
+		}
 		fmt.Println(string(data))
 		return nil
 	},
