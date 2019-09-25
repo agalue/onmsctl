@@ -182,7 +182,10 @@ func applyNode(c *cli.Context) error {
 		return err
 	}
 	node := model.RequisitionNode{}
-	yaml.Unmarshal(data, &node)
+	err = yaml.Unmarshal(data, &node)
+	if err != nil {
+		return err
+	}
 	return getReqAPI().SetNode(c.Args().Get(0), node)
 }
 

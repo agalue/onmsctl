@@ -146,7 +146,10 @@ func applyDetector(c *cli.Context) error {
 		return err
 	}
 	detector := model.Detector{}
-	yaml.Unmarshal(data, &detector)
+	err = yaml.Unmarshal(data, &detector)
+	if err != nil {
+		return err
+	}
 	return getFsAPI().SetDetector(c.Args().Get(0), detector)
 }
 

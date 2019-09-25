@@ -21,7 +21,10 @@ var CliCommand = cli.Command{
 			return err
 		}
 		info := model.OnmsInfo{}
-		json.Unmarshal(jsonInfo, &info)
+		err = json.Unmarshal(jsonInfo, &info)
+		if err != nil {
+			return err
+		}
 		data, err := yaml.Marshal(&info)
 		if err != nil {
 			return err

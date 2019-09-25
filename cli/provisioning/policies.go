@@ -146,7 +146,10 @@ func applyPolicy(c *cli.Context) error {
 		return err
 	}
 	policy := model.Policy{}
-	yaml.Unmarshal(data, &policy)
+	err = yaml.Unmarshal(data, &policy)
+	if err != nil {
+		return err
+	}
 	return getFsAPI().SetPolicy(c.Args().Get(0), policy)
 }
 

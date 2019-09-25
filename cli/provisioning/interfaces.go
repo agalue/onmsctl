@@ -161,7 +161,10 @@ func applyInterface(c *cli.Context) error {
 		return err
 	}
 	intf := model.RequisitionInterface{}
-	yaml.Unmarshal(data, &intf)
+	err = yaml.Unmarshal(data, &intf)
+	if err != nil {
+		return err
+	}
 	return getReqAPI().SetInterface(c.Args().Get(0), c.Args().Get(1), intf)
 }
 

@@ -175,7 +175,10 @@ func applySnmpConfig(c *cli.Context) error {
 		return err
 	}
 	snmp := model.SnmpInfo{}
-	yaml.Unmarshal(data, &snmp)
+	err = yaml.Unmarshal(data, &snmp)
+	if err != nil {
+		return err
+	}
 	return getAPI().SetConfig(c.Args().Get(0), snmp)
 }
 
