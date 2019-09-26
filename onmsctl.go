@@ -72,6 +72,11 @@ func initCliFlags(app *cli.App) {
 			Destination: &rest.Instance.Insecure,
 			Usage:       "Skips HTTPS certificate validation (e.x. self-signed certificates)",
 		},
+		cli.BoolFlag{
+			Name:        "debug, d",
+			Destination: &rest.Instance.Debug,
+			Usage:       "Enable DEBUG for HTTP requests",
+		},
 	}
 }
 

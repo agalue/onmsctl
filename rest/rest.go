@@ -4,8 +4,11 @@ import (
 	"bytes"
 	"crypto/tls"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"net/http/httptrace"
 	"time"
 )
 
@@ -24,6 +27,7 @@ type Client struct {
 	Password string `yaml:"password"`
 	Insecure bool   `yaml:"insecure"`
 	Timeout  int    `yaml:"timeout"`
+	Debug    bool   `yaml:"debug"`
 }
 
 func (cli Client) getHTTPClient() *http.Client {
@@ -36,11 +40,10 @@ func (cli Client) getHTTPClient() *http.Client {
 
 // Get sends an HTTP GET request
 func (cli Client) Get(path string) ([]byte, error) {
-	request, err := http.NewRequest(http.MethodGet, cli.URL+path, nil)
+	request, err := cli.buildRequest(http.MethodGet, cli.URL+path, nil)
 	if err != nil {
 		return nil, err
 	}
-	cli.setCommonHeaders(request)
 	response, err := cli.getHTTPClient().Do(request)
 	if err != nil {
 		return nil, err
@@ -49,16 +52,22 @@ func (cli Client) Get(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ioutil.ReadAll(response.Body)
+	data, err := ioutil.ReadAll(response.Body)
+	if cli.Debug && err == nil {
+		log.Println("Data received", string(data))
+	}
+	return data, err
 }
 
 // Post sends an HTTP POST request
 func (cli Client) Post(path string, jsonBytes []byte) error {
-	request, err := http.NewRequest(http.MethodPost, cli.URL+path, bytes.NewBuffer(jsonBytes))
+	if cli.Debug {
+		log.Println("Data to be sent", string(jsonBytes))
+	}
+	request, err := cli.buildRequest(http.MethodPost, cli.URL+path, bytes.NewBuffer(jsonBytes))
 	if err != nil {
 		return err
 	}
-	cli.setCommonHeaders(request)
 	request.Header.Set("Content-Type", "application/json")
 	response, err := cli.getHTTPClient().Do(request)
 	if err != nil {
@@ -69,11 +78,10 @@ func (cli Client) Post(path string, jsonBytes []byte) error {
 
 // Delete sends an HTTP DELETE request
 func (cli Client) Delete(path string) error {
-	request, err := http.NewRequest(http.MethodDelete, cli.URL+path, nil)
+	request, err := cli.buildRequest(http.MethodDelete, cli.URL+path, nil)
 	if err != nil {
 		return err
 	}
-	cli.setCommonHeaders(request)
 	response, err := cli.getHTTPClient().Do(request)
 	if err != nil {
 		return err
@@ -83,11 +91,13 @@ func (cli Client) Delete(path string) error {
 
 // Put sends an HTTP PUT request
 func (cli Client) Put(path string, jsonBytes []byte, contentType string) error {
-	request, err := http.NewRequest(http.MethodPut, cli.URL+path, bytes.NewBuffer(jsonBytes))
+	if cli.Debug {
+		log.Println("Data to be sent", string(jsonBytes))
+	}
+	request, err := cli.buildRequest(http.MethodPut, cli.URL+path, bytes.NewBuffer(jsonBytes))
 	if err != nil {
 		return err
 	}
-	cli.setCommonHeaders(request)
 	request.Header.Set("Content-Type", contentType)
 	response, err := cli.getHTTPClient().Do(request)
 	if err != nil {
@@ -96,9 +106,37 @@ func (cli Client) Put(path string, jsonBytes []byte, contentType string) error {
 	return httpIsValid(response)
 }
 
-func (cli Client) setCommonHeaders(request *http.Request) {
+func (cli Client) buildRequest(method, url string, body io.Reader) (*http.Request, error) {
+	request, err := http.NewRequest(method, url, body)
+	if err != nil {
+		return nil, err
+	}
 	request.Header.Set("Accept", "application/json")
 	request.SetBasicAuth(cli.Username, cli.Password)
+	if cli.Debug {
+		trace := &httptrace.ClientTrace{
+			GotConn: func(connInfo httptrace.GotConnInfo) {
+				log.Println("Got Connection", connInfo)
+			},
+			ConnectStart: func(network, addr string) {
+				log.Println("Dial start", network, addr)
+			},
+			ConnectDone: func(network, addr string, err error) {
+				log.Println("Dial done", network, addr)
+			},
+			GotFirstResponseByte: func() {
+				log.Println("Got first response byte!")
+			},
+			WroteHeaderField: func(key string, value []string) {
+				log.Println("Wrote header", key, value)
+			},
+			WroteRequest: func(wr httptrace.WroteRequestInfo) {
+				log.Println("Wrote request error?", wr.Err)
+			},
+		}
+		request = request.WithContext(httptrace.WithClientTrace(request.Context(), trace))
+	}
+	return request, nil
 }
 
 func httpIsValid(response *http.Response) error {
