@@ -3,7 +3,6 @@ package search
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
 
 	"github.com/OpenNMS/onmsctl/model"
 	"github.com/OpenNMS/onmsctl/rest"
@@ -28,7 +27,7 @@ var CliCommand = cli.Command{
 		},
 		cli.StringFlag{
 			Name:  "filter, f",
-			Usage: "The filter to apply",
+			Usage: "The filter to apply in FIQL format",
 		},
 		cli.IntFlag{
 			Name:  "limit, l",
@@ -46,9 +45,7 @@ var CliCommand = cli.Command{
 		if entity == "" {
 			return fmt.Errorf("Entity required; options: %s", Entities.EnumAsString())
 		}
-		limit := c.Int("limit")
-		offset := c.Int("offset")
-		url := "/api/v2/" + entity + "?limit=" + strconv.Itoa(limit) + "&offset=" + strconv.Itoa(offset)
+		url := fmt.Sprintf("/api/v2/%s?limit=%d&offset=%d", entity, c.Int("limit"), c.Int("offset"))
 		filter := c.String("filter")
 		if filter != "" {
 			url += "&_s=" + filter
