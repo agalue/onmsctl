@@ -412,6 +412,11 @@ type Requisition struct {
 	Nodes      []RequisitionNode `xml:"node,omitempty" json:"node,omitempty" yaml:"nodes,omitempty"`
 }
 
+// AddNode add a node to the requisition
+func (r *Requisition) AddNode(node *RequisitionNode) {
+	r.Nodes = append(r.Nodes, *node)
+}
+
 // IsValid returns an error if the requisition definition is invalid
 func (r Requisition) IsValid() error {
 	if r.Name == "" {

@@ -16,7 +16,7 @@ import (
 	"gotest.tools/assert"
 )
 
-const WWW_ONMS_IP = "34.194.50.139"
+const publicIP = "34.194.50.139"
 
 var testNode = model.RequisitionNode{
 	ForeignID: "n1",
@@ -131,7 +131,7 @@ func createTestServer(t *testing.T) *httptest.Server {
 				node := r.Nodes[0]
 				assert.Equal(t, "opennms.com", node.ForeignID)
 				assert.Equal(t, "opennms.com", node.NodeLabel)
-				assert.Equal(t, WWW_ONMS_IP, node.Interfaces[0].IPAddress)
+				assert.Equal(t, publicIP, node.Interfaces[0].IPAddress)
 			}
 
 		case "/rest/requisitions/Local/import":
@@ -167,7 +167,7 @@ func createTestServer(t *testing.T) *httptest.Server {
 			}
 			if node.ForeignID == "opennms.com" {
 				assert.Equal(t, "opennms.com", node.NodeLabel)
-				assert.Equal(t, WWW_ONMS_IP, node.Interfaces[0].IPAddress)
+				assert.Equal(t, publicIP, node.Interfaces[0].IPAddress)
 			}
 
 		case "/rest/requisitions/Test/nodes/n2":
@@ -184,11 +184,9 @@ func createTestServer(t *testing.T) *httptest.Server {
 				switch len(intf.MetaData) {
 				case 1:
 					assert.Equal(t, "false", intf.MetaData[0].Value)
-					break
 				case 2:
 					assert.Equal(t, "false", intf.MetaData[0].Value)
 					assert.Equal(t, "active", intf.MetaData[1].Key)
-					break
 				}
 			}
 

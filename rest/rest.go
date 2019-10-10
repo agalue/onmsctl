@@ -56,6 +56,7 @@ func (cli Client) Get(path string) ([]byte, error) {
 	if cli.Debug && err == nil {
 		log.Println("Data received", string(data))
 	}
+	response.Body.Close()
 	return data, err
 }
 
@@ -90,11 +91,11 @@ func (cli Client) Delete(path string) error {
 }
 
 // Put sends an HTTP PUT request
-func (cli Client) Put(path string, jsonBytes []byte, contentType string) error {
+func (cli Client) Put(path string, dataBytes []byte, contentType string) error {
 	if cli.Debug {
-		log.Println("Data to be sent", string(jsonBytes))
+		log.Println("Data to be sent", string(dataBytes))
 	}
-	request, err := cli.buildRequest(http.MethodPut, cli.URL+path, bytes.NewBuffer(jsonBytes))
+	request, err := cli.buildRequest(http.MethodPut, cli.URL+path, bytes.NewBuffer(dataBytes))
 	if err != nil {
 		return err
 	}

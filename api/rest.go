@@ -5,5 +5,5 @@ type RestAPI interface {
 	Get(path string) ([]byte, error)
 	Post(path string, jsonBytes []byte) error
 	Delete(path string) error
-	Put(path string, jsonBytes []byte, contentType string) error
+	Put(path string, dataBytes []byte, contentType string) error
 }
