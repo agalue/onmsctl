@@ -418,7 +418,7 @@ func (r *Requisition) AddNode(node *RequisitionNode) {
 }
 
 // IsValid returns an error if the requisition definition is invalid
-func (r Requisition) IsValid() error {
+func (r *Requisition) IsValid() error {
 	if r.Name == "" {
 		return fmt.Errorf("Requisition name cannot be empty")
 	}
