@@ -196,7 +196,7 @@ func intfSetMetaData(c *cli.Context) error {
 		return err
 	}
 	intf.SetMetaData(c.Args().Get(3), c.Args().Get(4))
-	if err := intf.IsValid(); err != nil {
+	if err := intf.Validate(); err != nil {
 		return err
 	}
 	return getReqAPI().SetInterface(c.Args().Get(0), c.Args().Get(1), *intf)
@@ -208,7 +208,7 @@ func intfDeleteMetaData(c *cli.Context) error {
 		return err
 	}
 	intf.DeleteMetaData(c.Args().Get(3))
-	if err := intf.IsValid(); err != nil {
+	if err := intf.Validate(); err != nil {
 		return err
 	}
 	return getReqAPI().SetInterface(c.Args().Get(0), c.Args().Get(1), *intf)

@@ -203,5 +203,5 @@ func parseRequisition(c *cli.Context) (*model.Requisition, error) {
 	if err != nil {
 		return requisition, err
 	}
-	return requisition, requisition.IsValid()
+	return requisition, requisition.Validate()
 }

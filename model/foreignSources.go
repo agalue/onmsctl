@@ -28,8 +28,8 @@ type Detector struct {
 	Parameters []Parameter `xml:"parameter,omitempty" json:"parameter,omitempty" yaml:"parameters,omitempty"`
 }
 
-// IsValid returns an error if the detector is invalid
-func (p *Detector) IsValid() error {
+// Validate returns an error if the detector is invalid
+func (p *Detector) Validate() error {
 	if p.Name == "" {
 		return fmt.Errorf("Detector name cannot be empty")
 	}
@@ -47,8 +47,8 @@ type Policy struct {
 	Parameters []Parameter `xml:"parameter,omitempty" json:"parameter,omitempty" yaml:"parameters,omitempty"`
 }
 
-// IsValid returns an error if the policy is invalid
-func (p *Policy) IsValid() error {
+// Validate returns an error if the policy is invalid
+func (p *Policy) Validate() error {
 	if p.Name == "" {
 		return fmt.Errorf("Policy name cannot be empty")
 	}
@@ -68,8 +68,8 @@ type ForeignSourceDef struct {
 	Policies     []Policy   `xml:"policies>policy" json:"policies,omitempty" yaml:"policies,omitempty"`
 }
 
-// IsValid returns an error if the node definition is invalid
-func (fs *ForeignSourceDef) IsValid() error {
+// Validate returns an error if the node definition is invalid
+func (fs *ForeignSourceDef) Validate() error {
 	if fs.Name == "" {
 		return fmt.Errorf("The name of a Foreign Source definition cannot be empty")
 	}
@@ -83,13 +83,13 @@ func (fs *ForeignSourceDef) IsValid() error {
 		return fmt.Errorf("Invalid scan interval %s", fs.ScanInterval)
 	}
 	for _, d := range fs.Detectors {
-		err := d.IsValid()
+		err := d.Validate()
 		if err != nil {
 			return err
 		}
 	}
 	for _, p := range fs.Policies {
-		err := p.IsValid()
+		err := p.Validate()
 		if err != nil {
 			return err
 		}
@@ -204,7 +204,7 @@ func FindParameter(parameters []Parameter, paramName string) *Parameter {
 	return nil
 }
 
-// IsValidScanInterval checks if a given scan-interval is valid
+// ValidateScanInterval checks if a given scan-interval is valid
 func IsValidScanInterval(scanInterval string) bool {
 	if scanInterval == "" {
 		return false

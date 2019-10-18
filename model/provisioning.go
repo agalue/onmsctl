@@ -20,8 +20,8 @@ type RequisitionMetaData struct {
 	Context string   `xml:"context,attr,omitempty" json:"context,omitempty" yaml:"context,omitempty"`
 }
 
-// IsValid returns an error if asset field is invalid
-func (m *RequisitionMetaData) IsValid() error {
+// Validate returns an error if asset field is invalid
+func (m *RequisitionMetaData) Validate() error {
 	if m.Context == "" {
 		m.Context = "requisition"
 	}
@@ -75,8 +75,8 @@ func (s *RequisitionMonitoredService) DeleteMetaData(key string) {
 	}
 }
 
-// IsValid returns an error if the service is invalid
-func (s RequisitionMonitoredService) IsValid() error {
+// Validate returns an error if the service is invalid
+func (s RequisitionMonitoredService) Validate() error {
 	if s.Name == "" {
 		return fmt.Errorf("Service name cannot be empty")
 	}
@@ -85,7 +85,7 @@ func (s RequisitionMonitoredService) IsValid() error {
 	}
 	for i := range s.MetaData {
 		m := &s.MetaData[i]
-		err := m.IsValid()
+		err := m.Validate()
 		if err != nil {
 			return err
 		}
@@ -100,8 +100,8 @@ type RequisitionAsset struct {
 	Value   string   `xml:"value,attr" json:"value" yaml:"value"`
 }
 
-// IsValid returns an error if asset field is invalid
-func (a RequisitionAsset) IsValid() error {
+// Validate returns an error if asset field is invalid
+func (a RequisitionAsset) Validate() error {
 	if a.Name == "" {
 		return fmt.Errorf("Asset name cannot be empty")
 	}
@@ -120,8 +120,8 @@ type RequisitionCategory struct {
 	Name    string   `xml:"name,attr" json:"name" yaml:"name"`
 }
 
-// IsValid returns an error if the category is invalid
-func (c RequisitionCategory) IsValid() error {
+// Validate returns an error if the category is invalid
+func (c RequisitionCategory) Validate() error {
 	if c.Name == "" {
 		return fmt.Errorf("Category name cannot be empty")
 	}
@@ -193,8 +193,8 @@ func (intf *RequisitionInterface) AddService(svc *RequisitionMonitoredService) {
 	intf.Services = append(intf.Services, *svc)
 }
 
-// IsValid returns an error if the interface definition is invalid
-func (intf *RequisitionInterface) IsValid() error {
+// Validate returns an error if the interface definition is invalid
+func (intf *RequisitionInterface) Validate() error {
 	if intf.IPAddress == "" {
 		return fmt.Errorf("IP Address cannot be empty")
 	}
@@ -218,7 +218,7 @@ func (intf *RequisitionInterface) IsValid() error {
 	}
 	for i := range intf.MetaData {
 		m := intf.MetaData[i]
-		if err := m.IsValid(); err != nil {
+		if err := m.Validate(); err != nil {
 			return err
 		}
 	}
@@ -251,7 +251,7 @@ func (intf *RequisitionInterface) validateServices() error {
 	serviceMap := make(map[string]int)
 	for i := range intf.Services {
 		s := &intf.Services[i]
-		if err := s.IsValid(); err != nil {
+		if err := s.Validate(); err != nil {
 			return err
 		}
 		serviceMap[s.Name]++
@@ -335,8 +335,8 @@ func (n *RequisitionNode) Merge(source RequisitionNode) error {
 	return mergo.Merge(n, source, mergo.WithOverride)
 }
 
-// IsValid returns an error if the node definition is invalid
-func (n *RequisitionNode) IsValid() error {
+// Validate returns an error if the node definition is invalid
+func (n *RequisitionNode) Validate() error {
 	if n.ForeignID == "" {
 		return fmt.Errorf("Foreign ID cannot be empty")
 	}
@@ -360,19 +360,19 @@ func (n *RequisitionNode) IsValid() error {
 	}
 	for i := range n.Categories {
 		c := &n.Categories[i]
-		if err := c.IsValid(); err != nil {
+		if err := c.Validate(); err != nil {
 			return err
 		}
 	}
 	for i := range n.Assets {
 		a := &n.Assets[i]
-		if err := a.IsValid(); err != nil {
+		if err := a.Validate(); err != nil {
 			return err
 		}
 	}
 	for i := range n.MetaData {
 		m := &n.MetaData[i]
-		if err := m.IsValid(); err != nil {
+		if err := m.Validate(); err != nil {
 			return err
 		}
 	}
@@ -388,7 +388,7 @@ func (n *RequisitionNode) validateInterfaces() error {
 		if intf.SnmpPrimary == "P" {
 			primaryCount++
 		}
-		if err := intf.IsValid(); err != nil {
+		if err := intf.Validate(); err != nil {
 			return err
 		}
 	}
@@ -417,8 +417,8 @@ func (r *Requisition) AddNode(node *RequisitionNode) {
 	r.Nodes = append(r.Nodes, *node)
 }
 
-// IsValid returns an error if the requisition definition is invalid
-func (r *Requisition) IsValid() error {
+// Validate returns an error if the requisition definition is invalid
+func (r *Requisition) Validate() error {
 	if r.Name == "" {
 		return fmt.Errorf("Requisition name cannot be empty")
 	}
@@ -429,7 +429,7 @@ func (r *Requisition) IsValid() error {
 	for i := range r.Nodes {
 		n := &r.Nodes[i]
 		foreignIDs[n.ForeignID]++
-		err := n.IsValid()
+		err := n.Validate()
 		if err != nil {
 			return fmt.Errorf("Problem on node %s on requisition %s: %s", n.NodeLabel, r.Name, err.Error())
 		}

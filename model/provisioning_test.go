@@ -63,8 +63,7 @@ func TestRequisitionObject(t *testing.T) {
 	}
 	var err error
 
-	err = req.IsValid()
-	assert.NilError(t, err)
+	assert.NilError(t, req.Validate())
 	assert.Equal(t, req.Nodes[0].NodeLabel, req.Nodes[0].ForeignID)
 	assert.Equal(t, req.Nodes[0].Interfaces[0].IPAddress, "34.194.50.139")
 
@@ -121,8 +120,7 @@ func TestRequisitionXML(t *testing.T) {
 	i1 := n.Interfaces[0]
 	assert.Equal(t, 4, len(i1.Services))
 
-	err = req.IsValid()
-	assert.NilError(t, err)
+	assert.NilError(t, req.Validate())
 }
 
 func TestInvalidRequisitionXML(t *testing.T) {
@@ -137,13 +135,11 @@ func TestInvalidRequisitionXML(t *testing.T) {
 	err := xml.Unmarshal([]byte(reqXML), req)
 	assert.NilError(t, err)
 	AllowFqdnOnRequisitionedInterfaces = false
-	err = req.IsValid()
+	err = req.Validate()
 	assert.ErrorContains(t, err, "not a valid IPv4")
 }
 
 func TestMetaData(t *testing.T) {
-	var err error
-
 	node := &RequisitionNode{
 		ForeignID: "n1",
 		NodeLabel: "n1",
@@ -159,8 +155,7 @@ func TestMetaData(t *testing.T) {
 	node.SetMetaData("k2", "v20")
 	assert.Equal(t, "v20", node.MetaData[1].Value)
 
-	err = node.IsValid()
-	assert.NilError(t, err)
+	assert.NilError(t, node.Validate())
 
 	intf := &RequisitionInterface{
 		IPAddress: "10.0.0.1",
@@ -176,8 +171,7 @@ func TestMetaData(t *testing.T) {
 	intf.SetMetaData("k4", "v40")
 	assert.Equal(t, "v40", intf.MetaData[1].Value)
 
-	err = intf.IsValid()
-	assert.NilError(t, err)
+	assert.NilError(t, intf.Validate())
 
 	node.AddInterface(intf)
 
@@ -198,8 +192,7 @@ func TestMetaData(t *testing.T) {
 	svc.SetMetaData("k6", "v60")
 	assert.Equal(t, "v60", svc.MetaData[1].Value)
 
-	err = svc.IsValid()
-	assert.NilError(t, err)
+	assert.NilError(t, svc.Validate())
 }
 
 func TestMergeNodes(t *testing.T) {

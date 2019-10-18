@@ -47,8 +47,8 @@ type LogMsg struct {
 	Destination string `json:"dest" yaml:"destination"`
 }
 
-// IsValid returns an error if the log message is invalid
-func (lm *LogMsg) IsValid() error {
+// Validate returns an error if the log message is invalid
+func (lm *LogMsg) Validate() error {
 	if lm.Message == "" {
 		return fmt.Errorf("Message cannot be null")
 	}
@@ -100,13 +100,13 @@ func (e *Event) SetTime(date time.Time) {
 	e.Time = fmt.Sprintf("%s, %s %d, %d %d:%02d:%02d %s GMT", d.Weekday(), d.Month(), d.Day(), d.Year(), hour, d.Minute(), d.Second(), txt)
 }
 
-// IsValid returns an error if the event object is invalid
-func (e Event) IsValid() error {
+// Validate returns an error if the event object is invalid
+func (e Event) Validate() error {
 	if e.UEI == "" {
 		return fmt.Errorf("UEI cannot be null")
 	}
 	if e.LogMessage != nil {
-		err := e.LogMessage.IsValid()
+		err := e.LogMessage.Validate()
 		if err != nil {
 			return err
 		}

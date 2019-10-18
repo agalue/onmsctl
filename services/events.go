@@ -17,7 +17,7 @@ func GetEventsAPI(rest api.RestAPI) api.EventsAPI {
 }
 
 func (api eventsAPI) SendEvent(event model.Event) error {
-	if err := event.IsValid(); err != nil {
+	if err := event.Validate(); err != nil {
 		return err
 	}
 	jsonBytes, err := json.Marshal(event)
