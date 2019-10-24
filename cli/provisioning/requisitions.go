@@ -27,10 +27,11 @@ var RequisitionsCliCommand = cli.Command{
 			Action: listRequisitions,
 		},
 		{
-			Name:      "get",
-			Usage:     "Gets a specific requisition by name",
-			Action:    showRequisition,
-			ArgsUsage: "<name>",
+			Name:         "get",
+			Usage:        "Gets a specific requisition by name",
+			Action:       showRequisition,
+			BashComplete: requisitionNameBashComplete,
+			ArgsUsage:    "<name>",
 		},
 		{
 			Name:      "add",
@@ -84,10 +85,11 @@ var RequisitionsCliCommand = cli.Command{
 			ArgsUsage: "<content>",
 		},
 		{
-			Name:      "import",
-			ShortName: "sync",
-			Usage:     "Import or synchronize a requisition",
-			Action:    importRequisition,
+			Name:         "import",
+			ShortName:    "sync",
+			Usage:        "Import or synchronize a requisition",
+			Action:       importRequisition,
+			BashComplete: requisitionNameBashComplete,
 			Flags: []cli.Flag{
 				cli.GenericFlag{
 					Name: "rescanExisting, r",
@@ -105,11 +107,12 @@ var RequisitionsCliCommand = cli.Command{
 			ArgsUsage: "<name>",
 		},
 		{
-			Name:      "delete",
-			ShortName: "del",
-			Usage:     "Deletes a requisition",
-			Action:    deleteRequisition,
-			ArgsUsage: "<name>",
+			Name:         "delete",
+			ShortName:    "del",
+			Usage:        "Deletes a requisition",
+			Action:       deleteRequisition,
+			BashComplete: requisitionNameBashComplete,
+			ArgsUsage:    "<name>",
 		},
 	},
 }

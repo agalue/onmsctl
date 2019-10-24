@@ -19,10 +19,11 @@ var PoliciesCliCommand = cli.Command{
 	Category:  "Foreign Source Definitions",
 	Subcommands: []cli.Command{
 		{
-			Name:      "list",
-			Usage:     "List all the policy from a given foreign source definition",
-			ArgsUsage: "<foreignSource>",
-			Action:    listPolicies,
+			Name:         "list",
+			Usage:        "List all the policy from a given foreign source definition",
+			ArgsUsage:    "<foreignSource>",
+			Action:       listPolicies,
+			BashComplete: requisitionNameBashComplete,
 		},
 		{
 			Name:      "enumerate",
