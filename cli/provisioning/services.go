@@ -126,7 +126,7 @@ func svcSetMetaData(c *cli.Context) error {
 		return err
 	}
 	service.SetMetaData(c.Args().Get(4), c.Args().Get(5))
-	if err := service.IsValid(); err != nil {
+	if err := service.Validate(); err != nil {
 		return err
 	}
 	return getReqAPI().SetService(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2), *service)
@@ -138,7 +138,7 @@ func svcDeleteMetaData(c *cli.Context) error {
 		return err
 	}
 	service.DeleteMetaData(c.Args().Get(4))
-	if err := service.IsValid(); err != nil {
+	if err := service.Validate(); err != nil {
 		return err
 	}
 	return getReqAPI().SetService(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2), *service)

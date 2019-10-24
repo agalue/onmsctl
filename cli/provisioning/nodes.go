@@ -217,7 +217,7 @@ func nodeSetMetaData(c *cli.Context) error {
 		return err
 	}
 	node.SetMetaData(c.Args().Get(2), c.Args().Get(3))
-	if err := node.IsValid(); err != nil {
+	if err := node.Validate(); err != nil {
 		return err
 	}
 	return getReqAPI().SetNode(c.Args().Get(0), *node)
@@ -229,7 +229,7 @@ func nodeDeleteMetaData(c *cli.Context) error {
 		return err
 	}
 	node.DeleteMetaData(c.Args().Get(2))
-	if err := node.IsValid(); err != nil {
+	if err := node.Validate(); err != nil {
 		return err
 	}
 	return getReqAPI().SetNode(c.Args().Get(0), *node)

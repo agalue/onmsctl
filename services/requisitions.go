@@ -143,7 +143,7 @@ func (api requisitionsAPI) SetNode(foreignSource string, node model.RequisitionN
 	if !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
-	if err := node.IsValid(); err != nil {
+	if err := node.Validate(); err != nil {
 		return err
 	}
 	if node.ParentForeignSource != "" && !api.utils.RequisitionExists(node.ParentForeignSource) {
@@ -203,7 +203,7 @@ func (api requisitionsAPI) SetInterface(foreignSource string, foreignID string, 
 	if !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
-	if err := intf.IsValid(); err != nil {
+	if err := intf.Validate(); err != nil {
 		return err
 	}
 	jsonBytes, err := json.Marshal(intf)
@@ -243,7 +243,7 @@ func (api requisitionsAPI) SetService(foreignSource string, foreignID string, ip
 	if !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
-	if err := svc.IsValid(); err != nil {
+	if err := svc.Validate(); err != nil {
 		return err
 	}
 	jsonBytes, err := json.Marshal(svc)
@@ -282,7 +282,7 @@ func (api requisitionsAPI) SetCategory(foreignSource string, foreignID string, c
 	if !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
-	if err := category.IsValid(); err != nil {
+	if err := category.Validate(); err != nil {
 		return err
 	}
 	jsonBytes, err := json.Marshal(category)
@@ -318,7 +318,7 @@ func (api requisitionsAPI) SetAsset(foreignSource string, foreignID string, asse
 	if !api.utils.RequisitionExists(foreignSource) {
 		return fmt.Errorf("Requisition %s doesn't exist", foreignSource)
 	}
-	if err := asset.IsValid(); err != nil {
+	if err := asset.Validate(); err != nil {
 		return err
 	}
 	assets, err := api.utils.GetAvailableAssets()

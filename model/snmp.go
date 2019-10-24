@@ -46,8 +46,8 @@ type SnmpInfo struct {
 	TTL             int    `json:"ttl,omitempty" yaml:"ttl,omitempty"`
 }
 
-// IsValid returns an error if the service is invalid
-func (s *SnmpInfo) IsValid() error {
+// Validate returns an error if the service is invalid
+func (s *SnmpInfo) Validate() error {
 	if s.Community == "" {
 		return fmt.Errorf("SNMP Community String cannot be null")
 	}

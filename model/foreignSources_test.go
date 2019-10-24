@@ -44,12 +44,10 @@ func TestForeignSourceObject(t *testing.T) {
 	var err error
 
 	fsDef.ScanInterval = "2YEARS" // This is wrong on purpose
-	err = fsDef.IsValid()
-	assert.ErrorContains(t, err, "Invalid scan interval")
+	assert.ErrorContains(t, fsDef.Validate(), "Invalid scan interval")
 
 	fsDef.ScanInterval = "2w 1d"
-	err = fsDef.IsValid()
-	assert.NilError(t, err)
+	assert.NilError(t, fsDef.Validate())
 
 	bytes, err := json.MarshalIndent(fsDef, "", "  ")
 	assert.NilError(t, err)

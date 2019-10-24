@@ -43,7 +43,7 @@ func (api snmpAPI) SetConfig(ipAddress string, config model.SnmpInfo) error {
 	if err != nil {
 		return err
 	}
-	err = config.IsValid()
+	err = config.Validate()
 	if err != nil {
 		return err
 	}

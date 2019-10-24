@@ -104,12 +104,10 @@ func applyEvent(c *cli.Context) error {
 		return err
 	}
 	event := model.Event{}
-	err = yaml.Unmarshal(data, &event)
-	if err != nil {
+	if err := yaml.Unmarshal(data, &event); err != nil {
 		return err
 	}
-	err = event.IsValid()
-	if err != nil {
+	if err := event.Validate(); err != nil {
 		return err
 	}
 	return getAPI().SendEvent(event)

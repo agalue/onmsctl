@@ -37,7 +37,7 @@ func (api foreignSourcesAPI) GetForeignSourceDef(foreignSource string) (*model.F
 }
 
 func (api foreignSourcesAPI) SetForeignSourceDef(fs model.ForeignSourceDef) error {
-	if err := fs.IsValid(); err != nil {
+	if err := fs.Validate(); err != nil {
 		return err
 	}
 	jsonBytes, err := json.Marshal(fs)
@@ -88,7 +88,7 @@ func (api foreignSourcesAPI) IsPolicyValid(policy model.Policy) error {
 }
 
 func (api foreignSourcesAPI) isPolicyValid(config model.PluginList, policy model.Policy) error {
-	if err := policy.IsValid(); err != nil {
+	if err := policy.Validate(); err != nil {
 		return err
 	}
 	plugin := config.FindPlugin(policy.Class)
@@ -110,7 +110,7 @@ func (api foreignSourcesAPI) IsDetectorValid(detector model.Detector) error {
 }
 
 func (api foreignSourcesAPI) isDetectorValid(config model.PluginList, detector model.Detector) error {
-	if err := detector.IsValid(); err != nil {
+	if err := detector.Validate(); err != nil {
 		return err
 	}
 	plugin := config.FindPlugin(detector.Class)
@@ -124,7 +124,7 @@ func (api foreignSourcesAPI) isDetectorValid(config model.PluginList, detector m
 }
 
 func (api foreignSourcesAPI) IsForeignSourceValid(fsDef model.ForeignSourceDef) error {
-	if err := fsDef.IsValid(); err != nil {
+	if err := fsDef.Validate(); err != nil {
 		return err
 	}
 	if len(fsDef.Policies) > 0 {
