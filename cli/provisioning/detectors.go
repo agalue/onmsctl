@@ -59,17 +59,17 @@ var DetectorsCliCommand = cli.Command{
 			},
 		},
 		{
-			Name:   "apply",
-			Usage:  "Creates or updates a detector from a external YAML file, overriding any existing content",
-			Action: applyDetector,
+			Name:         "apply",
+			Usage:        "Creates or updates a detector from a external YAML file, overriding any existing content",
+			Action:       applyDetector,
+			BashComplete: requisitionNameBashComplete,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "file, f",
 					Usage: "External YAML file (use '-' for STDIN Pipe)",
 				},
 			},
-			ArgsUsage:    "<foreignSource> <yaml>",
-			BashComplete: requisitionNameBashComplete,
+			ArgsUsage: "<foreignSource> <yaml>",
 		},
 		{
 			Name:         "delete",
