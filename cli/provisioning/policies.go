@@ -19,10 +19,11 @@ var PoliciesCliCommand = cli.Command{
 	Category:  "Foreign Source Definitions",
 	Subcommands: []cli.Command{
 		{
-			Name:      "list",
-			Usage:     "List all the policy from a given foreign source definition",
-			ArgsUsage: "<foreignSource>",
-			Action:    listPolicies,
+			Name:         "list",
+			Usage:        "List all the policy from a given foreign source definition",
+			ArgsUsage:    "<foreignSource>",
+			Action:       listPolicies,
+			BashComplete: requisitionNameBashComplete,
 		},
 		{
 			Name:      "enumerate",
@@ -38,16 +39,18 @@ var PoliciesCliCommand = cli.Command{
 			Action:    describePolicyClass,
 		},
 		{
-			Name:      "get",
-			Usage:     "Gets a policy from a given foreign source definition",
-			ArgsUsage: "<foreignSource> <policyName|className>",
-			Action:    getPolicy,
+			Name:         "get",
+			Usage:        "Gets a policy from a given foreign source definition",
+			ArgsUsage:    "<foreignSource> <policyName|className>",
+			Action:       getPolicy,
+			BashComplete: policyBashComplete,
 		},
 		{
-			Name:      "set",
-			Usage:     "Adds or update a policy for a given foreign source definition, overriding any existing content",
-			ArgsUsage: "<foreignSource> <policyName> <className>",
-			Action:    setPolicy,
+			Name:         "set",
+			Usage:        "Adds or update a policy for a given foreign source definition, overriding any existing content",
+			ArgsUsage:    "<foreignSource> <policyName> <className>",
+			Action:       setPolicy,
+			BashComplete: policyClassBashComplete,
 			Flags: []cli.Flag{
 				cli.StringSliceFlag{
 					Name:  "parameter, p",
@@ -56,9 +59,10 @@ var PoliciesCliCommand = cli.Command{
 			},
 		},
 		{
-			Name:   "apply",
-			Usage:  "Creates or updates a policy from a external YAML file, overriding any existing content",
-			Action: applyPolicy,
+			Name:         "apply",
+			Usage:        "Creates or updates a policy from a external YAML file, overriding any existing content",
+			Action:       applyPolicy,
+			BashComplete: requisitionNameBashComplete,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "file, f",
@@ -68,11 +72,12 @@ var PoliciesCliCommand = cli.Command{
 			ArgsUsage: "<foreignSource> <yaml>",
 		},
 		{
-			Name:      "delete",
-			ShortName: "del",
-			Usage:     "Deletes an existing policy from a given foreign source definition",
-			ArgsUsage: "<foreignSource> <policyName>",
-			Action:    deletePolicy,
+			Name:         "delete",
+			ShortName:    "del",
+			Usage:        "Deletes an existing policy from a given foreign source definition",
+			ArgsUsage:    "<foreignSource> <policyName>",
+			Action:       deletePolicy,
+			BashComplete: policyBashComplete,
 		},
 	},
 }
@@ -155,4 +160,30 @@ func applyPolicy(c *cli.Context) error {
 
 func deletePolicy(c *cli.Context) error {
 	return getFsAPI().DeletePolicy(c.Args().Get(0), c.Args().Get(1))
+}
+
+func policyBashComplete(c *cli.Context) {
+	requisitionNameBashComplete(c)
+	if c.NArg() == 1 {
+		fs, err := getFsAPI().GetForeignSourceDef(c.Args().Get(0))
+		if err != nil {
+			return
+		}
+		for _, d := range fs.Policies {
+			fmt.Println(zshNormalize(d.Name))
+		}
+	}
+}
+
+func policyClassBashComplete(c *cli.Context) {
+	requisitionNameBashComplete(c)
+	if c.NArg() == 1 {
+		cfg, err := getUtilsAPI().GetAvailablePolicies()
+		if err != nil {
+			return
+		}
+		for _, p := range cfg.Plugins {
+			fmt.Println(zshNormalize(p.Class))
+		}
+	}
 }

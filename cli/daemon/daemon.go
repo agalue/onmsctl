@@ -28,17 +28,17 @@ var DaemonMap = map[string]string{
 	"syslogd":                            "syslogd",
 	"trapd":                              "trapd",
 	"telemetryd":                         "telemetryd",
-	"nbi:email":                          "EmailNBI",
-	"nbi:snmptrap":                       "SnmpTrapNBI",
-	"nbi:syslog":                         "SyslogNBI",
+	"nbi-email":                          "EmailNBI",
+	"nbi-snmptrap":                       "SnmpTrapNBI",
+	"nbi-syslog":                         "SyslogNBI",
 	"notifd":                             "Notifd",
 	"reportd":                            "Reportd",
 	"pollerd":                            "Pollerd",
 	"poller-backend":                     "PollerBackEnd",
 	"provisiond":                         "Provisiond",
-	"provisiond:snmp-asset":              "Provisiond.SnmpAssetProvisioningAdapter",
-	"provisiond:snmp-hardware-inventory": "Provisiond.SnmpHardwareInventoryProvisioningAdapter",
-	"provisiond:wsman":                   "WsManAssetProvisioningAdapter",
+	"provisiond-snmp-asset":              "Provisiond.SnmpAssetProvisioningAdapter",
+	"provisiond-snmp-hardware-inventory": "Provisiond.SnmpHardwareInventoryProvisioningAdapter",
+	"provisiond-wsman":                   "WsManAssetProvisioningAdapter",
 	"scriptd":                            "Scriptd",
 	"statsd":                             "Statsd",
 	"tl1d":                               "Tl1d",
@@ -53,10 +53,11 @@ var CliCommand = cli.Command{
 	Usage: "Manage OpenNMS Daemons",
 	Subcommands: []cli.Command{
 		{
-			Name:      "reload",
-			Usage:     "Request reload the configuration of a given OpenNMS daemon",
-			ArgsUsage: "<daemonName>",
-			Action:    reloadDaemon,
+			Name:         "reload",
+			Usage:        "Request reload the configuration of a given OpenNMS daemon",
+			ArgsUsage:    "<daemonName>",
+			Action:       reloadDaemon,
+			BashComplete: reloadBashComplete,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "configFile, f",
@@ -90,6 +91,15 @@ func reloadDaemon(c *cli.Context) error {
 		event.AddParameter("configFile", configFile)
 	}
 	return services.GetEventsAPI(rest.Instance).SendEvent(event)
+}
+
+func reloadBashComplete(c *cli.Context) {
+	if c.NArg() > 0 {
+		return
+	}
+	for k := range DaemonMap {
+		fmt.Println(k)
+	}
 }
 
 func showReloadableDaemons(c *cli.Context) error {

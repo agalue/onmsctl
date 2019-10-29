@@ -19,10 +19,11 @@ var DetectorsCliCommand = cli.Command{
 	Category:  "Foreign Source Definitions",
 	Subcommands: []cli.Command{
 		{
-			Name:      "list",
-			Usage:     "List all the detectors from a given foreign source definition",
-			ArgsUsage: "<foreignSource>",
-			Action:    listDetectors,
+			Name:         "list",
+			Usage:        "List all the detectors from a given foreign source definition",
+			ArgsUsage:    "<foreignSource>",
+			Action:       listDetectors,
+			BashComplete: requisitionNameBashComplete,
 		},
 		{
 			Name:      "enumerate",
@@ -38,16 +39,18 @@ var DetectorsCliCommand = cli.Command{
 			Action:    describeDetectorClass,
 		},
 		{
-			Name:      "get",
-			Usage:     "Gets a detector from a given foreign source definition",
-			ArgsUsage: "<foreignSource> <detectorName|className>",
-			Action:    getDetector,
+			Name:         "get",
+			Usage:        "Gets a detector from a given foreign source definition",
+			ArgsUsage:    "<foreignSource> <detectorName|className>",
+			Action:       getDetector,
+			BashComplete: detectorBashComplete,
 		},
 		{
-			Name:      "set",
-			Usage:     "Adds or update a detector for a given foreign source definition, overriding any existing content",
-			ArgsUsage: "<foreignSource> <detectorName> <className>",
-			Action:    setDetector,
+			Name:         "set",
+			Usage:        "Adds or update a detector for a given foreign source definition, overriding any existing content",
+			ArgsUsage:    "<foreignSource> <className> <detectorName>",
+			Action:       setDetector,
+			BashComplete: detectorClassBashComplete,
 			Flags: []cli.Flag{
 				cli.StringSliceFlag{
 					Name:  "parameter, p",
@@ -56,9 +59,10 @@ var DetectorsCliCommand = cli.Command{
 			},
 		},
 		{
-			Name:   "apply",
-			Usage:  "Creates or updates a detector from a external YAML file, overriding any existing content",
-			Action: applyDetector,
+			Name:         "apply",
+			Usage:        "Creates or updates a detector from a external YAML file, overriding any existing content",
+			Action:       applyDetector,
+			BashComplete: requisitionNameBashComplete,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "file, f",
@@ -68,11 +72,12 @@ var DetectorsCliCommand = cli.Command{
 			ArgsUsage: "<foreignSource> <yaml>",
 		},
 		{
-			Name:      "delete",
-			ShortName: "del",
-			Usage:     "Deletes an existing detector from a given foreign source definition",
-			ArgsUsage: "<foreignSource> <detectorName>",
-			Action:    deleteDetector,
+			Name:         "delete",
+			ShortName:    "del",
+			Usage:        "Deletes an existing detector from a given foreign source definition",
+			ArgsUsage:    "<foreignSource> <detectorName>",
+			Action:       deleteDetector,
+			BashComplete: detectorBashComplete,
 		},
 	},
 }
@@ -155,4 +160,30 @@ func applyDetector(c *cli.Context) error {
 
 func deleteDetector(c *cli.Context) error {
 	return getFsAPI().DeleteDetector(c.Args().Get(0), c.Args().Get(1))
+}
+
+func detectorBashComplete(c *cli.Context) {
+	requisitionNameBashComplete(c)
+	if c.NArg() == 1 {
+		fs, err := getFsAPI().GetForeignSourceDef(c.Args().Get(0))
+		if err != nil {
+			return
+		}
+		for _, d := range fs.Detectors {
+			fmt.Println(zshNormalize(d.Name))
+		}
+	}
+}
+
+func detectorClassBashComplete(c *cli.Context) {
+	requisitionNameBashComplete(c)
+	if c.NArg() == 1 {
+		cfg, err := getUtilsAPI().GetAvailableDetectors()
+		if err != nil {
+			return
+		}
+		for _, p := range cfg.Plugins {
+			fmt.Println(zshNormalize(p.Class))
+		}
+	}
 }

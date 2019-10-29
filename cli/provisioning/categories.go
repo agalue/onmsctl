@@ -16,10 +16,11 @@ var CategoriesCliCommand = cli.Command{
 	Category:  "Requisitions",
 	Subcommands: []cli.Command{
 		{
-			Name:      "list",
-			Usage:     "List all monitored services from a given node",
-			ArgsUsage: "<foreignSource> <foreignId>",
-			Action:    listCategories,
+			Name:         "list",
+			Usage:        "List all monitored services from a given node",
+			ArgsUsage:    "<foreignSource> <foreignId>",
+			Action:       listCategories,
+			BashComplete: foreignIDBashComplete,
 		},
 		{
 			Name:      "add",

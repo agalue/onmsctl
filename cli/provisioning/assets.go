@@ -16,10 +16,11 @@ var AssetsCliCommand = cli.Command{
 	Category:  "Requisitions",
 	Subcommands: []cli.Command{
 		{
-			Name:      "list",
-			Usage:     "List all the assets from a given node",
-			ArgsUsage: "<foreignSource> <foreignId>",
-			Action:    listAssets,
+			Name:         "list",
+			Usage:        "List all the assets from a given node",
+			ArgsUsage:    "<foreignSource> <foreignId>",
+			Action:       listAssets,
+			BashComplete: foreignIDBashComplete,
 		},
 		{
 			Name:      "enumerate",
