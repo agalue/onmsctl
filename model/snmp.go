@@ -48,7 +48,12 @@ type SnmpInfo struct {
 
 // Validate returns an error if the service is invalid
 func (s *SnmpInfo) Validate() error {
-	if s.Community == "" {
+	if s.Version != "" {
+		if err := SNMPVersions.Set(s.Version); err != nil {
+			return fmt.Errorf("Invalid SNMP Version. Allowed values: %s", SNMPVersions.EnumAsString())
+		}
+	}
+	if s.Version != "v3" && s.Community == "" {
 		return fmt.Errorf("SNMP Community String cannot be null")
 	}
 	if s.SecurityLevel != 0 {
@@ -57,11 +62,6 @@ func (s *SnmpInfo) Validate() error {
 		}
 		if s.Version != "v3" {
 			s.SecurityLevel = 0
-		}
-	}
-	if s.Version != "" {
-		if err := SNMPVersions.Set(s.Version); err != nil {
-			return fmt.Errorf("Invalid SNMP Version. Allowed values: %s", SNMPVersions.EnumAsString())
 		}
 	}
 	if s.PrivProtocol != "" {
