@@ -81,6 +81,10 @@ var RequisitionsCliCommand = cli.Command{
 					Name:  "file, f",
 					Usage: "External YAML file (use '-' for STDIN Pipe)",
 				},
+				cli.BoolFlag{
+					Name:  "yaml, y",
+					Usage: "To generate the YAML representation on success",
+				},
 			},
 			ArgsUsage: "<content>",
 		},
@@ -166,6 +170,14 @@ func validateRequisition(c *cli.Context) error {
 	requisition, err := parseRequisition(c)
 	if err != nil {
 		return err
+	}
+	if c.Bool("yaml") {
+		data, err := yaml.Marshal(requisition)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(data))
+		return nil
 	}
 	fmt.Printf("Requisition %s is valid!\n", requisition.Name)
 	return nil
