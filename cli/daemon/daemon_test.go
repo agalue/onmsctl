@@ -28,10 +28,12 @@ func TestDaemonMap(t *testing.T) {
 	assert.Equal(t, true, isValidDaemon("pollerd"))
 	assert.Equal(t, false, isValidDaemon("nonexistent"))
 	assert.Equal(t, true, isValidDaemon("correlation:MyEngine"))
+	assert.Equal(t, true, isValidDaemon("correlation"))
 
 	assert.Equal(t, "Collectd", getDaemonName("collectd"))
-	assert.Equal(t, "EmailNBI", getDaemonName("nbi:email"))
+	assert.Equal(t, "EmailNBI", getDaemonName("nbi-email"))
 	assert.Equal(t, "DroolsCorrelationEngine:MyEngine", getDaemonName("correlation:MyEngine"))
+	assert.Equal(t, "DroolsCorrelationEngine", getDaemonName("correlation"))
 }
 
 func TestListDaemon(t *testing.T) {

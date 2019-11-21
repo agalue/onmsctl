@@ -127,8 +127,11 @@ func isValidDaemon(daemonName string) bool {
 func getDaemonName(id string) string {
 	if strings.HasPrefix(id, CorrelatorPrefix) {
 		data := strings.Split(id, ":")
-		fmt.Println(data)
-		return DaemonMap[CorrelatorPrefix] + ":" + data[1]
+		if len(data) == 2 {
+			return DaemonMap[CorrelatorPrefix] + ":" + data[1]
+		} else {
+			return DaemonMap[CorrelatorPrefix]
+		}
 	}
 	return DaemonMap[id]
 }
