@@ -166,6 +166,9 @@ func setSnmpConfig(c *cli.Context) error {
 		MaxRepetitions:  c.Int("maxRepetitions"),
 		MaxVarsPerPdu:   c.Int("maxVarsPerPdu"),
 	}
+	if err := checkLocation(snmp); err != nil {
+		return err
+	}
 	return getAPI().SetConfig(c.Args().Get(0), snmp)
 }
 
@@ -179,9 +182,26 @@ func applySnmpConfig(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	if err = checkLocation(snmp); err != nil {
+		return err
+	}
 	return getAPI().SetConfig(c.Args().Get(0), snmp)
+}
+
+func checkLocation(snmp model.SnmpInfo) error {
+	if snmp.Location != "" {
+		ok, err := getMonitoringLocationsAPI().LocationExists(snmp.Location)
+		if err == nil && !ok {
+			return fmt.Errorf("Location %s doesn't exists", snmp.Location)
+		}
+	}
+	return nil
 }
 
 func getAPI() api.SnmpAPI {
 	return services.GetSnmpAPI(rest.Instance)
+}
+
+func getMonitoringLocationsAPI() api.MonitoringLocationsAPI {
+	return services.GetMonitoringLocationsAPI(rest.Instance)
 }
