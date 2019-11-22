@@ -29,6 +29,10 @@ var CliCommand = cli.Command{
 			ArgsUsage: "<uei>",
 			Action:    sendEvent,
 			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "host",
+					Usage: "IP address or FQDN of the host that sends the event",
+				},
 				cli.Int64Flag{
 					Name:  "nodeid, n",
 					Usage: "The numeric node identifier",
@@ -88,6 +92,7 @@ func sendEvent(c *cli.Context) error {
 		IfIndex:     c.Int("ifindex"),
 		Description: c.String("descr"),
 		Severity:    c.String("severity"),
+		Host:        c.String("host"),
 		Source:      "onmsctl",
 	}
 	params := c.StringSlice("parm")
