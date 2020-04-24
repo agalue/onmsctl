@@ -376,6 +376,13 @@ func (n *RequisitionNode) Validate() error {
 			return err
 		}
 	}
+	for i := range n.Interfaces {
+		intf := &n.Interfaces[i]
+		if err := intf.Validate(); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
