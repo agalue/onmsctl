@@ -204,7 +204,7 @@ func FindParameter(parameters []Parameter, paramName string) *Parameter {
 	return nil
 }
 
-// ValidateScanInterval checks if a given scan-interval is valid
+// IsValidScanInterval checks if a given scan-interval is valid
 func IsValidScanInterval(scanInterval string) bool {
 	if scanInterval == "" {
 		return false
