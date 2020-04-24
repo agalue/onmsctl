@@ -11,6 +11,11 @@ var (
 	Severities = EnumValue{
 		Enum: []string{"Indeterminate", "Normal", "Warning", "Minor", "Major", "Critical"},
 	}
+
+	// Destinations for logMsg
+	Destinations = EnumValue{
+		Enum: []string{"logndisplay", "displayonly", "logonly", "suppress", "donotpersist"},
+	}
 )
 
 // SNMP an event SNMP object
