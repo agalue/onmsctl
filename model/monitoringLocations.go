@@ -9,7 +9,7 @@ type MonitoringLocation struct {
 	LocationName           string   `json:"location-name,omitempty" yaml:"name,omitempty"`
 	Priority               int      `json:"priority,omitempty" yaml:"priority,omitempty"`
 	MonitoringArea         string   `json:"monitoring-area,omitempty" yaml:"monitoringArea,omitempty"`
-	PollingPackageNames    []string `json:"polling-package-names,omitempty" yaml:pollingPackageNames,omitempty"`
+	PollingPackageNames    []string `json:"polling-package-names,omitempty" yaml:"pollingPackageNames,omitempty"`
 	CollectionPackageNames []string `json:"collection-package-names,omitempty" yaml:"collectionPackageNames,omitempty"`
 }
 
