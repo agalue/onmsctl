@@ -18,6 +18,11 @@ var severities = &model.EnumValue{
 	Enum: model.Severities.Enum,
 }
 
+var destinations = &model.EnumValue{
+	Enum:    model.Destinations.Enum,
+	Default: model.Destinations.Enum[0],
+}
+
 // CliCommand the CLI command to manage events
 var CliCommand = cli.Command{
 	Name:  "events",
@@ -30,7 +35,7 @@ var CliCommand = cli.Command{
 			Action:    sendEvent,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "host",
+					Name:  "host, H",
 					Usage: "IP address or FQDN of the host that sends the event",
 				},
 				cli.Int64Flag{
@@ -51,8 +56,13 @@ var CliCommand = cli.Command{
 				},
 				cli.StringFlag{
 					Name:  "descr, d",
-					Usage: "A description for the event browser",
+					Usage: "A description for the event",
 				},
+				//              Unfortunately, it is not possible to override the logMsg field.
+				//				cli.StringFlag{
+				//					Name:  "logmsg, m",
+				//					Usage: "The log message for the event",
+				//				},
 				cli.GenericFlag{
 					Name:  "severity, x",
 					Value: severities,
@@ -98,7 +108,15 @@ func sendEvent(c *cli.Context) error {
 	params := c.StringSlice("parm")
 	for _, p := range params {
 		data := strings.Split(p, "=")
-		event.AddParameter(data[0], data[1])
+		if len(data) == 2 {
+			event.AddParameter(data[0], data[1])
+		}
+	}
+	logmsg := c.String("logmsg")
+	if logmsg != "" {
+		event.LogMessage = &model.LogMsg{
+			Message: logmsg,
+		}
 	}
 	return getAPI().SendEvent(event)
 }
