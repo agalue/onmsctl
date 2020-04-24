@@ -1,200 +1,333 @@
 package model
 
+import (
+	"encoding/xml"
+	"fmt"
+)
+
+// MetaData a meta-data entry
+type MetaData struct {
+	XMLName xml.Name `xml:"meta-data" json:"-" yaml:"-"`
+	Key     string   `xml:"key" json:"key" yaml:"key"`
+	Value   string   `xml:"value" json:"value" yaml:"value"`
+	Context string   `xml:"context" json:"context" yaml:"context"`
+}
+
+// Validate verify structure and apply defaults when needed
+func (obj *MetaData) Validate() error {
+	if obj.Key == "" {
+		return fmt.Errorf("Key cannot be empty")
+	}
+	if obj.Value == "" {
+		return fmt.Errorf("Value cannot be empty")
+	}
+	if obj.Context == "" {
+		return fmt.Errorf("Context cannot be empty")
+	}
+	return nil
+}
+
 // OnmsCategory an entity that represents an OpenNMS category
 type OnmsCategory struct {
-	ID     int      `json:"id" yaml:"id"`
-	Name   string   `json:"name" yaml:"name"`
-	Groups []string `json:"groups,omitempty" yaml:"groups,omitempty"`
+	XMLName xml.Name `xml:"category" json:"-" yaml:"-"`
+	ID      int      `xml:"id,attr" json:"id" yaml:"id"`
+	Name    string   `xml:"name,attr" json:"name" yaml:"name"`
+	Groups  []string `xml:"groups,omitempty" json:"groups,omitempty" yaml:"groups,omitempty"`
 }
 
 // OnmsAssetRecord an entity that represents an OpenNMS asset record
 type OnmsAssetRecord struct {
-	ID int `json:"id,omitempty" yaml:"id,omitempty"`
+	XMLName xml.Name `xml:"assetRecord" json:"-" yaml:"-"`
+	ID      int      `xml:"id,attr,omitempty" json:"id,omitempty" yaml:"id,omitempty"`
 	// Identification
-	Description     string `json:"description,omitempty" yaml:"description,omitempty"`
-	Category        string `json:"category,omitempty" yaml:"category,omitempty"`
-	Manufacturer    string `json:"manufacturer,omitempty" yaml:"manufacturer,omitempty"`
-	ModelNumber     string `json:"modelNumber,omitempty" yaml:"modelNumber,omitempty"`
-	SerialNumber    string `json:"serialNumber,omitempty" yaml:"serialNumber,omitempty"`
-	AssetNumber     string `json:"assetNumber,omitempty" yaml:"assetNumber,omitempty"`
-	DateInstalled   *Time  `json:"dateInstalled,omitempty" yaml:"dateInstalled,omitempty"`
-	OperatingSystem string `json:"operatingSystem,omitempty" yaml:"operatingSystem,omitempty"`
+	Description     string `xml:"description,omitempty" json:"description,omitempty" yaml:"description,omitempty"`
+	Category        string `xml:"category,omitempty" json:"category,omitempty" yaml:"category,omitempty"`
+	Manufacturer    string `xml:"manufacturer,omitempty" json:"manufacturer,omitempty" yaml:"manufacturer,omitempty"`
+	ModelNumber     string `xml:"modelNumber,omitempty" json:"modelNumber,omitempty" yaml:"modelNumber,omitempty"`
+	SerialNumber    string `xml:"serialNumber,omitempty" json:"serialNumber,omitempty" yaml:"serialNumber,omitempty"`
+	AssetNumber     string `xml:"assetNumber,omitempty" json:"assetNumber,omitempty" yaml:"assetNumber,omitempty"`
+	DateInstalled   *Time  `xml:"dateInstalled,omitempty" json:"dateInstalled,omitempty" yaml:"dateInstalled,omitempty"`
+	OperatingSystem string `xml:"operatingSystem,omitempty" json:"operatingSystem,omitempty" yaml:"operatingSystem,omitempty"`
 	// Location
-	State          string  `json:"state,omitempty" yaml:"state,omitempty"`
-	Region         string  `json:"region,omitempty" yaml:"region,omitempty"`
-	Address1       string  `json:"address1,omitempty" yaml:"address1,omitempty"`
-	Address2       string  `json:"address2,omitempty" yaml:"address2,omitempty"`
-	City           string  `json:"city,omitempty" yaml:"city,omitempty"`
-	ZIP            string  `json:"zip,omitempty" yaml:"zip,omitempty"`
-	Country        string  `json:"country,omitempty" yaml:"country,omitempty"`
-	Longitude      float32 `json:"longitude,omitempty" yaml:"longitude,omitempty"`
-	Latitude       float32 `json:"latitude,omitempty" yaml:"latitude,omitempty"`
-	Division       string  `json:"division,omitempty" yaml:"division,omitempty"`
-	Department     string  `json:"department,omitempty" yaml:"department,omitempty"`
-	Building       string  `json:"building,omitempty" yaml:"building,omitempty"`
-	Floor          string  `json:"floor,omitempty" yaml:"floor,omitempty"`
-	Room           string  `json:"room,omitempty" yaml:"room,omitempty"`
-	Rack           string  `json:"rack,omitempty" yaml:"rack,omitempty"`
-	RackUnitHeight string  `json:"rackunitheight,omitempty" yaml:"rackUnitHeight,omitempty"`
-	Slot           string  `json:"slot,omitempty" yaml:"slot,omitempty"`
-	Port           string  `json:"port,omitempty" yaml:"port,omitempty"`
-	CircuitID      string  `json:"circuitId,omitempty" yaml:"circuitId,omitempty"`
-	Admin          string  `json:"admin,omitempty" yaml:"admin,omitempty"`
+	State          string  `xml:"state,omitempty" json:"state,omitempty" yaml:"state,omitempty"`
+	Region         string  `xml:"region,omitempty" json:"region,omitempty" yaml:"region,omitempty"`
+	Address1       string  `xml:"address1,omitempty" json:"address1,omitempty" yaml:"address1,omitempty"`
+	Address2       string  `xml:"address2,omitempty" json:"address2,omitempty" yaml:"address2,omitempty"`
+	City           string  `xml:"city,omitempty" json:"city,omitempty" yaml:"city,omitempty"`
+	ZIP            string  `xml:"zip,omitempty" json:"zip,omitempty" yaml:"zip,omitempty"`
+	Country        string  `xml:"country,omitempty" json:"country,omitempty" yaml:"country,omitempty"`
+	Longitude      float32 `xml:"longitude,omitempty" json:"longitude,omitempty" yaml:"longitude,omitempty"`
+	Latitude       float32 `xml:"latitude,omitempty" json:"latitude,omitempty" yaml:"latitude,omitempty"`
+	Division       string  `xml:"division,omitempty" json:"division,omitempty" yaml:"division,omitempty"`
+	Department     string  `xml:"department,omitempty" json:"department,omitempty" yaml:"department,omitempty"`
+	Building       string  `xml:"building,omitempty" json:"building,omitempty" yaml:"building,omitempty"`
+	Floor          string  `xml:"floor,omitempty" json:"floor,omitempty" yaml:"floor,omitempty"`
+	Room           string  `xml:"room,omitempty" json:"room,omitempty" yaml:"room,omitempty"`
+	Rack           string  `xml:"rack,omitempty" json:"rack,omitempty" yaml:"rack,omitempty"`
+	RackUnitHeight string  `xml:"rackunitheight,omitempty" json:"rackunitheight,omitempty" yaml:"rackUnitHeight,omitempty"`
+	Slot           string  `xml:"slot,omitempty" json:"slot,omitempty" yaml:"slot,omitempty"`
+	Port           string  `xml:"port,omitempty" json:"port,omitempty" yaml:"port,omitempty"`
+	CircuitID      string  `xml:"circuitId,omitempty" json:"circuitId,omitempty" yaml:"circuitId,omitempty"`
+	Admin          string  `xml:"admin,omitempty" json:"admin,omitempty" yaml:"admin,omitempty"`
 	// Vendor
-	Vendor                  string `json:"vendor,omitempty" yaml:"vendor,omitempty"`
-	VendorPhone             string `json:"vendorPhone,omitempty" yaml:"vendorPhone,omitempty"`
-	VendorFax               string `json:"vendorFax,omitempty" yaml:"vendorFax,omitempty"`
-	VendorAssetNumber       string `json:"vendorAssetNumber,omitempty" yaml:"vendorAssetNumber,omitempty"`
-	SupportPhone            string `json:"supportPhone,omitempty" yaml:"supportPhone,omitempty"`
-	Lease                   string `json:"lease,omitempty" yaml:"lease,omitempty"`
-	LeaseExpires            *Time  `json:"leaseExpires,omitempty" yaml:"leaseExpires,omitempty"`
-	MaintContract           string `json:"maintcontract,omitempty" yaml:"maintcontract,omitempty"`
-	MaintContractNumber     string `json:"maintContractNumber,omitempty" yaml:"maintContractNumber,omitempty"`
-	MaintContractExpiration *Time  `json:"maintContractExpiration,omitempty" yaml:"maintContractExpiration,omitempty"`
+	Vendor                  string `xml:"vendor,omitempty" json:"vendor,omitempty" yaml:"vendor,omitempty"`
+	VendorPhone             string `xml:"vendorPhone,omitempty" json:"vendorPhone,omitempty" yaml:"vendorPhone,omitempty"`
+	VendorFax               string `xml:"vendorFax,omitempty" json:"vendorFax,omitempty" yaml:"vendorFax,omitempty"`
+	VendorAssetNumber       string `xml:"vendorAssetNumber,omitempty" json:"vendorAssetNumber,omitempty" yaml:"vendorAssetNumber,omitempty"`
+	SupportPhone            string `xml:"supportPhone,omitempty" json:"supportPhone,omitempty" yaml:"supportPhone,omitempty"`
+	Lease                   string `xml:"lease,omitempty" json:"lease,omitempty" yaml:"lease,omitempty"`
+	LeaseExpires            *Time  `xml:"leaseExpires,omitempty" json:"leaseExpires,omitempty" yaml:"leaseExpires,omitempty"`
+	MaintContract           string `xml:"maintcontract,omitempty" json:"maintcontract,omitempty" yaml:"maintcontract,omitempty"`
+	MaintContractNumber     string `xml:"maintContractNumber,omitempty" json:"maintContractNumber,omitempty" yaml:"maintContractNumber,omitempty"`
+	MaintContractExpiration *Time  `xml:"maintContractExpiration,omitempty" json:"maintContractExpiration,omitempty" yaml:"maintContractExpiration,omitempty"`
 	// Hardware
-	CPU                string `json:"cpu,omitempty" yaml:"cpu,omitempty"`
-	RAM                string `json:"ram,omitempty" yaml:"ram,omitempty"`
-	AdditionalHardware string `json:"additionalhardware,omitempty" yaml:"additionalHardware,omitempty"`
-	NumPowerSupplies   string `json:"numpowersupplies,omitempty" yaml:"numPowerSupplies,omitempty"`
-	InputPower         string `json:"inputpower,omitempty" yaml:"inputPower,omitempty"`
-	StorageCtrl        string `json:"storagectrl,omitempty" yaml:"storageCtrl,omitempty"`
-	HDD1               string `json:"hdd1,omitempty" yaml:"hdd1,omitempty"`
-	HDD2               string `json:"hdd2,omitempty" yaml:"hdd2,omitempty"`
-	HDD3               string `json:"hdd3,omitempty" yaml:"hdd3,omitempty"`
-	HDD4               string `json:"hdd4,omitempty" yaml:"hdd4,omitempty"`
-	HDD5               string `json:"hdd5,omitempty" yaml:"hdd5,omitempty"`
-	HDD6               string `json:"hdd6,omitempty" yaml:"hdd6,omitempty"`
+	CPU                string `xml:"cpu,omitempty" json:"cpu,omitempty" yaml:"cpu,omitempty"`
+	RAM                string `xml:"ram,omitempty" json:"ram,omitempty" yaml:"ram,omitempty"`
+	AdditionalHardware string `xml:"additionalhardware,omitempty" json:"additionalhardware,omitempty" yaml:"additionalHardware,omitempty"`
+	NumPowerSupplies   string `xml:"numpowersupplies,omitempty" json:"numpowersupplies,omitempty" yaml:"numPowerSupplies,omitempty"`
+	InputPower         string `xml:"inputpower,omitempty" json:"inputpower,omitempty" yaml:"inputPower,omitempty"`
+	StorageCtrl        string `xml:"storagectrl,omitempty" json:"storagectrl,omitempty" yaml:"storageCtrl,omitempty"`
+	HDD1               string `xml:"hdd1,omitempty" json:"hdd1,omitempty" yaml:"hdd1,omitempty"`
+	HDD2               string `xml:"hdd2,omitempty" json:"hdd2,omitempty" yaml:"hdd2,omitempty"`
+	HDD3               string `xml:"hdd3,omitempty" json:"hdd3,omitempty" yaml:"hdd3,omitempty"`
+	HDD4               string `xml:"hdd4,omitempty" json:"hdd4,omitempty" yaml:"hdd4,omitempty"`
+	HDD5               string `xml:"hdd5,omitempty" json:"hdd5,omitempty" yaml:"hdd5,omitempty"`
+	HDD6               string `xml:"hdd6,omitempty" json:"hdd6,omitempty" yaml:"hdd6,omitempty"`
 	// Authentiation
-	Username      string `json:"username,omitempty" yaml:"username,omitempty"`
-	Password      string `json:"password,omitempty" yaml:"password,omitempty"`
-	Enable        string `json:"enable,omitempty" yaml:"enable,omitempty"`
-	AutoEnable    string `json:"autoenable,omitempty" yaml:"autoEnable,omitempty"`
-	Connection    string `json:"connection,omitempty" yaml:"connection,omitempty"`
-	SnmpCommunity string `json:"snmpcommunity,omitempty" yaml:"snmpCommunity,omitempty"`
+	Username      string `xml:"username,omitempty" json:"username,omitempty" yaml:"username,omitempty"`
+	Password      string `xml:"password,omitempty" json:"password,omitempty" yaml:"password,omitempty"`
+	Enable        string `xml:"enable,omitempty" json:"enable,omitempty" yaml:"enable,omitempty"`
+	AutoEnable    string `xml:"autoenable,omitempty" json:"autoenable,omitempty" yaml:"autoEnable,omitempty"`
+	Connection    string `xml:"connection,omitempty" json:"connection,omitempty" yaml:"connection,omitempty"`
+	SnmpCommunity string `xml:"snmpcommunity,omitempty" json:"snmpcommunity,omitempty" yaml:"snmpCommunity,omitempty"`
 	// Categories
-	DisplayCategory   string `json:"displayCategory,omitempty" yaml:"displayCategory,omitempty"`
-	NotifyCategory    string `json:"notifyCategory,omitempty" yaml:"notifyCategory,omitempty"`
-	PollerCategory    string `json:"pollerCategory,omitempty" yaml:"pollerCategory,omitempty"`
-	ThresholdCategory string `json:"thresholdCategory,omitempty" yaml:"thresholdCategory,omitempty"`
+	DisplayCategory   string `xml:"displayCategory,omitempty" json:"displayCategory,omitempty" yaml:"displayCategory,omitempty"`
+	NotifyCategory    string `xml:"notifyCategory,omitempty" json:"notifyCategory,omitempty" yaml:"notifyCategory,omitempty"`
+	PollerCategory    string `xml:"pollerCategory,omitempty" json:"pollerCategory,omitempty" yaml:"pollerCategory,omitempty"`
+	ThresholdCategory string `xml:"thresholdCategory,omitempty" json:"thresholdCategory,omitempty" yaml:"thresholdCategory,omitempty"`
 	// VMWare
-	VmwareManagedObjectID   string `json:"vmwareManagedObjectId,omitempty" yaml:"vmwareManagedObjectId,omitempty"`
-	VmwareManagedEntityType string `json:"vmwareManagedEntityType,omitempty" yaml:"vmwareManagedEntityType,omitempty"`
-	VmwareManagementServer  string `json:"vmwareManagementServer,omitempty" yaml:"vmwareManagementServer,omitempty"`
-	VmwareState             string `json:"vmwareState,omitempty" yaml:"vmwareState,omitempty"`
-	VmwareTopologyInfo      string `json:"vmwareTopologyInfo,omitempty" yaml:"vmwareTopologyInfo,omitempty"`
+	VmwareManagedObjectID   string `xml:"vmwareManagedObjectId,omitempty" json:"vmwareManagedObjectId,omitempty" yaml:"vmwareManagedObjectId,omitempty"`
+	VmwareManagedEntityType string `xml:"vmwareManagedEntityType,omitempty" json:"vmwareManagedEntityType,omitempty" yaml:"vmwareManagedEntityType,omitempty"`
+	VmwareManagementServer  string `xml:"vmwareManagementServer,omitempty" json:"vmwareManagementServer,omitempty" yaml:"vmwareManagementServer,omitempty"`
+	VmwareState             string `xml:"vmwareState,omitempty" json:"vmwareState,omitempty" yaml:"vmwareState,omitempty"`
+	VmwareTopologyInfo      string `xml:"vmwareTopologyInfo,omitempty" json:"vmwareTopologyInfo,omitempty" yaml:"vmwareTopologyInfo,omitempty"`
 	// General
-	Comment               string `json:"comment,omitempty" yaml:"comment,omitempty"`
-	LastModifiedBy        string `json:"lastModifiedBy,omitempty" yaml:"lastModifiedBy,omitempty"`
-	LastModifiedDate      *Time  `json:"lastModifiedDate,omitempty" yaml:"lastModifiedDate,omitempty"`
-	ManagedObjectType     string `json:"managedObjectType,omitempty" yaml:"managedObjectType,omitempty"`
-	ManagedObjectInstance string `json:"managedObjectInstance,omitempty" yaml:"managedObjectInstance,omitempty"`
+	Comment               string `xml:"comment,omitempty" json:"comment,omitempty" yaml:"comment,omitempty"`
+	LastModifiedBy        string `xml:"lastModifiedBy,omitempty" json:"lastModifiedBy,omitempty" yaml:"lastModifiedBy,omitempty"`
+	LastModifiedDate      *Time  `xml:"lastModifiedDate,omitempty" json:"lastModifiedDate,omitempty" yaml:"lastModifiedDate,omitempty"`
+	ManagedObjectType     string `xml:"managedObjectType,omitempty" json:"managedObjectType,omitempty" yaml:"managedObjectType,omitempty"`
+	ManagedObjectInstance string `xml:"managedObjectInstance,omitempty" json:"managedObjectInstance,omitempty" yaml:"managedObjectInstance,omitempty"`
 }
 
 // OnmsServiceType an entity that represents an OpenNMS Monitored Service type
 type OnmsServiceType struct {
-	ID   int    `json:"id" yaml:"id"`
-	Name string `json:"name" yaml:"name"`
+	XMLName xml.Name `xml:"serviceType" json:"-" yaml:"-"`
+	ID      int      `xml:"id,attr" json:"id" yaml:"id"`
+	Name    string   `xml:"name" json:"name" yaml:"name"`
 }
 
 // OnmsMonitoredService an entity that represents an OpenNMS Monitored Service
 type OnmsMonitoredService struct {
-	ID          int              `json:"id,omitempty" yaml:"id,omitempty"`
-	ServiceType *OnmsServiceType `json:"serviceType" yaml:"serviceType"`
-	Notify      string           `json:"notify,omitempty" yaml:"notify,omitempty"`
-	Qualifier   string           `json:"qualifier,omitempty" yaml:"qualifier,omitempty"`
-	Status      string           `json:"status,omitempty" yaml:"status,omitempty"`
-	StatusLong  string           `json:"statusLong,omitempty" yaml:"statusLong,omitempty"`
-	LastGood    *Time            `json:"lastGood,omitempty" yaml:"lastGood,omitempty"`
-	LastFail    *Time            `json:"lastFail,omitempty" yaml:"lastFail,omitempty"`
-	Source      string           `json:"source,omitempty" yaml:"source,omitempty"`
-	IsDown      bool             `json:"down" yaml:"isDown"`
+	XMLName     xml.Name         `xml:"service" json:"-" yaml:"-"`
+	ID          int              `xml:"id,attr,omitempty" json:"id,omitempty" yaml:"id,omitempty"`
+	ServiceType *OnmsServiceType `xml:"serviceType" json:"serviceType" yaml:"serviceType"`
+	Notify      string           `xml:"notify,omitempty" json:"notify,omitempty" yaml:"notify,omitempty"`
+	Qualifier   string           `xml:"qualifier,omitempty" json:"qualifier,omitempty" yaml:"qualifier,omitempty"`
+	Status      string           `xml:"status,attr,omitempty" json:"status,omitempty" yaml:"status,omitempty"`
+	StatusLong  string           `xml:"statusLong,attr,omitempty" json:"statusLong,omitempty" yaml:"statusLong,omitempty"`
+	LastGood    *Time            `xml:"lastGood,omitempty" json:"lastGood,omitempty" yaml:"lastGood,omitempty"`
+	LastFail    *Time            `xml:"lastFail,omitempty" json:"lastFail,omitempty" yaml:"lastFail,omitempty"`
+	Source      string           `xml:"source,attr,omitempty" json:"source,omitempty" yaml:"source,omitempty"`
+	IsDown      bool             `xml:"down,attr,omitempty" json:"down" yaml:"isDown"`
+	Meta        []MetaData       `xml:"metaData,attr,omitempty" json:"metaData,omitempty" yaml:"metaData,omitempty"`
+}
+
+// Validate verify structure and apply defaults when needed
+func (obj *OnmsMonitoredService) Validate() error {
+	if obj.ServiceType == nil || obj.ServiceType.Name == "" {
+		return fmt.Errorf("Service name cannot be empty")
+	}
+	if obj.Status == "" {
+		obj.Status = "A"
+	}
+	return nil
 }
 
 // OnmsMonitoredServiceList a list of nodes
 type OnmsMonitoredServiceList struct {
-	Count      int                    `json:"count" yaml:"count"`
-	TotalCount int                    `json:"totalCount" yaml:"totalCount"`
-	Offset     int                    `json:"offset" yaml:"offset"`
-	Services   []OnmsMonitoredService `json:"service" yaml:"services"`
+	XMLName    xml.Name               `xml:"services" json:"-" yaml:"-"`
+	Count      int                    `xml:"count,attr" json:"count" yaml:"count"`
+	TotalCount int                    `xml:"totalCount,attr" json:"totalCount" yaml:"totalCount"`
+	Offset     int                    `xml:"offset,attr" json:"offset" yaml:"offset"`
+	Services   []OnmsMonitoredService `xml:"service" json:"service" yaml:"services"`
 }
 
 // OnmsIPInterface an entity that represents an OpenNMS IP Interface
 type OnmsIPInterface struct {
-	ID                    int                `json:"id" yaml:"id"`
-	NodeID                int                `json:"nodeId,omitempty" yaml:"-,omitempty"`
-	IsManaged             string             `json:"isManaged,omitempty" yaml:"isManaged,omitempty"`
-	IPAddress             string             `json:"ipAddress" yaml:"ipAddress"`
-	MonitoredServiceCount int                `json:"monitoredServiceCount" yaml:"monitoredServiceCount"`
-	IfIndex               int                `json:"ifIndex,omitempty" yaml:"ifIndex,omitempty"`
-	HostName              string             `json:"hostName,omitempty" yaml:"hostName,omitempty"`
-	SnmpPrimary           string             `json:"snmpPrimary,omitempty" yaml:"snmpPrimary,omitempty"`
-	LastPoll              *Time              `json:"lastCapsdPoll,omitempty" yaml:"lastPoll,omitempty"`
-	SNMPInterface         *OnmsSnmpInterface `json:"snmpInterface,omitempty" yaml:"snmpInterface,omitempty"`
-	IsDown                bool               `json:"isDown" yaml:"isDown"`
-	HasFlows              bool               `json:"hasFlows" yaml:"hasFlows"`
+	XMLName               xml.Name               `xml:"ipInterface" json:"-" yaml:"-"`
+	ID                    int                    `xml:"id,attr" json:"id" yaml:"id"`
+	NodeID                int                    `xml:"nodeId,omitempty" json:"nodeId,omitempty" yaml:"-,omitempty"`
+	IsManaged             string                 `xml:"isManaged,attr" json:"isManaged,omitempty" yaml:"isManaged,omitempty"`
+	IPAddress             string                 `xml:"ipAddress" json:"ipAddress" yaml:"ipAddress"`
+	MonitoredServiceCount int                    `xml:"monitoredServiceCount,attr" json:"monitoredServiceCount" yaml:"monitoredServiceCount"`
+	IfIndex               int                    `xml:"ifIndex,attr,omitempty" json:"ifIndex,omitempty" yaml:"ifIndex,omitempty"`
+	HostName              string                 `xml:"hostName,omitempty" json:"hostName,omitempty" yaml:"hostName,omitempty"`
+	SnmpPrimary           string                 `xml:"snmpPrimary,attr,omitempty" json:"snmpPrimary,omitempty" yaml:"snmpPrimary,omitempty"`
+	LastPoll              *Time                  `xml:"lastCapsdPoll,omitempty" json:"lastCapsdPoll,omitempty" yaml:"lastPoll,omitempty"`
+	SNMPInterface         *OnmsSnmpInterface     `xml:"snmpInterface,omitempty" json:"snmpInterface,omitempty" yaml:"snmpInterface,omitempty"`
+	IsDown                bool                   `xml:"isDown,attr" json:"isDown" yaml:"isDown"`
+	HasFlows              bool                   `xml:"hasFlows,attr" json:"hasFlows" yaml:"hasFlows"`
+	Services              []OnmsMonitoredService `xml:"services,attr,omitempty" json:"services,omitempty" yaml:"services,omitempty"`
+	Meta                  []MetaData             `xml:"metaData,attr,omitempty" json:"metaData,omitempty" yaml:"metaData,omitempty"`
+}
+
+// Validate verify structure and apply defaults when needed
+func (obj *OnmsIPInterface) Validate() error {
+	if obj.IPAddress == "" {
+		return fmt.Errorf("IP Address cannot be empty")
+	}
+	if obj.SnmpPrimary == "" {
+		obj.SnmpPrimary = "P"
+	}
+	if obj.IsManaged == "" {
+		obj.IsManaged = "M"
+	}
+	if obj.SNMPInterface != nil {
+		if err := obj.SNMPInterface.Validate(); err != nil {
+			return err
+		}
+	}
+	for i := range obj.Services {
+		svc := &obj.Services[i]
+		if err := svc.Validate(); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // OnmsIPInterfaceList a list of nodes
 type OnmsIPInterfaceList struct {
-	Count      int               `json:"count" yaml:"count"`
-	TotalCount int               `json:"totalCount" yaml:"totalCount"`
-	Offset     int               `json:"offset" yaml:"offset"`
-	Interfaces []OnmsIPInterface `json:"ipInterface" yaml:"interfaces"`
+	XMLName    xml.Name          `xml:"ipInterfaces" json:"-" yaml:"-"`
+	Count      int               `xml:"count,attr" json:"count" yaml:"count"`
+	TotalCount int               `xml:"totalCount,attr" json:"totalCount" yaml:"totalCount"`
+	Offset     int               `xml:"offset,attr" json:"offset" yaml:"offset"`
+	Interfaces []OnmsIPInterface `xml:"ipInterface" json:"ipInterface" yaml:"interfaces"`
 }
 
 // OnmsSnmpInterface an entity that represents an OpenNMS SNMP Interface
 type OnmsSnmpInterface struct {
-	ID                      int    `json:"id" yaml:"id"`
-	IfType                  int    `json:"ifType,omitempty" yaml:"ifType,omitempty"`
-	IfAlias                 string `json:"ifAlias,omitempty" yaml:"ifAlias,omitempty"`
-	IfIndex                 int    `json:"ifIndex,omitempty" yaml:"ifIndex,omitempty"`
-	IfDescr                 string `json:"ifDescr,omitempty" yaml:"ifDescr,omitempty"`
-	IfName                  string `json:"ifName,omitempty" yaml:"ifName,omitempty"`
-	PhysAddress             string `json:"physAddress,omitempty" yaml:"physAddress,omitempty"`
-	IfSpeed                 int    `json:"ifSpeed,omitempty" yaml:"ifSpeed,omitempty"`
-	IfAdminStatus           int    `json:"ifAdminStatus,omitempty" yaml:"ifAdminStatus,omitempty"`
-	IfOperStatus            int    `json:"ifOperStatus,omitempty" yaml:"ifOperStatus,omitempty"`
-	Collect                 bool   `json:"collect" yaml:"collect"`
-	CollectFlag             string `json:"collectFlag,omitempty" yaml:"collectFlag,omitempty"`
-	CollectionUserSpecified bool   `json:"collectionUserSpecified,omitempty" yaml:"collectionUserSpecified,omitempty"`
-	Poll                    bool   `json:"poll" yaml:"poll"`
-	PollFlag                string `json:"pollFlag,omitempty" yaml:"pollFlag,omitempty"`
-	LastPoll                *Time  `json:"lastCapsdPoll,omitempty" yaml:"lastPoll,omitempty"`
-	HasFlows                bool   `json:"hasFlows" yaml:"hasFlows"`
+	XMLName                 xml.Name `xml:"snmpInterface" json:"-" yaml:"-"`
+	ID                      int      `xml:"id,attr" json:"id" yaml:"id"`
+	IfType                  int      `xml:"ifType,omitempty" json:"ifType,omitempty" yaml:"ifType,omitempty"`
+	IfAlias                 string   `xml:"ifAlias,omitempty" json:"ifAlias,omitempty" yaml:"ifAlias,omitempty"`
+	IfIndex                 int      `xml:"ifIndex,omitempty" json:"ifIndex,omitempty" yaml:"ifIndex,omitempty"`
+	IfDescr                 string   `xml:"ifDescr,omitempty" json:"ifDescr,omitempty" yaml:"ifDescr,omitempty"`
+	IfName                  string   `xml:"ifName,omitempty" json:"ifName,omitempty" yaml:"ifName,omitempty"`
+	PhysAddress             string   `xml:"physAddress,omitempty" json:"physAddress,omitempty" yaml:"physAddress,omitempty"`
+	IfSpeed                 int      `xml:"ifSpeed,omitempty" json:"ifSpeed,omitempty" yaml:"ifSpeed,omitempty"`
+	IfAdminStatus           int      `xml:"ifAdminStatus,omitempty" json:"ifAdminStatus,omitempty" yaml:"ifAdminStatus,omitempty"`
+	IfOperStatus            int      `xml:"ifOperStatus,omitempty" json:"ifOperStatus,omitempty" yaml:"ifOperStatus,omitempty"`
+	Collect                 bool     `xml:"collect,attr" json:"collect" yaml:"collect"`
+	CollectFlag             string   `xml:"collectFlag,attr,omitempty" json:"collectFlag,omitempty" yaml:"collectFlag,omitempty"`
+	CollectionUserSpecified bool     `xml:"collectionUserSpecified,omitempty" json:"collectionUserSpecified,omitempty" yaml:"collectionUserSpecified,omitempty"`
+	Poll                    bool     `xml:"poll,attr" json:"poll" yaml:"poll"`
+	PollFlag                string   `xml:"pollFlag,attr,omitempty" json:"pollFlag,omitempty" yaml:"pollFlag,omitempty"`
+	LastPoll                *Time    `xml:"lastCapsdPoll,omitempty" json:"lastCapsdPoll,omitempty" yaml:"lastPoll,omitempty"`
+	HasFlows                bool     `xml:"hasFlows,attr" json:"hasFlows" yaml:"hasFlows"`
+}
+
+// Validate verify structure and apply defaults when needed
+func (obj *OnmsSnmpInterface) Validate() error {
+	if obj.IfIndex == 0 {
+		return fmt.Errorf("ifIndex cannot be empty")
+	}
+	if obj.IfName == "" {
+		return fmt.Errorf("IfName cannot be empty")
+	}
+	if obj.IfOperStatus == 0 {
+		obj.IfOperStatus = 1
+	}
+	if obj.IfAdminStatus == 0 {
+		obj.IfAdminStatus = 1
+	}
+	if obj.CollectFlag == "" {
+		obj.CollectFlag = "C"
+	}
+	if obj.PollFlag == "" {
+		obj.PollFlag = "N"
+	}
+	return nil
 }
 
 // OnmsSnmpInterfaceList a list of nodes
 type OnmsSnmpInterfaceList struct {
-	Count      int                 `json:"count" yaml:"count"`
-	TotalCount int                 `json:"totalCount" yaml:"totalCount"`
-	Offset     int                 `json:"offset" yaml:"offset"`
-	Interfaces []OnmsSnmpInterface `json:"snmpInterface" yaml:"interfaces"`
+	XMLName    xml.Name            `xml:"snmpInterfaces" json:"-" yaml:"-"`
+	Count      int                 `xml:"count,attr" json:"count" yaml:"count"`
+	TotalCount int                 `xml:"totalCount,attr" json:"totalCount" yaml:"totalCount"`
+	Offset     int                 `xml:"offset,attr" json:"offset" yaml:"offset"`
+	Interfaces []OnmsSnmpInterface `xml:"snmpInterface" json:"snmpInterface" yaml:"interfaces"`
 }
 
 // OnmsNode an entity that represents an OpenNMS node
 type OnmsNode struct {
-	ID             string           `json:"id" yaml:"id"` // TODO the JSON returns a string instead of an integer
-	Label          string           `json:"label,omitempty" yaml:"label,omitempty"`
-	LabelSource    string           `json:"labelSource,omitempty" yaml:"labelSource,omitempty"`
-	ForeignSource  string           `json:"foreignSource,omitempty" yaml:"foreignSource,omitempty"`
-	ForeignID      string           `json:"foreignId,omitempty" yaml:"foreignId,omitempty"`
-	Location       string           `json:"location,omitempty" yaml:"location,omitempty"`
-	SysObjectID    string           `json:"sysObjectId,omitempty" yaml:"sysObjectId,omitempty"`
-	SysName        string           `json:"sysName,omitempty" yaml:"sysName,omitempty"`
-	SysLocation    string           `json:"sysLocation,omitempty" yaml:"sysLocation,omitempty"`
-	SysDescription string           `json:"sysDescription,omitempty" yaml:"sysDescription,omitempty"`
-	SysContact     string           `json:"sysContact,omitempty" yaml:"sysContact,omitempty"`
-	HasFlows       bool             `json:"hasFlows" yaml:"hasFlows"`
-	CreateTime     *Time            `json:"createTime,omitempty" yaml:"createTime,omitempty"`
-	LastPoll       *Time            `json:"lastCapsdPoll,omitempty" yaml:"lastPoll,omitempty"`
-	AssetRecord    *OnmsAssetRecord `json:"assetRecord,omitempty" yaml:"assetRecord,omitempty"`
-	Categories     []OnmsCategory   `json:"categories,omitempty" yaml:"categories,omitempty"`
+	XMLName        xml.Name            `xml:"node" json:"-" yaml:"-"`
+	ID             string              `xml:"id,attr" json:"id" yaml:"id"` // TODO the JSON returns a string instead of an integer
+	Type           string              `xml:"type,attr,omitempty" json:"type,omitempty" yaml:"type,omitempty"`
+	Label          string              `xml:"label,attr,omitempty" json:"label,omitempty" yaml:"label,omitempty"`
+	LabelSource    string              `xml:"labelSource,omitempty" json:"labelSource,omitempty" yaml:"labelSource,omitempty"`
+	ForeignSource  string              `xml:"foreignSource,attr,omitempty" json:"foreignSource,omitempty" yaml:"foreignSource,omitempty"`
+	ForeignID      string              `xml:"foreignId,attr,omitempty" json:"foreignId,omitempty" yaml:"foreignId,omitempty"`
+	Location       string              `xml:"location,attr,omitempty" json:"location,omitempty" yaml:"location,omitempty"`
+	SysObjectID    string              `xml:"sysObjectId,omitempty" json:"sysObjectId,omitempty" yaml:"sysObjectId,omitempty"`
+	SysName        string              `xml:"sysName,omitempty" json:"sysName,omitempty" yaml:"sysName,omitempty"`
+	SysLocation    string              `xml:"sysLocation,omitempty" json:"sysLocation,omitempty" yaml:"sysLocation,omitempty"`
+	SysDescription string              `xml:"sysDescription,omitempty" json:"sysDescription,omitempty" yaml:"sysDescription,omitempty"`
+	SysContact     string              `xml:"sysContact,omitempty" json:"sysContact,omitempty" yaml:"sysContact,omitempty"`
+	HasFlows       bool                `xml:"hasFlows,attr,omitempty" json:"hasFlows,omitempty" yaml:"hasFlows,omitempty"`
+	CreateTime     *Time               `xml:"createTime,omitempty" json:"createTime,omitempty" yaml:"createTime,omitempty"`
+	LastPoll       *Time               `xml:"lastCapsdPoll,omitempty" json:"lastCapsdPoll,omitempty" yaml:"lastPoll,omitempty"`
+	AssetRecord    *OnmsAssetRecord    `xml:"assetRecord,omitempty" json:"assetRecord,omitempty" yaml:"assetRecord,omitempty"`
+	Categories     []OnmsCategory      `xml:"categories,omitempty" json:"categories,omitempty" yaml:"categories,omitempty"`
+	IPInterfaces   []OnmsIPInterface   `xml:"ipInterfaces,omitempty" json:"ipInterfaces,omitempty" yaml:"ipInterfaces,omitempty"`
+	SNMPInterfaces []OnmsSnmpInterface `xml:"snmpInterfaces,omitempty" json:"snmpInterfaces,omitempty" yaml:"snmpInterfaces,omitempty"`
+	Meta           []MetaData          `xml:"metaData,attr,omitempty" json:"metaData,omitempty" yaml:"metaData,omitempty"`
+}
+
+// Validate verify structure and apply defaults when needed
+func (obj *OnmsNode) Validate() error {
+	if obj.Label == "" {
+		return fmt.Errorf("Label cannot be empty")
+	}
+	if obj.SysObjectID == "" {
+		return fmt.Errorf("SysObjectID cannot be empty")
+	}
+	if obj.LabelSource == "" {
+		obj.LabelSource = "U"
+	}
+	if obj.Type == "" {
+		obj.Type = "A"
+	}
+	for i := range obj.IPInterfaces {
+		intf := &obj.IPInterfaces[i]
+		if err := intf.Validate(); err != nil {
+			return err
+		}
+	}
+	for i := range obj.SNMPInterfaces {
+		intf := &obj.SNMPInterfaces[i]
+		if err := intf.Validate(); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // OnmsNodeList a list of nodes
 type OnmsNodeList struct {
-	Count      int        `json:"count" yaml:"count"`
-	TotalCount int        `json:"totalCount" yaml:"totalCount"`
-	Offset     int        `json:"offset" yaml:"offset"`
-	Nodes      []OnmsNode `json:"node" yaml:"nodes"`
+	XMLName    xml.Name   `xml:"nodes" json:"-" yaml:"-"`
+	Count      int        `xml:"count,attr" json:"count" yaml:"count"`
+	TotalCount int        `xml:"totalCount,attr" json:"totalCount" yaml:"totalCount"`
+	Offset     int        `xml:"offset,attr" json:"offset" yaml:"offset"`
+	Nodes      []OnmsNode `xml:"node" json:"node" yaml:"nodes"`
 }
