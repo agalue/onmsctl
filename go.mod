@@ -1,12 +1,12 @@
 module github.com/OpenNMS/onmsctl
 
-go 1.12
+go 1.14
 
 require (
-	github.com/google/go-cmp v0.3.0
-	github.com/imdario/mergo v0.3.7
+	github.com/google/go-cmp v0.4.0
+	github.com/imdario/mergo v0.3.9
 	github.com/pkg/errors v0.8.1 // indirect
-	github.com/urfave/cli v1.21.0
-	gopkg.in/yaml.v2 v2.2.2
+	github.com/urfave/cli v1.22.4
+	gopkg.in/yaml.v2 v2.2.8
 	gotest.tools v2.2.0+incompatible
 )
