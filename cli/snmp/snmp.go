@@ -13,7 +13,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// CliCommand the CLI command to provide server information
+// CliCommand the CLI command to manage SNMP configuration
 var CliCommand = cli.Command{
 	Name:  "snmp",
 	Usage: "Manage SNMP configuration",
