@@ -117,6 +117,10 @@ var CliCommand = cli.Command{
 					Name:  "contextName, ctx",
 					Usage: "SNMPv3 Context Name",
 				},
+				cli.IntFlag{
+					Name:  "ttl",
+					Usage: "Time To Live",
+				},
 			},
 		},
 		{
@@ -165,6 +169,9 @@ func setSnmpConfig(c *cli.Context) error {
 		MaxRequestSize:  c.Int("maxRequestSize"),
 		MaxRepetitions:  c.Int("maxRepetitions"),
 		MaxVarsPerPdu:   c.Int("maxVarsPerPdu"),
+	}
+	if ttl := c.Int("ttl"); ttl > 0 {
+		snmp.TTL = ttl
 	}
 	if err := checkLocation(snmp); err != nil {
 		return err

@@ -2,6 +2,7 @@ package snmp
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -25,6 +26,7 @@ var mockData = &model.SnmpInfo{
 	MaxRepetitions: 2,
 	Retries:        2,
 	Timeout:        1800,
+	TTL:            20000,
 }
 
 func createMockServer(t *testing.T) *httptest.Server {
@@ -78,7 +80,7 @@ func TestSetSnmp(t *testing.T) {
 	err = app.Run([]string{app.Name, "snmp", "set"})
 	assert.Error(t, err, "IP Address or FQDN required")
 
-	err = app.Run([]string{app.Name, "snmp", "set", "-c", mockData.Community, "-v", mockData.Version, "10.0.0.1"})
+	err = app.Run([]string{app.Name, "snmp", "set", "-c", mockData.Community, "-v", mockData.Version, "10.0.0.1", "-ttl", fmt.Sprintf("%d", mockData.TTL)})
 	assert.NilError(t, err)
 }
 
