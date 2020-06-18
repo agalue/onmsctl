@@ -11,16 +11,16 @@ type NumericAttribute struct {
 
 // Resource a resource object
 type Resource struct {
-	ID                 string                      `json:"id" yaml:"ID"`
-	Label              string                      `json:"label" yaml:"Label"`
-	Name               string                      `json:"name" yaml:"Name"`
-	Link               string                      `json:"link" yaml:"Link,omitempty"`
-	TypeLabel          string                      `json:"typeLabel" yaml:"TypeLabel"`
-	ParentID           string                      `json:"parentId" yaml:"ParentID"`
-	NumericAttributes  map[string]NumericAttribute `json:"rrdGraphAttributes,omitempty" yaml:"Metrics,omitempty"`
-	StringAttributes   map[string]string           `json:"stringPropertyAttributes,omitempty" yaml:"Strings,omitempty"`
-	ExternalAttributes map[string]string           `json:"externalValueAttributes,omitempty" yaml:"External,omitempty"`
-	Children           *ResourceList               `json:"children,omitempty" yaml:"Children,omitempty"`
+	ID                 string                      `json:"id" yaml:"id"`
+	Label              string                      `json:"label" yaml:"label"`
+	Name               string                      `json:"name" yaml:"name"`
+	Link               string                      `json:"link" yaml:"link,omitempty"`
+	TypeLabel          string                      `json:"typeLabel" yaml:"yypeLabel"`
+	ParentID           string                      `json:"parentId" yaml:"parentId"`
+	NumericAttributes  map[string]NumericAttribute `json:"rrdGraphAttributes,omitempty" yaml:"metrics,omitempty"`
+	StringAttributes   map[string]string           `json:"stringPropertyAttributes,omitempty" yaml:"strings,omitempty"`
+	ExternalAttributes map[string]string           `json:"externalValueAttributes,omitempty" yaml:"external,omitempty"`
+	Children           *ResourceList               `json:"children,omitempty" yaml:"children,omitempty"`
 }
 
 // ResourceList a list of resources
