@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/OpenNMS/onmsctl/model"
@@ -110,6 +111,10 @@ func (api mockRequisitionsRest) Post(path string, jsonBytes []byte) error {
 		return nil
 	}
 	return fmt.Errorf("POST: should not be called with %s", path)
+}
+
+func (api mockRequisitionsRest) PostRaw(path string, jsonBytes []byte) (*http.Response, error) {
+	return nil, fmt.Errorf("should not be called")
 }
 
 func (api mockRequisitionsRest) Delete(path string) error {

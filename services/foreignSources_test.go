@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/OpenNMS/onmsctl/model"
@@ -59,6 +60,10 @@ func (api mockForeignSourcesRest) Get(path string) ([]byte, error) {
 		return json.Marshal(mockForeignSource)
 	}
 	return nil, fmt.Errorf("GET: should not be called with path %s", path)
+}
+
+func (api mockForeignSourcesRest) PostRaw(path string, jsonBytes []byte) (*http.Response, error) {
+	return &http.Response{}, fmt.Errorf("should not be called")
 }
 
 func (api mockForeignSourcesRest) Post(path string, jsonBytes []byte) error {

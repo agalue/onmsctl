@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
 	"testing"
 
@@ -37,6 +38,10 @@ func (api mockEventRest) Post(path string, jsonBytes []byte) error {
 	json.Unmarshal(jsonBytes, event)
 	assert.Assert(api.t, cmp.Equal(mockEvent, event))
 	return nil
+}
+
+func (api mockEventRest) PostRaw(path string, jsonBytes []byte) (*http.Response, error) {
+	return nil, fmt.Errorf("should not be called")
 }
 
 func (api mockEventRest) Delete(path string) error {

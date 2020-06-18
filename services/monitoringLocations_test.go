@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/OpenNMS/onmsctl/model"
@@ -42,6 +43,10 @@ func (api mockMonitoringLocationRest) Post(path string, jsonBytes []byte) error 
 	assert.NilError(api.test, err)
 	assert.Equal(api.test, "Cary", loc.LocationName)
 	return nil
+}
+
+func (api mockMonitoringLocationRest) PostRaw(path string, jsonBytes []byte) (*http.Response, error) {
+	return nil, fmt.Errorf("should not be called")
 }
 
 func (api mockMonitoringLocationRest) Delete(path string) error {

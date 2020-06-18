@@ -62,19 +62,24 @@ func (cli Client) Get(path string) ([]byte, error) {
 
 // Post sends an HTTP POST request
 func (cli Client) Post(path string, jsonBytes []byte) error {
+	response, err := cli.PostRaw(path, jsonBytes)
+	if err != nil {
+		return err
+	}
+	return httpIsValid(response)
+}
+
+// PostRaw sends an HTTP POST request, returning the raw response
+func (cli Client) PostRaw(path string, jsonBytes []byte) (*http.Response, error) {
 	if cli.Debug {
 		log.Println("Data to be sent", string(jsonBytes))
 	}
 	request, err := cli.buildRequest(http.MethodPost, cli.URL+path, bytes.NewBuffer(jsonBytes))
 	if err != nil {
-		return err
+		return nil, err
 	}
 	request.Header.Set("Content-Type", "application/json")
-	response, err := cli.getHTTPClient().Do(request)
-	if err != nil {
-		return err
-	}
-	return httpIsValid(response)
+	return cli.getHTTPClient().Do(request)
 }
 
 // Delete sends an HTTP DELETE request

@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
 	"testing"
 
@@ -32,6 +33,10 @@ func (api *mockSnmpInfoRest) Get(path string) ([]byte, error) {
 
 func (api mockSnmpInfoRest) Post(path string, jsonBytes []byte) error {
 	return fmt.Errorf("should not be called")
+}
+
+func (api mockSnmpInfoRest) PostRaw(path string, jsonBytes []byte) (*http.Response, error) {
+	return nil, fmt.Errorf("should not be called")
 }
 
 func (api mockSnmpInfoRest) Delete(path string) error {

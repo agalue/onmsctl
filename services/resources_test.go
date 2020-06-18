@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"testing"
 
 	"gotest.tools/assert"
@@ -42,6 +43,10 @@ func (api mockResourceRest) Get(path string) ([]byte, error) {
 
 func (api mockResourceRest) Post(path string, jsonBytes []byte) error {
 	return fmt.Errorf("should not be called")
+}
+
+func (api mockResourceRest) PostRaw(path string, jsonBytes []byte) (*http.Response, error) {
+	return nil, fmt.Errorf("should not be called")
 }
 
 func (api mockResourceRest) Delete(path string) error {

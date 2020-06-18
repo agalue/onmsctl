@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/OpenNMS/onmsctl/test"
@@ -28,6 +29,10 @@ func (api mockProvisioningRest) Get(path string) ([]byte, error) {
 
 func (api mockProvisioningRest) Post(path string, jsonBytes []byte) error {
 	return fmt.Errorf("should not be called")
+}
+
+func (api mockProvisioningRest) PostRaw(path string, jsonBytes []byte) (*http.Response, error) {
+	return nil, fmt.Errorf("should not be called")
 }
 
 func (api mockProvisioningRest) Delete(path string) error {
