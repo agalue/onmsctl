@@ -32,6 +32,29 @@ func TestGetRequisition(t *testing.T) {
 	assert.NilError(t, err)
 }
 
+func TestImportRequisition(t *testing.T) {
+	var err error
+	app := test.CreateCli(RequisitionsCliCommand)
+	server := createTestServer(t)
+	defer server.Close()
+
+	err = app.Run([]string{app.Name, "req", "import"})
+	assert.Error(t, err, "Requisition name required")
+
+	err = app.Run([]string{app.Name, "req", "import", "Local"})
+	assert.NilError(t, err)
+}
+
+func TestImportAllRequisition(t *testing.T) {
+	var err error
+	app := test.CreateCli(RequisitionsCliCommand)
+	server := createTestServer(t)
+	defer server.Close()
+
+	err = app.Run([]string{app.Name, "req", "import", "ALL"})
+	assert.NilError(t, err)
+}
+
 func TestAddRequisition(t *testing.T) {
 	var err error
 	app := test.CreateCli(RequisitionsCliCommand)

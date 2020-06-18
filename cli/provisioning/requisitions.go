@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/OpenNMS/onmsctl/common"
@@ -91,7 +92,7 @@ var RequisitionsCliCommand = cli.Command{
 		{
 			Name:         "import",
 			ShortName:    "sync",
-			Usage:        "Import or synchronize a requisition",
+			Usage:        "Import or synchronize a requisition\n   To import all the existing requisitions use the word 'ALL'.",
 			Action:       importRequisition,
 			BashComplete: requisitionNameBashComplete,
 			Flags: []cli.Flag{
@@ -108,7 +109,7 @@ var RequisitionsCliCommand = cli.Command{
 	`,
 				},
 			},
-			ArgsUsage: "<name>",
+			ArgsUsage: "<name>|ALL",
 		},
 		{
 			Name:         "delete",
@@ -184,7 +185,27 @@ func validateRequisition(c *cli.Context) error {
 }
 
 func importRequisition(c *cli.Context) error {
-	return getReqAPI().ImportRequisition(c.Args().First(), c.String("rescanExisting"))
+	requisition := c.Args().First()
+	if strings.ToLower(requisition) != "all" {
+		return getReqAPI().ImportRequisition(requisition, c.String("rescanExisting"))
+	}
+	requisitions, err := getUtilsAPI().GetRequisitionNames()
+	if err != nil {
+		return err
+	}
+	wg := &sync.WaitGroup{}
+	for _, req := range requisitions.ForeignSources {
+		wg.Add(1)
+		go func(wg *sync.WaitGroup, req string) {
+			defer wg.Done()
+			fmt.Printf("Importing requisition %s\n", req)
+			if err := getReqAPI().ImportRequisition(req, c.String("rescanExisting")); err != nil {
+				fmt.Printf("ERROR: Cannot import because %v\n", err)
+			}
+		}(wg, req)
+	}
+	wg.Wait()
+	return nil
 }
 
 func deleteRequisition(c *cli.Context) error {
