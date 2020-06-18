@@ -7,6 +7,7 @@ import (
 	"github.com/OpenNMS/onmsctl/cli/daemon"
 	"github.com/OpenNMS/onmsctl/cli/events"
 	"github.com/OpenNMS/onmsctl/cli/info"
+	"github.com/OpenNMS/onmsctl/cli/profiles"
 	"github.com/OpenNMS/onmsctl/cli/provisioning"
 	"github.com/OpenNMS/onmsctl/cli/resources"
 	"github.com/OpenNMS/onmsctl/cli/search"
@@ -89,5 +90,6 @@ func initCliCommands(app *cli.App) {
 		daemon.CliCommand,
 		resources.CliCommand,
 		search.CliCommand,
+		profiles.CliCommand,
 	}
 }

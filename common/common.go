@@ -7,8 +7,8 @@ import (
 	"text/tabwriter"
 
 	"github.com/OpenNMS/onmsctl/rest"
+	"github.com/OpenNMS/onmsctl/services"
 	"github.com/urfave/cli"
-	"gopkg.in/yaml.v2"
 )
 
 // TableWriterOutput the default output for table writers
@@ -16,15 +16,7 @@ var TableWriterOutput = os.Stdout
 
 // Reads YAML configuration from file and place it on a target object
 func init() {
-	configFile := getConfigFile()
-	if fileExists(configFile) {
-		data, _ := ioutil.ReadFile(configFile)
-		err := yaml.Unmarshal(data, &rest.Instance)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "ERROR: cannot read configuration file %s; %s\n", configFile, err)
-			os.Exit(1)
-		}
-	}
+	services.GetProfilesAPI(rest.Instance).GetProfilesConfig()
 }
 
 // NewTableWriter creates a new table writer
@@ -69,17 +61,4 @@ func fileExists(filename string) bool {
 		}
 	}
 	return true
-}
-
-func getEnv(key, fallback string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value
-	}
-	return fallback
-}
-
-func getConfigFile() string {
-	homeDir, _ := os.UserHomeDir()
-	configFile := homeDir + string(os.PathSeparator) + ".onms" + string(os.PathSeparator) + "config.yaml"
-	return getEnv("ONMSCONFIG", configFile)
 }

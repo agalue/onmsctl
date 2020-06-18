@@ -4,6 +4,7 @@ A CLI tool for OpenNMS.
 
 The following features have been implemented:
 
+* Manage multiple OpenNMS servers
 * Verify installed OpenNMS Version
 * Manage provisioning requisitions (replacing `provision.pl`)
 * Manage SNMP configuration (replacing `provision.pl`)
@@ -155,3 +156,5 @@ Make sure to protect the file, as the credentials are on plain text.
 * Visualize tabular data with pagination (nodes, events, alarms, outages, notifications).
 
 * Configure scheduled outages.
+
+* Manually build the inventory (when using Provisioning or Auto-Discover are not possible).
