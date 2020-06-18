@@ -150,6 +150,12 @@ func (obj *OnmsMonitoredService) Validate() error {
 	if obj.Status == "" {
 		obj.Status = "A"
 	}
+	for m := range obj.Meta {
+		meta := &obj.Meta[m]
+		if err := meta.Validate(); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -176,7 +182,9 @@ type OnmsIPInterface struct {
 	LastPoll              *Time                  `xml:"lastCapsdPoll,omitempty" json:"lastCapsdPoll,omitempty" yaml:"lastPoll,omitempty"`
 	SNMPInterface         *OnmsSnmpInterface     `xml:"snmpInterface,omitempty" json:"snmpInterface,omitempty" yaml:"snmpInterface,omitempty"`
 	IsDown                bool                   `xml:"isDown,attr" json:"isDown" yaml:"isDown"`
-	HasFlows              bool                   `xml:"hasFlows,attr" json:"hasFlows" yaml:"hasFlows"`
+	HasFlows              bool                   `xml:"hasFlows,attr,omitempty" json:"hasFlows,omitempty" yaml:"hasFlows,omitempty"` // DEPRECATED
+	LastIngressFlow       *Time                  `xml:"lastIngressFlow,attr,omitempty" json:"lastIngressFlow,omitempty" yaml:"lastIngressFlow,omitempty"`
+	LastEgressFlow        *Time                  `xml:"lastEgressFlow,attr,omitempty" json:"lastEgressFlow,omitempty" yaml:"lastEgressFlow,omitempty"`
 	Services              []OnmsMonitoredService `xml:"services,attr,omitempty" json:"services,omitempty" yaml:"services,omitempty"`
 	Meta                  []MetaData             `xml:"metaData,attr,omitempty" json:"metaData,omitempty" yaml:"metaData,omitempty"`
 }
@@ -200,6 +208,12 @@ func (obj *OnmsIPInterface) Validate() error {
 	for i := range obj.Services {
 		svc := &obj.Services[i]
 		if err := svc.Validate(); err != nil {
+			return err
+		}
+	}
+	for m := range obj.Meta {
+		meta := &obj.Meta[m]
+		if err := meta.Validate(); err != nil {
 			return err
 		}
 	}
@@ -234,7 +248,9 @@ type OnmsSnmpInterface struct {
 	Poll                    bool     `xml:"poll,attr" json:"poll" yaml:"poll"`
 	PollFlag                string   `xml:"pollFlag,attr,omitempty" json:"pollFlag,omitempty" yaml:"pollFlag,omitempty"`
 	LastPoll                *Time    `xml:"lastCapsdPoll,omitempty" json:"lastCapsdPoll,omitempty" yaml:"lastPoll,omitempty"`
-	HasFlows                bool     `xml:"hasFlows,attr" json:"hasFlows" yaml:"hasFlows"`
+	HasFlows                bool     `xml:"hasFlows,attr,omitempty" json:"hasFlows,omitempty" yaml:"hasFlows,omitempty"` // DEPRECATED
+	LastIngressFlow         *Time    `xml:"lastIngressFlow,attr,omitempty" json:"lastIngressFlow,omitempty" yaml:"lastIngressFlow,omitempty"`
+	LastEgressFlow          *Time    `xml:"lastEgressFlow,attr,omitempty" json:"lastEgressFlow,omitempty" yaml:"lastEgressFlow,omitempty"`
 }
 
 // Validate verify structure and apply defaults when needed
@@ -271,27 +287,29 @@ type OnmsSnmpInterfaceList struct {
 
 // OnmsNode an entity that represents an OpenNMS node
 type OnmsNode struct {
-	XMLName        xml.Name            `xml:"node" json:"-" yaml:"-"`
-	ID             string              `xml:"id,attr" json:"id" yaml:"id"` // TODO the JSON returns a string instead of an integer
-	Type           string              `xml:"type,attr,omitempty" json:"type,omitempty" yaml:"type,omitempty"`
-	Label          string              `xml:"label,attr,omitempty" json:"label,omitempty" yaml:"label,omitempty"`
-	LabelSource    string              `xml:"labelSource,omitempty" json:"labelSource,omitempty" yaml:"labelSource,omitempty"`
-	ForeignSource  string              `xml:"foreignSource,attr,omitempty" json:"foreignSource,omitempty" yaml:"foreignSource,omitempty"`
-	ForeignID      string              `xml:"foreignId,attr,omitempty" json:"foreignId,omitempty" yaml:"foreignId,omitempty"`
-	Location       string              `xml:"location,attr,omitempty" json:"location,omitempty" yaml:"location,omitempty"`
-	SysObjectID    string              `xml:"sysObjectId,omitempty" json:"sysObjectId,omitempty" yaml:"sysObjectId,omitempty"`
-	SysName        string              `xml:"sysName,omitempty" json:"sysName,omitempty" yaml:"sysName,omitempty"`
-	SysLocation    string              `xml:"sysLocation,omitempty" json:"sysLocation,omitempty" yaml:"sysLocation,omitempty"`
-	SysDescription string              `xml:"sysDescription,omitempty" json:"sysDescription,omitempty" yaml:"sysDescription,omitempty"`
-	SysContact     string              `xml:"sysContact,omitempty" json:"sysContact,omitempty" yaml:"sysContact,omitempty"`
-	HasFlows       bool                `xml:"hasFlows,attr,omitempty" json:"hasFlows,omitempty" yaml:"hasFlows,omitempty"`
-	CreateTime     *Time               `xml:"createTime,omitempty" json:"createTime,omitempty" yaml:"createTime,omitempty"`
-	LastPoll       *Time               `xml:"lastCapsdPoll,omitempty" json:"lastCapsdPoll,omitempty" yaml:"lastPoll,omitempty"`
-	AssetRecord    *OnmsAssetRecord    `xml:"assetRecord,omitempty" json:"assetRecord,omitempty" yaml:"assetRecord,omitempty"`
-	Categories     []OnmsCategory      `xml:"categories,omitempty" json:"categories,omitempty" yaml:"categories,omitempty"`
-	IPInterfaces   []OnmsIPInterface   `xml:"ipInterfaces,omitempty" json:"ipInterfaces,omitempty" yaml:"ipInterfaces,omitempty"`
-	SNMPInterfaces []OnmsSnmpInterface `xml:"snmpInterfaces,omitempty" json:"snmpInterfaces,omitempty" yaml:"snmpInterfaces,omitempty"`
-	Meta           []MetaData          `xml:"metaData,attr,omitempty" json:"metaData,omitempty" yaml:"metaData,omitempty"`
+	XMLName         xml.Name            `xml:"node" json:"-" yaml:"-"`
+	ID              string              `xml:"id,attr" json:"id" yaml:"id"` // TODO the JSON returns a string instead of an integer
+	Type            string              `xml:"type,attr,omitempty" json:"type,omitempty" yaml:"type,omitempty"`
+	Label           string              `xml:"label,attr,omitempty" json:"label,omitempty" yaml:"label,omitempty"`
+	LabelSource     string              `xml:"labelSource,omitempty" json:"labelSource,omitempty" yaml:"labelSource,omitempty"`
+	ForeignSource   string              `xml:"foreignSource,attr,omitempty" json:"foreignSource,omitempty" yaml:"foreignSource,omitempty"`
+	ForeignID       string              `xml:"foreignId,attr,omitempty" json:"foreignId,omitempty" yaml:"foreignId,omitempty"`
+	Location        string              `xml:"location,attr,omitempty" json:"location,omitempty" yaml:"location,omitempty"`
+	SysObjectID     string              `xml:"sysObjectId,omitempty" json:"sysObjectId,omitempty" yaml:"sysObjectId,omitempty"`
+	SysName         string              `xml:"sysName,omitempty" json:"sysName,omitempty" yaml:"sysName,omitempty"`
+	SysLocation     string              `xml:"sysLocation,omitempty" json:"sysLocation,omitempty" yaml:"sysLocation,omitempty"`
+	SysDescription  string              `xml:"sysDescription,omitempty" json:"sysDescription,omitempty" yaml:"sysDescription,omitempty"`
+	SysContact      string              `xml:"sysContact,omitempty" json:"sysContact,omitempty" yaml:"sysContact,omitempty"`
+	HasFlows        bool                `xml:"hasFlows,attr,omitempty" json:"hasFlows,omitempty" yaml:"hasFlows,omitempty"` // DEPRECATED
+	LastIngressFlow *Time               `xml:"lastIngressFlow,attr,omitempty" json:"lastIngressFlow,omitempty" yaml:"lastIngressFlow,omitempty"`
+	LastEgressFlow  *Time               `xml:"lastEgressFlow,attr,omitempty" json:"lastEgressFlow,omitempty" yaml:"lastEgressFlow,omitempty"`
+	CreateTime      *Time               `xml:"createTime,omitempty" json:"createTime,omitempty" yaml:"createTime,omitempty"`
+	LastPoll        *Time               `xml:"lastCapsdPoll,omitempty" json:"lastCapsdPoll,omitempty" yaml:"lastPoll,omitempty"`
+	AssetRecord     *OnmsAssetRecord    `xml:"assetRecord,omitempty" json:"assetRecord,omitempty" yaml:"assetRecord,omitempty"`
+	Categories      []OnmsCategory      `xml:"categories,omitempty" json:"categories,omitempty" yaml:"categories,omitempty"`
+	IPInterfaces    []OnmsIPInterface   `xml:"ipInterfaces,omitempty" json:"ipInterfaces,omitempty" yaml:"ipInterfaces,omitempty"`
+	SNMPInterfaces  []OnmsSnmpInterface `xml:"snmpInterfaces,omitempty" json:"snmpInterfaces,omitempty" yaml:"snmpInterfaces,omitempty"`
+	Meta            []MetaData          `xml:"metaData,attr,omitempty" json:"metaData,omitempty" yaml:"metaData,omitempty"`
 }
 
 // Validate verify structure and apply defaults when needed
@@ -317,6 +335,12 @@ func (obj *OnmsNode) Validate() error {
 	for i := range obj.SNMPInterfaces {
 		intf := &obj.SNMPInterfaces[i]
 		if err := intf.Validate(); err != nil {
+			return err
+		}
+	}
+	for m := range obj.Meta {
+		meta := &obj.Meta[m]
+		if err := meta.Validate(); err != nil {
 			return err
 		}
 	}
