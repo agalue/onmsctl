@@ -11,7 +11,7 @@ type eventsAPI struct {
 	rest api.RestAPI
 }
 
-// GetEventsAPI Obtain an implementation of the Foreign Source Definitions API
+// GetEventsAPI Obtain an implementation of the Events API
 func GetEventsAPI(rest api.RestAPI) api.EventsAPI {
 	return &eventsAPI{rest}
 }
