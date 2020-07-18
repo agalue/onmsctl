@@ -110,19 +110,19 @@ func setConfigProfile(c *cli.Context) error {
 }
 
 func makeDefaultConfigProfile(c *cli.Context) error {
-	if name := c.Args().First(); name == "" {
+	name := c.Args().First()
+	if name == "" {
 		return fmt.Errorf("Profile name required")
-	} else {
-		return getAPI().SetDefault(name)
 	}
+	return getAPI().SetDefault(name)
 }
 
 func deleteConfigProfile(c *cli.Context) error {
-	if name := c.Args().First(); name == "" {
+	name := c.Args().First()
+	if name == "" {
 		return fmt.Errorf("Profile name required")
-	} else {
-		return getAPI().DeleteProfile(name)
 	}
+	return getAPI().DeleteProfile(name)
 }
 
 func getAPI() api.ProfilesAPI {

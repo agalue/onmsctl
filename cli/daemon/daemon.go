@@ -129,9 +129,8 @@ func getDaemonName(id string) string {
 		data := strings.Split(id, ":")
 		if len(data) == 2 {
 			return DaemonMap[CorrelatorPrefix] + ":" + data[1]
-		} else {
-			return DaemonMap[CorrelatorPrefix]
 		}
+		return DaemonMap[CorrelatorPrefix]
 	}
 	return DaemonMap[id]
 }
