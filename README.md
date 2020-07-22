@@ -51,7 +51,7 @@ For your own operating system, there is no need to specify parameters, as `go bu
 Alternatively, in case you don't want to install `Go` on your system, but you have [Docker](https://www.docker.com) installed, you can use it to compile it:
 
 ```bash
-➜ docker run -it --rm -e GO111MODULE=on -e GOOS=windows -e GOARCH=amd64 -v $(pwd):/app golang:1.12 bash
+➜ docker run -it --rm -e GO111MODULE=on -e GOOS=windows -e GOARCH=amd64 -v $(pwd):/app golang bash
 root@3854e5d2d67c:/go# cd /app
 root@3854e5d2d67c:/app# go build -o onmsctl.exe
 root@3854e5d2d67c:/app# exit
