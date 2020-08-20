@@ -80,8 +80,8 @@ func (s RequisitionMonitoredService) Validate() error {
 	if s.Name == "" {
 		return fmt.Errorf("Service name cannot be empty")
 	}
-	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, s.Name); matched {
-		return fmt.Errorf("Invalid characters on service name %s:, /, \\, ?, &, *, ', \"", s.Name)
+	if err := hasValidContent("Service Name", s.Name); err != nil {
+		return err
 	}
 	for i := range s.MetaData {
 		m := &s.MetaData[i]
@@ -105,8 +105,8 @@ func (a RequisitionAsset) Validate() error {
 	if a.Name == "" {
 		return fmt.Errorf("Asset name cannot be empty")
 	}
-	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, a.Name); matched {
-		return fmt.Errorf("Invalid characters on asset name %s:, /, \\, ?, &, *, ', \"", a.Name)
+	if err := hasValidContent("Asset Name", a.Name); err != nil {
+		return err
 	}
 	if a.Value == "" {
 		return fmt.Errorf("Asset value for %s cannot be empty", a.Name)
@@ -125,8 +125,8 @@ func (c RequisitionCategory) Validate() error {
 	if c.Name == "" {
 		return fmt.Errorf("Category name cannot be empty")
 	}
-	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, c.Name); matched {
-		return fmt.Errorf("Invalid characters on category name %s:, /, \\, ?, &, *, ', \"", c.Name)
+	if err := hasValidContent("Category Name", c.Name); err != nil {
+		return err
 	}
 	return nil
 }
@@ -340,8 +340,8 @@ func (n *RequisitionNode) Validate() error {
 	if n.ForeignID == "" {
 		return fmt.Errorf("Foreign ID cannot be empty")
 	}
-	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, n.ForeignID); matched {
-		return fmt.Errorf("Invalid characters on Foreign ID %s:, /, \\, ?, &, *, ', \"", n.ForeignID)
+	if err := hasValidContent("Foreign ID", n.ForeignID); err != nil {
+		return err
 	}
 	if n.NodeLabel == "" { // Set a reasonable default when the label is not initialized
 		n.NodeLabel = n.ForeignID
@@ -429,8 +429,8 @@ func (r *Requisition) Validate() error {
 	if r.Name == "" {
 		return fmt.Errorf("Requisition name cannot be empty")
 	}
-	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, r.Name); matched {
-		return fmt.Errorf("Invalid characters on requisition name %s:, /, \\, ?, &, *, ', \"", r.Name)
+	if err := hasValidContent("Requisition Name", r.Name); err != nil {
+		return err
 	}
 	foreignIDs := make(map[string]int)
 	for i := range r.Nodes {
@@ -477,4 +477,11 @@ func (stats RequisitionsStats) GetRequisitionStats(foreignSource string) Requisi
 		}
 	}
 	return RequisitionStats{}
+}
+
+func hasValidContent(kind string, field string) error {
+	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, field); matched {
+		return fmt.Errorf("Invalid characters on %s %s. Please avoid /, \\, ?, :, &, *, ', \"", kind, field)
+	}
+	return nil
 }
