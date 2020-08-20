@@ -11,16 +11,16 @@ import (
 	"github.com/urfave/cli"
 )
 
-// CorrelatorPrefix the prefix for correlation engines
-const CorrelatorPrefix = "correlation"
+// The prefix for correlation engines
+const correlatorPrefix = "correlation"
 
-// DaemonMap a map with reloadable daemons
-var DaemonMap = map[string]string{
+// A map with reloadable daemons
+var daemonMap = map[string]string{
 	"ackd":                               "Ackd",
 	"alarmd":                             "alarmd",
 	"bsmd":                               "Bsmd",
 	"collectd":                           "Collectd",
-	CorrelatorPrefix:                     "DroolsCorrelationEngine", // Append engine name
+	correlatorPrefix:                     "DroolsCorrelationEngine", // Append engine name
 	"discoverd":                          "Discovery",
 	"enlinkd":                            "Enlinkd",
 	"eventd":                             "Eventd",
@@ -97,14 +97,14 @@ func reloadBashComplete(c *cli.Context) {
 	if c.NArg() > 0 {
 		return
 	}
-	for k := range DaemonMap {
+	for k := range daemonMap {
 		fmt.Println(k)
 	}
 }
 
 func showReloadableDaemons(c *cli.Context) error {
-	keys := make([]string, 0, len(DaemonMap))
-	for k := range DaemonMap {
+	keys := make([]string, 0, len(daemonMap))
+	for k := range daemonMap {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
@@ -116,21 +116,21 @@ func showReloadableDaemons(c *cli.Context) error {
 
 func isValidDaemon(daemonName string) bool {
 	name := strings.ToLower(daemonName)
-	if _, ok := DaemonMap[name]; ok {
+	if _, ok := daemonMap[name]; ok {
 		return true
-	} else if strings.HasPrefix(name, CorrelatorPrefix) {
+	} else if strings.HasPrefix(name, correlatorPrefix) {
 		return true
 	}
 	return false
 }
 
 func getDaemonName(id string) string {
-	if strings.HasPrefix(id, CorrelatorPrefix) {
+	if strings.HasPrefix(id, correlatorPrefix) {
 		data := strings.Split(id, ":")
 		if len(data) == 2 {
-			return DaemonMap[CorrelatorPrefix] + ":" + data[1]
+			return daemonMap[correlatorPrefix] + ":" + data[1]
 		}
-		return DaemonMap[CorrelatorPrefix]
+		return daemonMap[correlatorPrefix]
 	}
-	return DaemonMap[id]
+	return daemonMap[id]
 }
