@@ -54,7 +54,7 @@ func (cli Client) Get(path string) ([]byte, error) {
 	}
 	data, err := ioutil.ReadAll(response.Body)
 	if cli.Debug && err == nil {
-		log.Println("Data received", string(data))
+		log.Printf("GET, Path: %s, Data: %s", path, string(data))
 	}
 	response.Body.Close()
 	return data, err
@@ -72,7 +72,7 @@ func (cli Client) Post(path string, jsonBytes []byte) error {
 // PostRaw sends an HTTP POST request, returning the raw response
 func (cli Client) PostRaw(path string, jsonBytes []byte) (*http.Response, error) {
 	if cli.Debug {
-		log.Println("Data to be sent", string(jsonBytes))
+		log.Printf("POST, Path: %s, Data: %s", path, string(jsonBytes))
 	}
 	request, err := cli.buildRequest(http.MethodPost, cli.URL+path, bytes.NewBuffer(jsonBytes))
 	if err != nil {
@@ -147,8 +147,11 @@ func (cli Client) buildRequest(method, url string, body io.Reader) (*http.Reques
 
 func httpIsValid(response *http.Response) error {
 	code := response.StatusCode
-	if code != http.StatusOK && code != http.StatusAccepted && code != http.StatusNoContent {
-		return fmt.Errorf("Invalid Response: %s", response.Status)
+	if code == http.StatusOK ||
+		code == http.StatusAccepted ||
+		code == http.StatusNoContent ||
+		code == http.StatusCreated {
+		return nil
 	}
-	return nil
+	return fmt.Errorf("Invalid Response: %s", response.Status)
 }
