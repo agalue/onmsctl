@@ -30,7 +30,7 @@ func (obj *MetaData) Validate() error {
 // OnmsCategory an entity that represents an OpenNMS category
 type OnmsCategory struct {
 	XMLName xml.Name `xml:"category" json:"-" yaml:"-"`
-	ID      int      `xml:"id,attr" json:"id" yaml:"id"`
+	ID      int      `xml:"id,attr,omitempty" json:"id,omitempty" yaml:"id,omitempty"`
 	Name    string   `xml:"name,attr" json:"name" yaml:"name"`
 	Groups  []string `xml:"groups,omitempty" json:"groups,omitempty" yaml:"groups,omitempty"`
 }
@@ -122,7 +122,7 @@ type OnmsAssetRecord struct {
 // OnmsServiceType an entity that represents an OpenNMS Monitored Service type
 type OnmsServiceType struct {
 	XMLName xml.Name `xml:"serviceType" json:"-" yaml:"-"`
-	ID      int      `xml:"id,attr" json:"id" yaml:"id"`
+	ID      int      `xml:"id,attr,omitempty" json:"id,omitempty" yaml:"id,omitempty"`
 	Name    string   `xml:"name" json:"name" yaml:"name"`
 }
 
@@ -138,7 +138,7 @@ type OnmsMonitoredService struct {
 	LastGood    *Time            `xml:"lastGood,omitempty" json:"lastGood,omitempty" yaml:"lastGood,omitempty"`
 	LastFail    *Time            `xml:"lastFail,omitempty" json:"lastFail,omitempty" yaml:"lastFail,omitempty"`
 	Source      string           `xml:"source,attr,omitempty" json:"source,omitempty" yaml:"source,omitempty"`
-	IsDown      bool             `xml:"down,attr,omitempty" json:"down" yaml:"isDown"`
+	IsDown      bool             `xml:"down,attr,omitempty" json:"down,omitempty" yaml:"isDown,omitempty"`
 	Meta        []MetaData       `xml:"metaData,attr,omitempty" json:"metaData,omitempty" yaml:"metaData,omitempty"`
 }
 
@@ -171,22 +171,33 @@ type OnmsMonitoredServiceList struct {
 // OnmsIPInterface an entity that represents an OpenNMS IP Interface
 type OnmsIPInterface struct {
 	XMLName               xml.Name               `xml:"ipInterface" json:"-" yaml:"-"`
-	ID                    int                    `xml:"id,attr" json:"id" yaml:"id"`
+	ID                    int                    `xml:"id,attr,omitempty" json:"id,omitempty" yaml:"id,omitempty"`
 	NodeID                int                    `xml:"nodeId,omitempty" json:"nodeId,omitempty" yaml:"-,omitempty"`
-	IsManaged             string                 `xml:"isManaged,attr" json:"isManaged,omitempty" yaml:"isManaged,omitempty"`
+	IsManaged             string                 `xml:"isManaged,attr,omitempty" json:"isManaged,omitempty" yaml:"isManaged,omitempty"`
 	IPAddress             string                 `xml:"ipAddress" json:"ipAddress" yaml:"ipAddress"`
-	MonitoredServiceCount int                    `xml:"monitoredServiceCount,attr" json:"monitoredServiceCount" yaml:"monitoredServiceCount"`
+	MonitoredServiceCount int                    `xml:"monitoredServiceCount,attr,omitempty" json:"monitoredServiceCount,omitempty" yaml:"monitoredServiceCount,omitempty"`
 	IfIndex               int                    `xml:"ifIndex,attr,omitempty" json:"ifIndex,omitempty" yaml:"ifIndex,omitempty"`
 	HostName              string                 `xml:"hostName,omitempty" json:"hostName,omitempty" yaml:"hostName,omitempty"`
 	SnmpPrimary           string                 `xml:"snmpPrimary,attr,omitempty" json:"snmpPrimary,omitempty" yaml:"snmpPrimary,omitempty"`
 	LastPoll              *Time                  `xml:"lastCapsdPoll,omitempty" json:"lastCapsdPoll,omitempty" yaml:"lastPoll,omitempty"`
 	SNMPInterface         *OnmsSnmpInterface     `xml:"snmpInterface,omitempty" json:"snmpInterface,omitempty" yaml:"snmpInterface,omitempty"`
-	IsDown                bool                   `xml:"isDown,attr" json:"isDown" yaml:"isDown"`
+	IsDown                bool                   `xml:"isDown,attr,omitempty" json:"isDown,omitempty" yaml:"isDown,omitempty"`
 	HasFlows              bool                   `xml:"hasFlows,attr,omitempty" json:"hasFlows,omitempty" yaml:"hasFlows,omitempty"` // DEPRECATED
 	LastIngressFlow       *Time                  `xml:"lastIngressFlow,attr,omitempty" json:"lastIngressFlow,omitempty" yaml:"lastIngressFlow,omitempty"`
 	LastEgressFlow        *Time                  `xml:"lastEgressFlow,attr,omitempty" json:"lastEgressFlow,omitempty" yaml:"lastEgressFlow,omitempty"`
 	Services              []OnmsMonitoredService `xml:"services,attr,omitempty" json:"services,omitempty" yaml:"services,omitempty"`
 	Meta                  []MetaData             `xml:"metaData,attr,omitempty" json:"metaData,omitempty" yaml:"metaData,omitempty"`
+}
+
+// ExtractBasic extracts core attributes only
+func (obj *OnmsIPInterface) ExtractBasic() *OnmsIPInterface {
+	return &OnmsIPInterface{
+		ID:          obj.ID,
+		IPAddress:   obj.IPAddress,
+		IsManaged:   obj.IsManaged,
+		SnmpPrimary: obj.SnmpPrimary,
+		HostName:    obj.HostName,
+	}
 }
 
 // Validate verify structure and apply defaults when needed
@@ -232,25 +243,43 @@ type OnmsIPInterfaceList struct {
 // OnmsSnmpInterface an entity that represents an OpenNMS SNMP Interface
 type OnmsSnmpInterface struct {
 	XMLName                 xml.Name `xml:"snmpInterface" json:"-" yaml:"-"`
-	ID                      int      `xml:"id,attr" json:"id" yaml:"id"`
+	ID                      int      `xml:"id,attr,omitempty" json:"id,omitempty" yaml:"id,omitempty"`
 	IfType                  int      `xml:"ifType,omitempty" json:"ifType,omitempty" yaml:"ifType,omitempty"`
 	IfAlias                 string   `xml:"ifAlias,omitempty" json:"ifAlias,omitempty" yaml:"ifAlias,omitempty"`
 	IfIndex                 int      `xml:"ifIndex,omitempty" json:"ifIndex,omitempty" yaml:"ifIndex,omitempty"`
 	IfDescr                 string   `xml:"ifDescr,omitempty" json:"ifDescr,omitempty" yaml:"ifDescr,omitempty"`
 	IfName                  string   `xml:"ifName,omitempty" json:"ifName,omitempty" yaml:"ifName,omitempty"`
 	PhysAddress             string   `xml:"physAddress,omitempty" json:"physAddress,omitempty" yaml:"physAddress,omitempty"`
-	IfSpeed                 int      `xml:"ifSpeed,omitempty" json:"ifSpeed,omitempty" yaml:"ifSpeed,omitempty"`
+	IfSpeed                 int64    `xml:"ifSpeed,omitempty" json:"ifSpeed,omitempty" yaml:"ifSpeed,omitempty"`
 	IfAdminStatus           int      `xml:"ifAdminStatus,omitempty" json:"ifAdminStatus,omitempty" yaml:"ifAdminStatus,omitempty"`
 	IfOperStatus            int      `xml:"ifOperStatus,omitempty" json:"ifOperStatus,omitempty" yaml:"ifOperStatus,omitempty"`
-	Collect                 bool     `xml:"collect,attr" json:"collect" yaml:"collect"`
+	Collect                 bool     `xml:"collect,attr,omitempty" json:"collect,omitempty" yaml:"collect,omitempty"`
 	CollectFlag             string   `xml:"collectFlag,attr,omitempty" json:"collectFlag,omitempty" yaml:"collectFlag,omitempty"`
 	CollectionUserSpecified bool     `xml:"collectionUserSpecified,omitempty" json:"collectionUserSpecified,omitempty" yaml:"collectionUserSpecified,omitempty"`
-	Poll                    bool     `xml:"poll,attr" json:"poll" yaml:"poll"`
+	Poll                    bool     `xml:"poll,attr,omitempty" json:"poll,omitempty" yaml:"poll,omitempty"`
 	PollFlag                string   `xml:"pollFlag,attr,omitempty" json:"pollFlag,omitempty" yaml:"pollFlag,omitempty"`
 	LastPoll                *Time    `xml:"lastCapsdPoll,omitempty" json:"lastCapsdPoll,omitempty" yaml:"lastPoll,omitempty"`
 	HasFlows                bool     `xml:"hasFlows,attr,omitempty" json:"hasFlows,omitempty" yaml:"hasFlows,omitempty"` // DEPRECATED
 	LastIngressFlow         *Time    `xml:"lastIngressFlow,attr,omitempty" json:"lastIngressFlow,omitempty" yaml:"lastIngressFlow,omitempty"`
 	LastEgressFlow          *Time    `xml:"lastEgressFlow,attr,omitempty" json:"lastEgressFlow,omitempty" yaml:"lastEgressFlow,omitempty"`
+}
+
+// ExtractBasic extracts core attributes only
+func (obj *OnmsSnmpInterface) ExtractBasic() *OnmsSnmpInterface {
+	return &OnmsSnmpInterface{
+		ID:            obj.ID,
+		IfIndex:       obj.IfIndex,
+		IfType:        obj.IfType,
+		IfAlias:       obj.IfAlias,
+		IfName:        obj.IfName,
+		IfDescr:       obj.IfDescr,
+		IfSpeed:       obj.IfSpeed,
+		IfAdminStatus: obj.IfAdminStatus,
+		IfOperStatus:  obj.IfOperStatus,
+		PhysAddress:   obj.PhysAddress,
+		CollectFlag:   obj.CollectFlag,
+		PollFlag:      obj.PollFlag,
+	}
 }
 
 // Validate verify structure and apply defaults when needed
@@ -288,7 +317,7 @@ type OnmsSnmpInterfaceList struct {
 // OnmsNode an entity that represents an OpenNMS node
 type OnmsNode struct {
 	XMLName         xml.Name            `xml:"node" json:"-" yaml:"-"`
-	ID              string              `xml:"id,attr" json:"id" yaml:"id"` // TODO the JSON returns a string instead of an integer
+	ID              string              `xml:"id,attr,omitempty" json:"id,omitempty" yaml:"id,omitempty"` // The JSON returns a string instead of an integer
 	Type            string              `xml:"type,attr,omitempty" json:"type,omitempty" yaml:"type,omitempty"`
 	Label           string              `xml:"label,attr,omitempty" json:"label,omitempty" yaml:"label,omitempty"`
 	LabelSource     string              `xml:"labelSource,omitempty" json:"labelSource,omitempty" yaml:"labelSource,omitempty"`
@@ -317,14 +346,17 @@ func (obj *OnmsNode) Validate() error {
 	if obj.Label == "" {
 		return fmt.Errorf("Label cannot be empty")
 	}
-	if obj.SysObjectID == "" {
-		return fmt.Errorf("SysObjectID cannot be empty")
-	}
 	if obj.LabelSource == "" {
 		obj.LabelSource = "U"
 	}
 	if obj.Type == "" {
 		obj.Type = "A"
+	}
+	if obj.ForeignSource == "" && obj.ForeignID != "" {
+		return fmt.Errorf("Foreign Source is required")
+	}
+	if obj.ForeignSource != "" && obj.ForeignID == "" {
+		return fmt.Errorf("Foreign ID is required")
 	}
 	for i := range obj.IPInterfaces {
 		intf := &obj.IPInterfaces[i]
@@ -342,6 +374,42 @@ func (obj *OnmsNode) Validate() error {
 		meta := &obj.Meta[m]
 		if err := meta.Validate(); err != nil {
 			return err
+		}
+	}
+	return nil
+}
+
+// ExtractBasic extracts core attributes only
+func (obj *OnmsNode) ExtractBasic() *OnmsNode {
+	return &OnmsNode{
+		ID:             obj.ID,
+		Type:           obj.Type,
+		Label:          obj.Label,
+		LabelSource:    obj.LabelSource,
+		Location:       obj.Location,
+		SysObjectID:    obj.SysObjectID,
+		SysName:        obj.SysName,
+		SysLocation:    obj.SysLocation,
+		SysDescription: obj.SysDescription,
+		SysContact:     obj.SysContact,
+	}
+}
+
+// GetIPInterface gets a given IP interface by its address (nil if not found)
+func (obj *OnmsNode) GetIPInterface(ipAddress string) *OnmsIPInterface {
+	for _, ip := range obj.IPInterfaces {
+		if ip.IPAddress == ipAddress {
+			return &ip
+		}
+	}
+	return nil
+}
+
+// GetSnmpInterface gets a given SNMP interface by its ifIndex (nil if not found)
+func (obj *OnmsNode) GetSnmpInterface(ifIndex int) *OnmsSnmpInterface {
+	for _, snmp := range obj.SNMPInterfaces {
+		if snmp.IfIndex == ifIndex {
+			return &snmp
 		}
 	}
 	return nil
