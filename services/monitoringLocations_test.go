@@ -45,7 +45,7 @@ func (api mockMonitoringLocationRest) Post(path string, jsonBytes []byte) error 
 	return nil
 }
 
-func (api mockMonitoringLocationRest) PostRaw(path string, jsonBytes []byte) (*http.Response, error) {
+func (api mockMonitoringLocationRest) PostRaw(path string, dataBytes []byte, contentType string) (*http.Response, error) {
 	return nil, fmt.Errorf("should not be called")
 }
 
@@ -53,8 +53,12 @@ func (api mockMonitoringLocationRest) Delete(path string) error {
 	return fmt.Errorf("should not be called")
 }
 
-func (api mockMonitoringLocationRest) Put(path string, jsonBytes []byte, contentType string) error {
+func (api mockMonitoringLocationRest) Put(path string, dataBytes []byte, contentType string) error {
 	return fmt.Errorf("should not be called")
+}
+
+func (api mockMonitoringLocationRest) IsValid(r *http.Response) error {
+	return nil
 }
 
 func TestLocationExists(t *testing.T) {

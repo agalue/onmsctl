@@ -6,7 +6,8 @@ import "net/http"
 type RestAPI interface {
 	Get(path string) ([]byte, error)
 	Post(path string, jsonBytes []byte) error
-	PostRaw(path string, jsonBytes []byte) (*http.Response, error)
+	PostRaw(path string, dataBytes []byte, contentType string) (*http.Response, error)
 	Delete(path string) error
 	Put(path string, dataBytes []byte, contentType string) error
+	IsValid(response *http.Response) error
 }

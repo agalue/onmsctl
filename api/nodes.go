@@ -28,8 +28,6 @@ type NodesAPI interface {
 	SetSnmpInterface(nodeCriteria string, intf *model.OnmsSnmpInterface) error
 	DeleteSnmpInterface(nodeCriteria string, ifIndex int) error
 
-	LinkInterfaces(nodeCriteria string, ifIndex int, ipAddress string) error
-
 	GetMonitoredServices(nodeCriteria string, ipAddress string) (*model.OnmsMonitoredServiceList, error)
 
 	GetMonitoredService(nodeCriteria string, ipAddress string, service string) (*model.OnmsMonitoredService, error)

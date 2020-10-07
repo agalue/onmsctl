@@ -2,9 +2,9 @@ package services
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"log"
-	"net/http"
 	"regexp"
 	"strconv"
 	"sync"
@@ -80,18 +80,31 @@ func (api nodesAPI) AddNode(node *model.OnmsNode) error {
 		return err
 	}
 	log.Printf("Adding node %s", node.Label)
+	// Search for existing nodes
+	filter := fmt.Sprintf("(node.label==*%s*)", node.Label)
+	if node.ForeignSource != "" || node.ForeignID != "" {
+		filter += fmt.Sprintf(",(node.foreignSource==%s;node.foreignId==%s)", node.ForeignSource, node.ForeignID)
+	}
+	list, err := api.searchNodes(filter)
+	if err != nil {
+		return fmt.Errorf("Cannot search for existing nodes: %v", err)
+	}
+	if len(list.Nodes) > 0 {
+		return fmt.Errorf("Cannot add node because found one with ID %s that matches either the Label or ForeignSource/ForeignID combination", list.Nodes[0].ID)
+	}
+	// Create node
 	jsonBytes, err := json.Marshal(node.ExtractBasic())
 	if err != nil {
 		return err
 	}
-	// Create node and extract nodeID from location header
-	response, err := api.rest.PostRaw("/api/v2/nodes", jsonBytes)
+	response, err := api.rest.PostRaw("/api/v2/nodes", jsonBytes, "application/json")
 	if err != nil {
 		return nil
 	}
-	if err = api.isValid(response); err != nil {
+	if err = api.rest.IsValid(response); err != nil {
 		return err
 	}
+	// Extract nodeID from location header
 	re := regexp.MustCompile(`\/(\d+)$`)
 	match := re.FindStringSubmatch(response.Header.Get("Location"))
 	nodeID := match[1]
@@ -166,7 +179,7 @@ func (api nodesAPI) GetIPInterfaces(nodeCriteria string) (*model.OnmsIPInterface
 			wg.Add(1)
 			go func(page int, wg *sync.WaitGroup) {
 				defer wg.Done()
-				url := fmt.Sprintf("/api/v2/nodes/%s/ipinterfaces?limit=%d&offset=%d", nodeCriteria, defaultLimit, 0)
+				url := fmt.Sprintf("/api/v2/nodes/%s/ipinterfaces?limit=%d&offset=%d", nodeCriteria, defaultLimit, defaultLimit*page)
 				if bytes, err = api.rest.Get(url); err != nil {
 					return
 				}
@@ -205,9 +218,9 @@ func (api nodesAPI) SetIPInterface(nodeCriteria string, intf *model.OnmsIPInterf
 	if intf.IfIndex > 0 {
 		snmp, err := api.GetSnmpInterface(nodeCriteria, intf.IfIndex)
 		if err != nil {
-			return err
+			return fmt.Errorf("Cannot find SNMP Interface with ifIndex %d on Node %s", intf.IfIndex, nodeCriteria)
 		}
-		log.Printf("Associating SNMP interface with ID %d to %s", snmp.ID, ip.IPAddress)
+		log.Printf("Associating SNMP interface with ID %d and ifIndex %d to %s", snmp.ID, snmp.IfIndex, ip.IPAddress)
 		ip.SNMPInterface = snmp.ExtractBasic()
 	}
 	jsonBytes, err := json.Marshal(ip)
@@ -269,7 +282,7 @@ func (api nodesAPI) GetSnmpInterfaces(nodeCriteria string) (*model.OnmsSnmpInter
 			wg.Add(1)
 			go func(page int, wg *sync.WaitGroup) {
 				defer wg.Done()
-				url := fmt.Sprintf("/api/v2/nodes/%s/ipinterfaces?limit=%d&offset=%d", nodeCriteria, defaultLimit, 0)
+				url := fmt.Sprintf("/api/v2/nodes/%s/snmpinterfaces?limit=%d&offset=%d", nodeCriteria, defaultLimit, defaultLimit*page)
 				if bytes, err = api.rest.Get(url); err != nil {
 					return
 				}
@@ -300,32 +313,24 @@ func (api nodesAPI) GetSnmpInterface(nodeCriteria string, ifIndex int) (*model.O
 	return intf, nil
 }
 
+// There are issues with the APIv2 which is why the APIv1 is used
 func (api nodesAPI) SetSnmpInterface(nodeCriteria string, intf *model.OnmsSnmpInterface) error {
 	if err := intf.Validate(); err != nil {
 		return err
 	}
-	jsonBytes, err := json.Marshal(intf.ExtractBasic())
+	dataBytes, err := xml.Marshal(intf.ExtractBasic())
 	if err != nil {
 		return err
 	}
-	return api.rest.Post("/api/v2/nodes/"+nodeCriteria+"/snmpinterfaces", jsonBytes)
+	response, err := api.rest.PostRaw("/rest/nodes/"+nodeCriteria+"/snmpinterfaces", dataBytes, "application/xml")
+	if err != nil {
+		return err
+	}
+	return api.rest.IsValid(response)
 }
 
 func (api nodesAPI) DeleteSnmpInterface(nodeCriteria string, ifIndex int) error {
 	return api.rest.Delete("/api/v2/nodes/" + nodeCriteria + "/snmpinterfaces/" + strconv.Itoa(ifIndex))
-}
-
-func (api nodesAPI) LinkInterfaces(nodeCriteria string, ifIndex int, ipAddress string) error {
-	ip, err := api.GetIPInterface(nodeCriteria, ipAddress)
-	if err != nil {
-		return err
-	}
-	snmp, err := api.GetSnmpInterface(nodeCriteria, ifIndex)
-	if err != nil {
-		return err
-	}
-	ip.SNMPInterface = snmp
-	return api.SetIPInterface(nodeCriteria, ip)
 }
 
 func (api nodesAPI) GetMonitoredServices(nodeCriteria string, ipAddress string) (*model.OnmsMonitoredServiceList, error) {
@@ -450,10 +455,16 @@ func (api nodesAPI) deleteMetadata(baseURL string, context string, key string) e
 	return api.rest.Delete(baseURL + "/metadata/" + context + "/" + key)
 }
 
-func (api nodesAPI) isValid(response *http.Response) error {
-	code := response.StatusCode
-	if code == http.StatusCreated || code == http.StatusNoContent {
-		return nil
+func (api nodesAPI) searchNodes(fiqlFilter string) (*model.OnmsNodeList, error) {
+	bytes, err := api.rest.Get("/api/v2/nodes?limit=0&_s=" + fiqlFilter)
+	if err != nil {
+		return nil, err
 	}
-	return fmt.Errorf("Invalid Response (%d): %s", response.StatusCode, response.Status)
+	list := &model.OnmsNodeList{}
+	if bytes != nil && len(bytes) > 0 {
+		if err = json.Unmarshal(bytes, list); err != nil {
+			return nil, err
+		}
+	}
+	return list, nil
 }

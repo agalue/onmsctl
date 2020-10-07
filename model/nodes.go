@@ -246,7 +246,7 @@ type OnmsSnmpInterface struct {
 	ID                      int      `xml:"id,attr,omitempty" json:"id,omitempty" yaml:"id,omitempty"`
 	IfType                  int      `xml:"ifType,omitempty" json:"ifType,omitempty" yaml:"ifType,omitempty"`
 	IfAlias                 string   `xml:"ifAlias,omitempty" json:"ifAlias,omitempty" yaml:"ifAlias,omitempty"`
-	IfIndex                 int      `xml:"ifIndex,omitempty" json:"ifIndex,omitempty" yaml:"ifIndex,omitempty"`
+	IfIndex                 int      `xml:"ifIndex,attr,omitempty" json:"ifIndex,omitempty" yaml:"ifIndex,omitempty"`
 	IfDescr                 string   `xml:"ifDescr,omitempty" json:"ifDescr,omitempty" yaml:"ifDescr,omitempty"`
 	IfName                  string   `xml:"ifName,omitempty" json:"ifName,omitempty" yaml:"ifName,omitempty"`
 	PhysAddress             string   `xml:"physAddress,omitempty" json:"physAddress,omitempty" yaml:"physAddress,omitempty"`

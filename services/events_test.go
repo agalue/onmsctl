@@ -40,7 +40,7 @@ func (api mockEventRest) Post(path string, jsonBytes []byte) error {
 	return nil
 }
 
-func (api mockEventRest) PostRaw(path string, jsonBytes []byte) (*http.Response, error) {
+func (api mockEventRest) PostRaw(path string, dataBytes []byte, contentType string) (*http.Response, error) {
 	return nil, fmt.Errorf("should not be called")
 }
 
@@ -48,8 +48,12 @@ func (api mockEventRest) Delete(path string) error {
 	return fmt.Errorf("should not be called")
 }
 
-func (api mockEventRest) Put(path string, jsonBytes []byte, contentType string) error {
+func (api mockEventRest) Put(path string, dataBytes []byte, contentType string) error {
 	return fmt.Errorf("should not be called")
+}
+
+func (api mockEventRest) IsValid(r *http.Response) error {
+	return nil
 }
 
 func TestSendEvent(t *testing.T) {

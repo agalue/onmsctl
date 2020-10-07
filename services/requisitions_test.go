@@ -113,8 +113,12 @@ func (api mockRequisitionsRest) Post(path string, jsonBytes []byte) error {
 	return fmt.Errorf("POST: should not be called with %s", path)
 }
 
-func (api mockRequisitionsRest) PostRaw(path string, jsonBytes []byte) (*http.Response, error) {
+func (api mockRequisitionsRest) PostRaw(path string, dataBytes []byte, contentType string) (*http.Response, error) {
 	return nil, fmt.Errorf("should not be called")
+}
+
+func (api mockRequisitionsRest) IsValid(r *http.Response) error {
+	return nil
 }
 
 func (api mockRequisitionsRest) Delete(path string) error {
@@ -141,7 +145,7 @@ func (api mockRequisitionsRest) Delete(path string) error {
 	return fmt.Errorf("DELETE: should not be called with %s", path)
 }
 
-func (api mockRequisitionsRest) Put(path string, jsonBytes []byte, contentType string) error {
+func (api mockRequisitionsRest) Put(path string, dataBytes []byte, contentType string) error {
 	switch path {
 	case "/rest/requisitions/Test1/import?rescanExisting=false":
 		return nil
