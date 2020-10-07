@@ -24,8 +24,51 @@ var CliCommand = cli.Command{
 			Action: getNodes,
 		},
 		{
+			Name:   "add",
+			Usage:  "Add a new node",
+			Action: addNode,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "label, l",
+					Usage: "Node Label",
+				},
+				cli.StringFlag{
+					Name:  "location, L",
+					Usage: "Node Minion Location",
+				},
+				cli.StringFlag{
+					Name:  "foreignSource, f",
+					Usage: "Foreign Source",
+				},
+				cli.StringFlag{
+					Name:  "foreignID, i",
+					Usage: "Foreign ID",
+				},
+				cli.StringFlag{
+					Name:  "sysOID, so",
+					Usage: "SNMP System Object ID",
+				},
+				cli.StringFlag{
+					Name:  "sysName, sn",
+					Usage: "SNMP System Name",
+				},
+				cli.StringFlag{
+					Name:  "sysDescr, sd",
+					Usage: "SNMP System Description",
+				},
+				cli.StringFlag{
+					Name:  "sysLocation, sl",
+					Usage: "SNMP System Location",
+				},
+				cli.StringFlag{
+					Name:  "sysContact, sc",
+					Usage: "SNMP System Contact",
+				},
+			},
+		},
+		{
 			Name:   "apply",
-			Usage:  "Creates a set of nodes from a external file",
+			Usage:  "Adds a new set of nodes from a external file",
 			Action: addNodes,
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -41,6 +84,58 @@ var CliCommand = cli.Command{
 			ArgsUsage: "<nodeId|foreignSource:foreignID>",
 			Action:    deleteNode,
 		},
+		{
+			Name:  "metadata",
+			Usage: "Manage node-level metadata",
+			Subcommands: []cli.Command{
+				{
+					Name:      "list",
+					Usage:     "Lists all the node-level metadata",
+					Action:    listNodeMetadata,
+					ArgsUsage: "<nodeId|foreignSource:foreignID>",
+				},
+				{
+					Name:      "set",
+					Usage:     "Adds or updates a node-level metadata entry",
+					Action:    setNodeMetadata,
+					ArgsUsage: "<nodeId|foreignSource:foreignID>",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "context, c",
+							Usage: "Metadata Context",
+						},
+						cli.StringFlag{
+							Name:  "key, k",
+							Usage: "Metadata Key",
+						},
+						cli.StringFlag{
+							Name:  "value, v",
+							Usage: "Metadata Value",
+						},
+					},
+				},
+				{
+					Name:      "delete",
+					Usage:     "Deletes an existing node-level metadata entry",
+					Action:    deleteNodeMetadata,
+					ArgsUsage: "<nodeId|foreignSource:foreignID>",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "context, c",
+							Usage: "Metadata Context",
+						},
+						cli.StringFlag{
+							Name:  "key, k",
+							Usage: "Metadata Key",
+						},
+					},
+				},
+			},
+		},
+		IPInterfacesCliCommand,
+		SnmpInterfacesCliCommand,
+		CategoriesCliCommand,
+		AssetsCliCommand,
 	},
 }
 
@@ -70,6 +165,24 @@ func deleteNode(c *cli.Context) error {
 	return services.GetNodesAPI(rest.Instance).DeleteNode(criteria)
 }
 
+func addNode(c *cli.Context) error {
+	n := &model.OnmsNode{
+		Label:          c.String("label"),
+		Location:       c.String("location"),
+		ForeignSource:  c.String("foreignSource"),
+		ForeignID:      c.String("foreignID"),
+		SysObjectID:    c.String("sysOID"),
+		SysName:        c.String("sysName"),
+		SysDescription: c.String("sysDescr"),
+		SysContact:     c.String("sysContact"),
+		SysLocation:    c.String("sysLocation"),
+	}
+	if err := n.Validate(); err != nil {
+		return err
+	}
+	return services.GetNodesAPI(rest.Instance).AddNode(n)
+}
+
 func addNodes(c *cli.Context) error {
 	list := &model.OnmsNodeList{}
 	data, err := common.ReadInput(c, 0)
@@ -88,4 +201,58 @@ func addNodes(c *cli.Context) error {
 		}
 	}
 	return nil
+}
+
+func listNodeMetadata(c *cli.Context) error {
+	criteria := c.Args().Get(0)
+	if criteria == "" {
+		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+	}
+	meta, err := services.GetNodesAPI(rest.Instance).GetNodeMetadata(criteria)
+	if err != nil {
+		return err
+	}
+	if len(meta) == 0 {
+		fmt.Println("There is no metadata")
+		return nil
+	}
+	writer := common.NewTableWriter()
+	fmt.Fprintln(writer, "Context\tKey\tValue")
+	for _, m := range meta {
+		fmt.Fprintf(writer, "%s\t%s\t%s\n", m.Context, m.Key, m.Value)
+	}
+	writer.Flush()
+	return nil
+}
+
+func setNodeMetadata(c *cli.Context) error {
+	criteria := c.Args().Get(0)
+	if criteria == "" {
+		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+	}
+	meta := model.MetaData{
+		Context: c.String("context"),
+		Key:     c.String("key"),
+		Value:   c.String("value"),
+	}
+	if err := meta.Validate(); err != nil {
+		return err
+	}
+	return services.GetNodesAPI(rest.Instance).SetNodeMetadata(criteria, meta)
+}
+
+func deleteNodeMetadata(c *cli.Context) error {
+	criteria := c.Args().Get(0)
+	if criteria == "" {
+		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+	}
+	ctx := c.String("context")
+	if ctx == "" {
+		return fmt.Errorf("Context is required")
+	}
+	key := c.String("key")
+	if key == "" {
+		return fmt.Errorf("Key is required")
+	}
+	return services.GetNodesAPI(rest.Instance).DeleteNodeMetadata(criteria, ctx, key)
 }
