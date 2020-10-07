@@ -12,6 +12,7 @@ The following features have been implemented:
 * Send events to OpenNMS (replacing `send-event.pl`)
 * Reload configuration of OpenNMS daemons
 * Enumerate collected resources and metrics (replacing `resourcecli`)
+* Manually manage the inventory (bypassing the provisioning system), useful when it is not possible to use Provisioning or Auto-Discover.
 * Preliminar support for searching entities (work in progress)
 
 The reason for implementing a CLI in `Go` is that the generated binaries are self-contained, and for the first time, Windows users will be able to control OpenNMS from the command line. For example, `provision.pl` or `send-events.pl` rely on having Perl installed with some additional dependencies, which can be complicated on the environment where this is either hard or impossible to have.
@@ -156,5 +157,3 @@ Make sure to protect the file, as the credentials are on plain text.
 * Visualize tabular data with pagination (nodes, events, alarms, outages, notifications).
 
 * Configure scheduled outages.
-
-* Manually build the inventory (when using Provisioning or Auto-Discover are not possible).
