@@ -2,9 +2,7 @@ package nodes
 
 import (
 	"fmt"
-	"reflect"
 
-	"github.com/OpenNMS/onmsctl/model"
 	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/OpenNMS/onmsctl/services"
 	"github.com/urfave/cli"
@@ -44,9 +42,12 @@ var AssetsCliCommand = cli.Command{
 }
 
 func getFields(c *cli.Context) error {
-	fields := getAvailableFields()
-	for _, f := range fields {
-		fmt.Printf("%s\n", f)
+	assets, err := services.GetProvisioningUtilsAPI(rest.Instance).GetAvailableAssets()
+	if err != nil {
+		return err
+	}
+	for _, asset := range assets.Element {
+		fmt.Printf("%s\n", asset)
 	}
 	return nil
 }
@@ -97,24 +98,17 @@ func setAssetField(criteria string, field string, value string) error {
 	if !isValidField(field) {
 		return fmt.Errorf("Invalid field %s", field)
 	}
-	record, err := services.GetNodesAPI(rest.Instance).GetAssetRecord(criteria)
-	if err != nil {
-		return err
-	}
-	reflect.ValueOf(record).Elem().FieldByName(field).SetString(value)
-	return services.GetNodesAPI(rest.Instance).SetAssetRecord(criteria, record)
+	return services.GetNodesAPI(rest.Instance).SetAssetField(criteria, field, value)
 }
 
 func getAvailableFields() []string {
-	r := &model.OnmsAssetRecord{}
-	s := reflect.ValueOf(r).Elem()
-	typeOfT := s.Type()
+	assets, err := services.GetProvisioningUtilsAPI(rest.Instance).GetAvailableAssets()
 	fields := make([]string, 0)
-	for i := 0; i < s.NumField(); i++ {
-		f := typeOfT.Field(i).Name
-		if f != "" && f != "ID" && f != "XMLName" {
-			fields = append(fields, typeOfT.Field(i).Name)
-		}
+	if err != nil {
+		return fields
+	}
+	for _, asset := range assets.Element {
+		fields = append(fields, asset)
 	}
 	return fields
 }

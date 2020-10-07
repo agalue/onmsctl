@@ -135,16 +135,19 @@ func addService(c *cli.Context) error {
 	if criteria == "" {
 		return fmt.Errorf("Interface IP Address is required")
 	}
-
-	svc := &model.OnmsMonitoredService{
+	svc := c.Args().Get(2)
+	if criteria == "" {
+		return fmt.Errorf("Monitored Service Name is required")
+	}
+	service := &model.OnmsMonitoredService{
 		ServiceType: &model.OnmsServiceType{
-			Name: c.String("name"),
+			Name: svc,
 		},
 	}
-	if err := svc.Validate(); err != nil {
+	if err := service.Validate(); err != nil {
 		return err
 	}
-	return services.GetNodesAPI(rest.Instance).SetMonitoredService(criteria, ipaddr, svc)
+	return services.GetNodesAPI(rest.Instance).SetMonitoredService(criteria, ipaddr, service)
 }
 
 func listServiceMetadata(c *cli.Context) error {
@@ -153,11 +156,11 @@ func listServiceMetadata(c *cli.Context) error {
 		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	ipaddr := c.Args().Get(1)
-	if criteria == "" {
+	if ipaddr == "" {
 		return fmt.Errorf("Interface IP Address is required")
 	}
 	svc := c.Args().Get(2)
-	if criteria == "" {
+	if svc == "" {
 		return fmt.Errorf("Monitored Service Name is required")
 	}
 	meta, err := services.GetNodesAPI(rest.Instance).GetMonitoredServiceMetadata(criteria, ipaddr, svc)
@@ -183,11 +186,11 @@ func setServiceMetadata(c *cli.Context) error {
 		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	ipaddr := c.Args().Get(1)
-	if criteria == "" {
+	if ipaddr == "" {
 		return fmt.Errorf("Interface IP Address is required")
 	}
 	svc := c.Args().Get(2)
-	if criteria == "" {
+	if svc == "" {
 		return fmt.Errorf("Monitored Service Name is required")
 	}
 	meta := model.MetaData{
@@ -207,11 +210,11 @@ func deleteServiceMetadata(c *cli.Context) error {
 		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	ipaddr := c.Args().Get(1)
-	if criteria == "" {
+	if ipaddr == "" {
 		return fmt.Errorf("Interface IP Address is required")
 	}
 	svc := c.Args().Get(2)
-	if criteria == "" {
+	if svc == "" {
 		return fmt.Errorf("Monitored Service Name is required")
 	}
 	ctx := c.String("context")

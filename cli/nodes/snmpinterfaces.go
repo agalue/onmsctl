@@ -60,6 +60,14 @@ var SnmpInterfacesCliCommand = cli.Command{
 					Name:  "ifAlias, a",
 					Usage: "The IF-MIB::ifAlias",
 				},
+				cli.BoolTFlag{
+					Name:  "collect",
+					Usage: "flag to collect performance metrics via SNMP Collector",
+				},
+				cli.BoolFlag{
+					Name:  "poll",
+					Usage: "flag to poll status via SNMP Interface Poller",
+				},
 			},
 		},
 		{
@@ -123,6 +131,16 @@ func addSnmpInterface(c *cli.Context) error {
 		IfName:        c.String("ifName"),
 		IfDescr:       c.String("ifDescr"),
 		IfAlias:       c.String("ifAlias"),
+	}
+	if c.BoolT("collect") {
+		snmp.CollectFlag = "UC"
+	} else {
+		snmp.CollectFlag = "UN"
+	}
+	if c.Bool("poll") {
+		snmp.PollFlag = "P"
+	} else {
+		snmp.PollFlag = "N"
 	}
 	if err := snmp.Validate(); err != nil {
 		return err

@@ -75,7 +75,7 @@ func (cli Client) Post(path string, jsonBytes []byte) error {
 // PostRaw sends an HTTP POST request, returning the raw response
 func (cli Client) PostRaw(path string, dataBytes []byte, contentType string) (*http.Response, error) {
 	if cli.Debug {
-		log.Printf("POST, Path: %s, Data: %s", cli.URL+path, string(dataBytes))
+		log.Printf("POST, Path: %s, Type: %s, Data: %s", cli.URL+path, contentType, string(dataBytes))
 	}
 	request, err := cli.buildRequest(http.MethodPost, cli.URL+path, bytes.NewBuffer(dataBytes))
 	if err != nil {

@@ -42,5 +42,5 @@ type NodesAPI interface {
 	DeleteCategory(nodeCriteria string, category string) error
 
 	GetAssetRecord(nodeCriteria string) (*model.OnmsAssetRecord, error)
-	SetAssetRecord(nodeCriteria string, record *model.OnmsAssetRecord) error
+	SetAssetField(nodeCriteria string, field string, value string) error
 }

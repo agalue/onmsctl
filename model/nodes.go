@@ -5,6 +5,15 @@ import (
 	"fmt"
 )
 
+// MetaDataList a list of metadata
+type MetaDataList struct {
+	XMLName    xml.Name   `xml:"meta-data-list" json:"-" yaml:"-"`
+	Count      int        `xml:"count,attr" json:"count" yaml:"count"`
+	TotalCount int        `xml:"totalCount,attr" json:"totalCount" yaml:"totalCount"`
+	Offset     int        `xml:"offset,attr" json:"offset" yaml:"offset"`
+	Metadata   []MetaData `xml:"meta-data" json:"metaData" yaml:"metadata"`
+}
+
 // MetaData a meta-data entry
 type MetaData struct {
 	XMLName xml.Name `xml:"meta-data" json:"-" yaml:"-"`
@@ -25,6 +34,15 @@ func (obj *MetaData) Validate() error {
 		return fmt.Errorf("Context cannot be empty")
 	}
 	return nil
+}
+
+// OnmsCategoryList a list of metadata
+type OnmsCategoryList struct {
+	XMLName    xml.Name       `xml:"categories" json:"-" yaml:"-"`
+	Count      int            `xml:"count,attr" json:"count" yaml:"count"`
+	TotalCount int            `xml:"totalCount,attr" json:"totalCount" yaml:"totalCount"`
+	Offset     int            `xml:"offset,attr" json:"offset" yaml:"offset"`
+	Categories []OnmsCategory `xml:"category" json:"category" yaml:"categories"`
 }
 
 // OnmsCategory an entity that represents an OpenNMS category
@@ -171,7 +189,7 @@ type OnmsMonitoredServiceList struct {
 // OnmsIPInterface an entity that represents an OpenNMS IP Interface
 type OnmsIPInterface struct {
 	XMLName               xml.Name               `xml:"ipInterface" json:"-" yaml:"-"`
-	ID                    int                    `xml:"id,attr,omitempty" json:"id,omitempty" yaml:"id,omitempty"`
+	ID                    string                 `xml:"id,attr,omitempty" json:"id,omitempty" yaml:"id,omitempty"` // The JSON returns a string instead of an integer
 	NodeID                int                    `xml:"nodeId,omitempty" json:"nodeId,omitempty" yaml:"-,omitempty"`
 	IsManaged             string                 `xml:"isManaged,attr,omitempty" json:"isManaged,omitempty" yaml:"isManaged,omitempty"`
 	IPAddress             string                 `xml:"ipAddress" json:"ipAddress" yaml:"ipAddress"`

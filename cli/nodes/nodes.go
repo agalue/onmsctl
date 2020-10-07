@@ -37,14 +37,6 @@ var CliCommand = cli.Command{
 					Usage: "Node Minion Location",
 				},
 				cli.StringFlag{
-					Name:  "foreignSource, f",
-					Usage: "Foreign Source",
-				},
-				cli.StringFlag{
-					Name:  "foreignID, i",
-					Usage: "Foreign ID",
-				},
-				cli.StringFlag{
 					Name:  "sysOID, so",
 					Usage: "SNMP System Object ID",
 				},
@@ -169,8 +161,6 @@ func addNode(c *cli.Context) error {
 	n := &model.OnmsNode{
 		Label:          c.String("label"),
 		Location:       c.String("location"),
-		ForeignSource:  c.String("foreignSource"),
-		ForeignID:      c.String("foreignID"),
 		SysObjectID:    c.String("sysOID"),
 		SysName:        c.String("sysName"),
 		SysDescription: c.String("sysDescr"),

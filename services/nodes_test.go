@@ -126,7 +126,7 @@ func (api mockNodeRest) Get(path string) ([]byte, error) {
 	}
 	if strings.HasSuffix(path, "/nodes/10/ipinterfaces/10.0.0.1") {
 		ip := mockNode.GetIPInterface("10.0.0.1")
-		ip.ID = 11 // Fake Primary Key
+		ip.ID = "11" // Fake Primary Key
 		return json.Marshal(ip)
 	}
 	return nil, fmt.Errorf("GET should not be called for %s", path)
