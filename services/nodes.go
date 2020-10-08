@@ -26,7 +26,7 @@ func GetNodesAPI(rest api.RestAPI) api.NodesAPI {
 }
 
 func (api nodesAPI) GetNodes() (*model.OnmsNodeList, error) {
-	bytes, err := api.rest.Get(fmt.Sprintf("/api/v2/nodes?limit=%d&offset=0", defaultLimit))
+	bytes, err := api.rest.Get(fmt.Sprintf("/api/v2/nodes?limit=%d&offset=0&orderBy=label", defaultLimit))
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (api nodesAPI) GetNodes() (*model.OnmsNodeList, error) {
 			wg.Add(1)
 			go func(page int, wg *sync.WaitGroup) {
 				defer wg.Done()
-				url := fmt.Sprintf("/api/v2/nodes?limit=%d&offset=%d", defaultLimit, defaultLimit*page)
+				url := fmt.Sprintf("/api/v2/nodes?limit=%d&offset=%d&orderBy=label", defaultLimit, defaultLimit*page)
 				if bytes, err = api.rest.Get(url); err != nil {
 					return
 				}
@@ -158,7 +158,7 @@ func (api nodesAPI) DeleteNodeMetadata(nodeCriteria string, context string, key 
 }
 
 func (api nodesAPI) GetIPInterfaces(nodeCriteria string) (*model.OnmsIPInterfaceList, error) {
-	url := fmt.Sprintf("/api/v2/nodes/%s/ipinterfaces?limit=%d&offset=%d", nodeCriteria, defaultLimit, 0)
+	url := fmt.Sprintf("/api/v2/nodes/%s/ipinterfaces?limit=%d&offset=%d&orderBy=ipAddress", nodeCriteria, defaultLimit, 0)
 	bytes, err := api.rest.Get(url)
 	if err != nil {
 		return nil, err
@@ -180,7 +180,7 @@ func (api nodesAPI) GetIPInterfaces(nodeCriteria string) (*model.OnmsIPInterface
 			wg.Add(1)
 			go func(page int, wg *sync.WaitGroup) {
 				defer wg.Done()
-				url := fmt.Sprintf("/api/v2/nodes/%s/ipinterfaces?limit=%d&offset=%d", nodeCriteria, defaultLimit, defaultLimit*page)
+				url := fmt.Sprintf("/api/v2/nodes/%s/ipinterfaces?limit=%d&offset=%d&orderBy=ipAddress", nodeCriteria, defaultLimit, defaultLimit*page)
 				if bytes, err = api.rest.Get(url); err != nil {
 					return
 				}
@@ -266,7 +266,7 @@ func (api nodesAPI) DeleteIPInterfaceMetadata(nodeCriteria string, ipAddress str
 }
 
 func (api nodesAPI) GetSnmpInterfaces(nodeCriteria string) (*model.OnmsSnmpInterfaceList, error) {
-	url := fmt.Sprintf("/api/v2/nodes/%s/snmpinterfaces?limit=%d&offset=%d", nodeCriteria, defaultLimit, 0)
+	url := fmt.Sprintf("/api/v2/nodes/%s/snmpinterfaces?limit=%d&offset=%d&orderBy=ifName", nodeCriteria, defaultLimit, 0)
 	bytes, err := api.rest.Get(url)
 	if err != nil {
 		return nil, err
@@ -288,7 +288,7 @@ func (api nodesAPI) GetSnmpInterfaces(nodeCriteria string) (*model.OnmsSnmpInter
 			wg.Add(1)
 			go func(page int, wg *sync.WaitGroup) {
 				defer wg.Done()
-				url := fmt.Sprintf("/api/v2/nodes/%s/snmpinterfaces?limit=%d&offset=%d", nodeCriteria, defaultLimit, defaultLimit*page)
+				url := fmt.Sprintf("/api/v2/nodes/%s/snmpinterfaces?limit=%d&offset=%d&orderBy=ifName", nodeCriteria, defaultLimit, defaultLimit*page)
 				if bytes, err = api.rest.Get(url); err != nil {
 					return
 				}

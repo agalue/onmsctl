@@ -34,11 +34,11 @@ var SnmpInterfacesCliCommand = cli.Command{
 				},
 				cli.IntFlag{
 					Name:  "ifOper, o",
-					Usage: "The IF-MIB::ifOperStatus",
+					Usage: "The IF-MIB::ifOperStatus (1:up, 2:down, 3:testing, 4:unknown, 5:dormant, 6:notPresent, 7:lowerLayerDown)",
 				},
 				cli.IntFlag{
 					Name:  "ifAdmin, A",
-					Usage: "The IF-MIB::ifAdminStatus",
+					Usage: "The IF-MIB::ifAdminStatus (1:up, 2:down, 3:testing)",
 				},
 				cli.Int64Flag{
 					Name:  "ifSpeed, s",
@@ -59,6 +59,10 @@ var SnmpInterfacesCliCommand = cli.Command{
 				cli.StringFlag{
 					Name:  "ifAlias, a",
 					Usage: "The IF-MIB::ifAlias",
+				},
+				cli.StringFlag{
+					Name:  "physAddress, p",
+					Usage: "The IF-MIB::ifPhysAddress (MAC Address)",
 				},
 				cli.BoolTFlag{
 					Name:  "collect",
@@ -131,6 +135,7 @@ func addSnmpInterface(c *cli.Context) error {
 		IfName:        c.String("ifName"),
 		IfDescr:       c.String("ifDescr"),
 		IfAlias:       c.String("ifAlias"),
+		PhysAddress:   c.String("physAddress"),
 	}
 	if c.BoolT("collect") {
 		snmp.CollectFlag = "UC"

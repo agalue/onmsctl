@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/xml"
 	"fmt"
+	"net"
 )
 
 // MetaDataList a list of metadata
@@ -223,6 +224,10 @@ func (obj *OnmsIPInterface) Validate() error {
 	if obj.IPAddress == "" {
 		return fmt.Errorf("IP Address cannot be empty")
 	}
+	ip := net.ParseIP(obj.IPAddress)
+	if ip == nil {
+		return fmt.Errorf("Invalid IP Address: %s", obj.IPAddress)
+	}
 	if obj.SnmpPrimary == "" {
 		obj.SnmpPrimary = "P"
 	}
@@ -319,6 +324,12 @@ func (obj *OnmsSnmpInterface) Validate() error {
 	}
 	if obj.PollFlag == "" {
 		obj.PollFlag = "N"
+	}
+	if obj.PhysAddress != "" {
+		_, err := net.ParseMAC(obj.PhysAddress)
+		if err != nil {
+			return fmt.Errorf("Invalid Physical Address: %v", err)
+		}
 	}
 	return nil
 }

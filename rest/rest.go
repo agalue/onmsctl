@@ -104,7 +104,7 @@ func (cli Client) Delete(path string) error {
 // Put sends an HTTP PUT request
 func (cli Client) Put(path string, dataBytes []byte, contentType string) error {
 	if cli.Debug {
-		log.Println("Data to be sent", string(dataBytes))
+		log.Printf("PUT, Path: %s, Type: %s, Data: %s", cli.URL+path, contentType, string(dataBytes))
 	}
 	request, err := cli.buildRequest(http.MethodPut, cli.URL+path, bytes.NewBuffer(dataBytes))
 	if err != nil {
