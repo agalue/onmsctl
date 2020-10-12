@@ -31,7 +31,7 @@ func (api mockProvisioningRest) Post(path string, jsonBytes []byte) error {
 	return fmt.Errorf("should not be called")
 }
 
-func (api mockProvisioningRest) PostRaw(path string, jsonBytes []byte) (*http.Response, error) {
+func (api mockProvisioningRest) PostRaw(path string, dataBytes []byte, contentType string) (*http.Response, error) {
 	return nil, fmt.Errorf("should not be called")
 }
 
@@ -39,8 +39,12 @@ func (api mockProvisioningRest) Delete(path string) error {
 	return fmt.Errorf("should not be called")
 }
 
-func (api mockProvisioningRest) Put(path string, jsonBytes []byte, contentType string) error {
+func (api mockProvisioningRest) Put(path string, dataBytes []byte, contentType string) error {
 	return fmt.Errorf("should not be called")
+}
+
+func (api mockProvisioningRest) IsValid(r *http.Response) error {
+	return nil
 }
 
 func TestGetRequisitionNames(t *testing.T) {

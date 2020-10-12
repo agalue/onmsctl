@@ -28,8 +28,6 @@ type NodesAPI interface {
 	SetSnmpInterface(nodeCriteria string, intf *model.OnmsSnmpInterface) error
 	DeleteSnmpInterface(nodeCriteria string, ifIndex int) error
 
-	LinkInterfaces(nodeCriteria string, ifIndex int, ipAddress string) error
-
 	GetMonitoredServices(nodeCriteria string, ipAddress string) (*model.OnmsMonitoredServiceList, error)
 
 	GetMonitoredService(nodeCriteria string, ipAddress string, service string) (*model.OnmsMonitoredService, error)
@@ -44,5 +42,5 @@ type NodesAPI interface {
 	DeleteCategory(nodeCriteria string, category string) error
 
 	GetAssetRecord(nodeCriteria string) (*model.OnmsAssetRecord, error)
-	SetAssetRecord(nodeCriteria string, record *model.OnmsAssetRecord) error
+	SetAssetField(nodeCriteria string, field string, value string) error
 }

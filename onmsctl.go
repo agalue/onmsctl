@@ -7,6 +7,7 @@ import (
 	"github.com/OpenNMS/onmsctl/cli/daemon"
 	"github.com/OpenNMS/onmsctl/cli/events"
 	"github.com/OpenNMS/onmsctl/cli/info"
+	"github.com/OpenNMS/onmsctl/cli/nodes"
 	"github.com/OpenNMS/onmsctl/cli/profiles"
 	"github.com/OpenNMS/onmsctl/cli/provisioning"
 	"github.com/OpenNMS/onmsctl/cli/resources"
@@ -17,7 +18,7 @@ import (
 )
 
 var (
-	version = "v1.0.0-beta2"
+	version = "v1.0.0-beta3"
 )
 
 func main() {
@@ -85,6 +86,7 @@ func initCliCommands(app *cli.App) {
 	app.Commands = []cli.Command{
 		info.CliCommand,
 		provisioning.CliCommand,
+		nodes.CliCommand,
 		snmp.CliCommand,
 		events.CliCommand,
 		daemon.CliCommand,

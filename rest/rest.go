@@ -40,6 +40,9 @@ func (cli Client) getHTTPClient() *http.Client {
 
 // Get sends an HTTP GET request
 func (cli Client) Get(path string) ([]byte, error) {
+	if cli.Debug {
+		log.Printf("GET, Path: %s", cli.URL+path)
+	}
 	request, err := cli.buildRequest(http.MethodGet, cli.URL+path, nil)
 	if err != nil {
 		return nil, err
@@ -48,13 +51,13 @@ func (cli Client) Get(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = httpIsValid(response)
+	err = cli.IsValid(response)
 	if err != nil {
 		return nil, err
 	}
 	data, err := ioutil.ReadAll(response.Body)
 	if cli.Debug && err == nil {
-		log.Printf("GET, Path: %s, Data: %s", path, string(data))
+		log.Printf("GET, Data: %s", string(data))
 	}
 	response.Body.Close()
 	return data, err
@@ -62,28 +65,31 @@ func (cli Client) Get(path string) ([]byte, error) {
 
 // Post sends an HTTP POST request
 func (cli Client) Post(path string, jsonBytes []byte) error {
-	response, err := cli.PostRaw(path, jsonBytes)
+	response, err := cli.PostRaw(path, jsonBytes, "application/json")
 	if err != nil {
 		return err
 	}
-	return httpIsValid(response)
+	return cli.IsValid(response)
 }
 
 // PostRaw sends an HTTP POST request, returning the raw response
-func (cli Client) PostRaw(path string, jsonBytes []byte) (*http.Response, error) {
+func (cli Client) PostRaw(path string, dataBytes []byte, contentType string) (*http.Response, error) {
 	if cli.Debug {
-		log.Printf("POST, Path: %s, Data: %s", path, string(jsonBytes))
+		log.Printf("POST, Path: %s, Type: %s, Data: %s", cli.URL+path, contentType, string(dataBytes))
 	}
-	request, err := cli.buildRequest(http.MethodPost, cli.URL+path, bytes.NewBuffer(jsonBytes))
+	request, err := cli.buildRequest(http.MethodPost, cli.URL+path, bytes.NewBuffer(dataBytes))
 	if err != nil {
 		return nil, err
 	}
-	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Content-Type", contentType)
 	return cli.getHTTPClient().Do(request)
 }
 
 // Delete sends an HTTP DELETE request
 func (cli Client) Delete(path string) error {
+	if cli.Debug {
+		log.Printf("DELETE, Path: %s", cli.URL+path)
+	}
 	request, err := cli.buildRequest(http.MethodDelete, cli.URL+path, nil)
 	if err != nil {
 		return err
@@ -92,13 +98,13 @@ func (cli Client) Delete(path string) error {
 	if err != nil {
 		return err
 	}
-	return httpIsValid(response)
+	return cli.IsValid(response)
 }
 
 // Put sends an HTTP PUT request
 func (cli Client) Put(path string, dataBytes []byte, contentType string) error {
 	if cli.Debug {
-		log.Println("Data to be sent", string(dataBytes))
+		log.Printf("PUT, Path: %s, Type: %s, Data: %s", cli.URL+path, contentType, string(dataBytes))
 	}
 	request, err := cli.buildRequest(http.MethodPut, cli.URL+path, bytes.NewBuffer(dataBytes))
 	if err != nil {
@@ -109,7 +115,22 @@ func (cli Client) Put(path string, dataBytes []byte, contentType string) error {
 	if err != nil {
 		return err
 	}
-	return httpIsValid(response)
+	return cli.IsValid(response)
+}
+
+// IsValid verifies HTTP response, return an error if it is not valid
+func (cli Client) IsValid(response *http.Response) error {
+	if cli.Debug {
+		log.Printf("Got response: %s", response.Status)
+	}
+	code := response.StatusCode
+	if code == http.StatusOK ||
+		code == http.StatusAccepted ||
+		code == http.StatusNoContent ||
+		code == http.StatusCreated {
+		return nil
+	}
+	return fmt.Errorf("Invalid Response: %s", response.Status)
 }
 
 func (cli Client) buildRequest(method, url string, body io.Reader) (*http.Request, error) {
@@ -143,15 +164,4 @@ func (cli Client) buildRequest(method, url string, body io.Reader) (*http.Reques
 		request = request.WithContext(httptrace.WithClientTrace(request.Context(), trace))
 	}
 	return request, nil
-}
-
-func httpIsValid(response *http.Response) error {
-	code := response.StatusCode
-	if code == http.StatusOK ||
-		code == http.StatusAccepted ||
-		code == http.StatusNoContent ||
-		code == http.StatusCreated {
-		return nil
-	}
-	return fmt.Errorf("Invalid Response: %s", response.Status)
 }

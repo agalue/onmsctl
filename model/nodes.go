@@ -3,7 +3,17 @@ package model
 import (
 	"encoding/xml"
 	"fmt"
+	"net"
 )
+
+// MetaDataList a list of metadata
+type MetaDataList struct {
+	XMLName    xml.Name   `xml:"meta-data-list" json:"-" yaml:"-"`
+	Count      int        `xml:"count,attr" json:"count" yaml:"count"`
+	TotalCount int        `xml:"totalCount,attr" json:"totalCount" yaml:"totalCount"`
+	Offset     int        `xml:"offset,attr" json:"offset" yaml:"offset"`
+	Metadata   []MetaData `xml:"meta-data" json:"metaData" yaml:"metadata"`
+}
 
 // MetaData a meta-data entry
 type MetaData struct {
@@ -25,6 +35,15 @@ func (obj *MetaData) Validate() error {
 		return fmt.Errorf("Context cannot be empty")
 	}
 	return nil
+}
+
+// OnmsCategoryList a list of metadata
+type OnmsCategoryList struct {
+	XMLName    xml.Name       `xml:"categories" json:"-" yaml:"-"`
+	Count      int            `xml:"count,attr" json:"count" yaml:"count"`
+	TotalCount int            `xml:"totalCount,attr" json:"totalCount" yaml:"totalCount"`
+	Offset     int            `xml:"offset,attr" json:"offset" yaml:"offset"`
+	Categories []OnmsCategory `xml:"category" json:"category" yaml:"categories"`
 }
 
 // OnmsCategory an entity that represents an OpenNMS category
@@ -171,7 +190,7 @@ type OnmsMonitoredServiceList struct {
 // OnmsIPInterface an entity that represents an OpenNMS IP Interface
 type OnmsIPInterface struct {
 	XMLName               xml.Name               `xml:"ipInterface" json:"-" yaml:"-"`
-	ID                    int                    `xml:"id,attr,omitempty" json:"id,omitempty" yaml:"id,omitempty"`
+	ID                    string                 `xml:"id,attr,omitempty" json:"id,omitempty" yaml:"id,omitempty"` // The JSON returns a string instead of an integer
 	NodeID                int                    `xml:"nodeId,omitempty" json:"nodeId,omitempty" yaml:"-,omitempty"`
 	IsManaged             string                 `xml:"isManaged,attr,omitempty" json:"isManaged,omitempty" yaml:"isManaged,omitempty"`
 	IPAddress             string                 `xml:"ipAddress" json:"ipAddress" yaml:"ipAddress"`
@@ -204,6 +223,10 @@ func (obj *OnmsIPInterface) ExtractBasic() *OnmsIPInterface {
 func (obj *OnmsIPInterface) Validate() error {
 	if obj.IPAddress == "" {
 		return fmt.Errorf("IP Address cannot be empty")
+	}
+	ip := net.ParseIP(obj.IPAddress)
+	if ip == nil {
+		return fmt.Errorf("Invalid IP Address: %s", obj.IPAddress)
 	}
 	if obj.SnmpPrimary == "" {
 		obj.SnmpPrimary = "P"
@@ -246,7 +269,7 @@ type OnmsSnmpInterface struct {
 	ID                      int      `xml:"id,attr,omitempty" json:"id,omitempty" yaml:"id,omitempty"`
 	IfType                  int      `xml:"ifType,omitempty" json:"ifType,omitempty" yaml:"ifType,omitempty"`
 	IfAlias                 string   `xml:"ifAlias,omitempty" json:"ifAlias,omitempty" yaml:"ifAlias,omitempty"`
-	IfIndex                 int      `xml:"ifIndex,omitempty" json:"ifIndex,omitempty" yaml:"ifIndex,omitempty"`
+	IfIndex                 int      `xml:"ifIndex,attr,omitempty" json:"ifIndex,omitempty" yaml:"ifIndex,omitempty"`
 	IfDescr                 string   `xml:"ifDescr,omitempty" json:"ifDescr,omitempty" yaml:"ifDescr,omitempty"`
 	IfName                  string   `xml:"ifName,omitempty" json:"ifName,omitempty" yaml:"ifName,omitempty"`
 	PhysAddress             string   `xml:"physAddress,omitempty" json:"physAddress,omitempty" yaml:"physAddress,omitempty"`
@@ -301,6 +324,12 @@ func (obj *OnmsSnmpInterface) Validate() error {
 	}
 	if obj.PollFlag == "" {
 		obj.PollFlag = "N"
+	}
+	if obj.PhysAddress != "" {
+		_, err := net.ParseMAC(obj.PhysAddress)
+		if err != nil {
+			return fmt.Errorf("Invalid Physical Address: %v", err)
+		}
 	}
 	return nil
 }

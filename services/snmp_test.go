@@ -35,7 +35,7 @@ func (api mockSnmpInfoRest) Post(path string, jsonBytes []byte) error {
 	return fmt.Errorf("should not be called")
 }
 
-func (api mockSnmpInfoRest) PostRaw(path string, jsonBytes []byte) (*http.Response, error) {
+func (api mockSnmpInfoRest) PostRaw(path string, dataBytes []byte, contentType string) (*http.Response, error) {
 	return nil, fmt.Errorf("should not be called")
 }
 
@@ -43,11 +43,15 @@ func (api mockSnmpInfoRest) Delete(path string) error {
 	return fmt.Errorf("should not be called")
 }
 
-func (api mockSnmpInfoRest) Put(path string, jsonBytes []byte, contentType string) error {
+func (api mockSnmpInfoRest) Put(path string, dataBytes []byte, contentType string) error {
 	assert.Assert(api.test, strings.HasPrefix(path, "/rest/snmpConfig"))
 	snmp := &model.SnmpInfo{}
-	json.Unmarshal(jsonBytes, snmp)
+	json.Unmarshal(dataBytes, snmp)
 	assert.Assert(api.test, cmp.Equal(mockSnmpInfo, snmp))
+	return nil
+}
+
+func (api mockSnmpInfoRest) IsValid(r *http.Response) error {
 	return nil
 }
 

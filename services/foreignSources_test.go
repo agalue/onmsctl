@@ -62,7 +62,7 @@ func (api mockForeignSourcesRest) Get(path string) ([]byte, error) {
 	return nil, fmt.Errorf("GET: should not be called with path %s", path)
 }
 
-func (api mockForeignSourcesRest) PostRaw(path string, jsonBytes []byte) (*http.Response, error) {
+func (api mockForeignSourcesRest) PostRaw(path string, dataBytes []byte, contentType string) (*http.Response, error) {
 	return &http.Response{}, fmt.Errorf("should not be called")
 }
 
@@ -107,13 +107,17 @@ func (api mockForeignSourcesRest) Delete(path string) error {
 	return fmt.Errorf("DELETE: should not be called with %s", path)
 }
 
-func (api mockForeignSourcesRest) Put(path string, jsonBytes []byte, contentType string) error {
+func (api mockForeignSourcesRest) Put(path string, dataBytes []byte, contentType string) error {
 	switch path {
 	case "/rest/foreignSources/Example":
-		assert.Equal(api.t, "scan-interval=3d", string(jsonBytes))
+		assert.Equal(api.t, "scan-interval=3d", string(dataBytes))
 		return nil
 	}
 	return fmt.Errorf("PUT: should not be called with %s", path)
+}
+
+func (api mockForeignSourcesRest) IsValid(r *http.Response) error {
+	return nil
 }
 
 func TestGetForeignSourceDef(t *testing.T) {

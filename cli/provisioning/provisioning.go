@@ -8,7 +8,7 @@ import (
 var CliCommand = cli.Command{
 	Name:      "provision",
 	ShortName: "inv",
-	Usage:     "Manage provisioning / inventory",
+	Usage:     "Manage Provisioning / Inventory",
 	Subcommands: []cli.Command{
 		RequisitionsCliCommand,
 		NodesCliCommand,

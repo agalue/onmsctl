@@ -45,7 +45,7 @@ func (api mockResourceRest) Post(path string, jsonBytes []byte) error {
 	return fmt.Errorf("should not be called")
 }
 
-func (api mockResourceRest) PostRaw(path string, jsonBytes []byte) (*http.Response, error) {
+func (api mockResourceRest) PostRaw(path string, dataBytes []byte, contentType string) (*http.Response, error) {
 	return nil, fmt.Errorf("should not be called")
 }
 
@@ -56,8 +56,12 @@ func (api mockResourceRest) Delete(path string) error {
 	return fmt.Errorf("should not be called")
 }
 
-func (api mockResourceRest) Put(path string, jsonBytes []byte, contentType string) error {
+func (api mockResourceRest) Put(path string, dataBytes []byte, contentType string) error {
 	return fmt.Errorf("should not be called")
+}
+
+func (api mockResourceRest) IsValid(r *http.Response) error {
+	return nil
 }
 
 func TestGetResources(t *testing.T) {

@@ -2,9 +2,10 @@ package services
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"log"
-	"net/http"
+	"net/url"
 	"regexp"
 	"strconv"
 	"sync"
@@ -25,13 +26,15 @@ func GetNodesAPI(rest api.RestAPI) api.NodesAPI {
 }
 
 func (api nodesAPI) GetNodes() (*model.OnmsNodeList, error) {
-	bytes, err := api.rest.Get(fmt.Sprintf("/api/v2/nodes?limit=%d&offset=0", defaultLimit))
+	bytes, err := api.rest.Get(fmt.Sprintf("/api/v2/nodes?limit=%d&offset=0&orderBy=label", defaultLimit))
 	if err != nil {
 		return nil, err
 	}
 	list := &model.OnmsNodeList{}
-	if err = json.Unmarshal(bytes, list); err != nil {
-		return nil, err
+	if bytes != nil && len(bytes) > 0 {
+		if err = json.Unmarshal(bytes, list); err != nil {
+			return nil, err
+		}
 	}
 	if list.TotalCount > list.Count {
 		pages := list.TotalCount / defaultLimit
@@ -44,13 +47,15 @@ func (api nodesAPI) GetNodes() (*model.OnmsNodeList, error) {
 			wg.Add(1)
 			go func(page int, wg *sync.WaitGroup) {
 				defer wg.Done()
-				url := fmt.Sprintf("/api/v2/nodes?limit=%d&offset=%d", defaultLimit, defaultLimit*page)
+				url := fmt.Sprintf("/api/v2/nodes?limit=%d&offset=%d&orderBy=label", defaultLimit, defaultLimit*page)
 				if bytes, err = api.rest.Get(url); err != nil {
 					return
 				}
 				temp := &model.OnmsNodeList{}
-				if err = json.Unmarshal(bytes, temp); err != nil {
-					return
+				if bytes != nil && len(bytes) > 0 {
+					if err = json.Unmarshal(bytes, temp); err != nil {
+						return
+					}
 				}
 				m.Lock()
 				list.Nodes = append(list.Nodes, temp.Nodes...)
@@ -80,32 +85,43 @@ func (api nodesAPI) AddNode(node *model.OnmsNode) error {
 		return err
 	}
 	log.Printf("Adding node %s", node.Label)
+	// Search for existing nodes
+	filter := fmt.Sprintf("(node.label==*%s*)", node.Label)
+	if node.ForeignSource != "" || node.ForeignID != "" {
+		filter += fmt.Sprintf(",(node.foreignSource==%s;node.foreignId==%s)", node.ForeignSource, node.ForeignID)
+	}
+	list, err := api.searchNodes(filter)
+	if err != nil {
+		return fmt.Errorf("Cannot search for existing nodes: %v", err)
+	}
+	if len(list.Nodes) > 0 {
+		return fmt.Errorf("Cannot add node because found one with ID %s that matches either the Label or ForeignSource/ForeignID combination", list.Nodes[0].ID)
+	}
+	// Create node
 	jsonBytes, err := json.Marshal(node.ExtractBasic())
 	if err != nil {
 		return err
 	}
-	// Create node and extract nodeID from location header
-	response, err := api.rest.PostRaw("/api/v2/nodes", jsonBytes)
+	response, err := api.rest.PostRaw("/api/v2/nodes", jsonBytes, "application/json")
 	if err != nil {
 		return nil
 	}
-	if err = api.isValid(response); err != nil {
+	if err = api.rest.IsValid(response); err != nil {
 		return err
 	}
+	// Extract nodeID from location header
 	re := regexp.MustCompile(`\/(\d+)$`)
 	match := re.FindStringSubmatch(response.Header.Get("Location"))
 	nodeID := match[1]
 	log.Printf("Node added with ID %s", nodeID)
 	// Create SNMP Interfaces
 	for _, intf := range node.SNMPInterfaces {
-		log.Printf("Adding SNMP Interface with index %d", intf.IfIndex)
 		if err = api.SetSnmpInterface(nodeID, &intf); err != nil {
 			return err
 		}
 	}
 	// Create IP Interfaces
 	for _, intf := range node.IPInterfaces {
-		log.Printf("Adding IP Interface %s", intf.IPAddress)
 		if err = api.SetIPInterface(nodeID, &intf); err != nil {
 			return err
 		}
@@ -121,10 +137,6 @@ func (api nodesAPI) AddNode(node *model.OnmsNode) error {
 		if err = api.SetNodeMetadata(nodeID, meta); err != nil {
 			return err
 		}
-	}
-	// Create Asset Record
-	if node.AssetRecord != nil {
-		api.SetAssetRecord(nodeID, node.AssetRecord)
 	}
 	return nil
 }
@@ -146,14 +158,16 @@ func (api nodesAPI) DeleteNodeMetadata(nodeCriteria string, context string, key 
 }
 
 func (api nodesAPI) GetIPInterfaces(nodeCriteria string) (*model.OnmsIPInterfaceList, error) {
-	url := fmt.Sprintf("/api/v2/nodes/%s/ipinterfaces?limit=%d&offset=%d", nodeCriteria, defaultLimit, 0)
+	url := fmt.Sprintf("/api/v2/nodes/%s/ipinterfaces?limit=%d&offset=%d&orderBy=ipAddress", nodeCriteria, defaultLimit, 0)
 	bytes, err := api.rest.Get(url)
 	if err != nil {
 		return nil, err
 	}
 	list := &model.OnmsIPInterfaceList{}
-	if err = json.Unmarshal(bytes, &list); err != nil {
-		return nil, err
+	if bytes != nil && len(bytes) > 0 {
+		if err = json.Unmarshal(bytes, &list); err != nil {
+			return nil, err
+		}
 	}
 	if list.TotalCount > list.Count {
 		pages := list.TotalCount / defaultLimit
@@ -166,13 +180,15 @@ func (api nodesAPI) GetIPInterfaces(nodeCriteria string) (*model.OnmsIPInterface
 			wg.Add(1)
 			go func(page int, wg *sync.WaitGroup) {
 				defer wg.Done()
-				url := fmt.Sprintf("/api/v2/nodes/%s/ipinterfaces?limit=%d&offset=%d", nodeCriteria, defaultLimit, 0)
+				url := fmt.Sprintf("/api/v2/nodes/%s/ipinterfaces?limit=%d&offset=%d&orderBy=ipAddress", nodeCriteria, defaultLimit, defaultLimit*page)
 				if bytes, err = api.rest.Get(url); err != nil {
 					return
 				}
 				temp := &model.OnmsIPInterfaceList{}
-				if err = json.Unmarshal(bytes, temp); err != nil {
-					return
+				if bytes != nil && len(bytes) > 0 {
+					if err = json.Unmarshal(bytes, temp); err != nil {
+						return
+					}
 				}
 				m.Lock()
 				list.Interfaces = append(list.Interfaces, temp.Interfaces...)
@@ -205,11 +221,12 @@ func (api nodesAPI) SetIPInterface(nodeCriteria string, intf *model.OnmsIPInterf
 	if intf.IfIndex > 0 {
 		snmp, err := api.GetSnmpInterface(nodeCriteria, intf.IfIndex)
 		if err != nil {
-			return err
+			return fmt.Errorf("Cannot find SNMP Interface with ifIndex %d on Node %s", intf.IfIndex, nodeCriteria)
 		}
-		log.Printf("Associating SNMP interface with ID %d to %s", snmp.ID, ip.IPAddress)
+		log.Printf("Associating SNMP interface with ID %d and ifIndex %d to %s", snmp.ID, snmp.IfIndex, ip.IPAddress)
 		ip.SNMPInterface = snmp.ExtractBasic()
 	}
+	log.Printf("Adding IP Interface %s", intf.IPAddress)
 	jsonBytes, err := json.Marshal(ip)
 	if err != nil {
 		return err
@@ -249,14 +266,16 @@ func (api nodesAPI) DeleteIPInterfaceMetadata(nodeCriteria string, ipAddress str
 }
 
 func (api nodesAPI) GetSnmpInterfaces(nodeCriteria string) (*model.OnmsSnmpInterfaceList, error) {
-	url := fmt.Sprintf("/api/v2/nodes/%s/snmpinterfaces?limit=%d&offset=%d", nodeCriteria, defaultLimit, 0)
+	url := fmt.Sprintf("/api/v2/nodes/%s/snmpinterfaces?limit=%d&offset=%d&orderBy=ifName", nodeCriteria, defaultLimit, 0)
 	bytes, err := api.rest.Get(url)
 	if err != nil {
 		return nil, err
 	}
 	list := &model.OnmsSnmpInterfaceList{}
-	if err = json.Unmarshal(bytes, &list); err != nil {
-		return nil, err
+	if bytes != nil && len(bytes) > 0 {
+		if err = json.Unmarshal(bytes, &list); err != nil {
+			return nil, err
+		}
 	}
 	if list.TotalCount > list.Count {
 		pages := list.TotalCount / defaultLimit
@@ -269,13 +288,15 @@ func (api nodesAPI) GetSnmpInterfaces(nodeCriteria string) (*model.OnmsSnmpInter
 			wg.Add(1)
 			go func(page int, wg *sync.WaitGroup) {
 				defer wg.Done()
-				url := fmt.Sprintf("/api/v2/nodes/%s/ipinterfaces?limit=%d&offset=%d", nodeCriteria, defaultLimit, 0)
+				url := fmt.Sprintf("/api/v2/nodes/%s/snmpinterfaces?limit=%d&offset=%d&orderBy=ifName", nodeCriteria, defaultLimit, defaultLimit*page)
 				if bytes, err = api.rest.Get(url); err != nil {
 					return
 				}
 				temp := &model.OnmsSnmpInterfaceList{}
-				if err = json.Unmarshal(bytes, temp); err != nil {
-					return
+				if bytes != nil && len(bytes) > 0 {
+					if err = json.Unmarshal(bytes, temp); err != nil {
+						return
+					}
 				}
 				m.Lock()
 				list.Interfaces = append(list.Interfaces, temp.Interfaces...)
@@ -300,32 +321,25 @@ func (api nodesAPI) GetSnmpInterface(nodeCriteria string, ifIndex int) (*model.O
 	return intf, nil
 }
 
+// There are issues with the APIv2 which is why the APIv1 is used
 func (api nodesAPI) SetSnmpInterface(nodeCriteria string, intf *model.OnmsSnmpInterface) error {
 	if err := intf.Validate(); err != nil {
 		return err
 	}
-	jsonBytes, err := json.Marshal(intf.ExtractBasic())
+	log.Printf("Adding SNMP Interface with index %d", intf.IfIndex)
+	dataBytes, err := xml.Marshal(intf.ExtractBasic())
 	if err != nil {
 		return err
 	}
-	return api.rest.Post("/api/v2/nodes/"+nodeCriteria+"/snmpinterfaces", jsonBytes)
+	response, err := api.rest.PostRaw("/rest/nodes/"+nodeCriteria+"/snmpinterfaces", dataBytes, "application/xml")
+	if err != nil {
+		return err
+	}
+	return api.rest.IsValid(response)
 }
 
 func (api nodesAPI) DeleteSnmpInterface(nodeCriteria string, ifIndex int) error {
 	return api.rest.Delete("/api/v2/nodes/" + nodeCriteria + "/snmpinterfaces/" + strconv.Itoa(ifIndex))
-}
-
-func (api nodesAPI) LinkInterfaces(nodeCriteria string, ifIndex int, ipAddress string) error {
-	ip, err := api.GetIPInterface(nodeCriteria, ipAddress)
-	if err != nil {
-		return err
-	}
-	snmp, err := api.GetSnmpInterface(nodeCriteria, ifIndex)
-	if err != nil {
-		return err
-	}
-	ip.SNMPInterface = snmp
-	return api.SetIPInterface(nodeCriteria, ip)
 }
 
 func (api nodesAPI) GetMonitoredServices(nodeCriteria string, ipAddress string) (*model.OnmsMonitoredServiceList, error) {
@@ -334,8 +348,10 @@ func (api nodesAPI) GetMonitoredServices(nodeCriteria string, ipAddress string) 
 		return nil, err
 	}
 	list := &model.OnmsMonitoredServiceList{}
-	if err = json.Unmarshal(bytes, &list); err != nil {
-		return nil, err
+	if bytes != nil && len(bytes) > 0 {
+		if err = json.Unmarshal(bytes, &list); err != nil {
+			return nil, err
+		}
 	}
 	return list, nil
 }
@@ -384,11 +400,13 @@ func (api nodesAPI) GetCategories(nodeCriteria string) ([]model.OnmsCategory, er
 	if err != nil {
 		return nil, err
 	}
-	list := make([]model.OnmsCategory, 0)
-	if err = json.Unmarshal(bytes, &list); err != nil {
-		return nil, err
+	list := &model.OnmsCategoryList{}
+	if bytes != nil && len(bytes) > 0 {
+		if err = json.Unmarshal(bytes, &list); err != nil {
+			return nil, err
+		}
 	}
-	return list, nil
+	return list.Categories, nil
 }
 
 func (api nodesAPI) AddCategory(nodeCriteria string, category *model.OnmsCategory) error {
@@ -404,23 +422,24 @@ func (api nodesAPI) DeleteCategory(nodeCriteria string, category string) error {
 }
 
 func (api nodesAPI) GetAssetRecord(nodeCriteria string) (*model.OnmsAssetRecord, error) {
-	bytes, err := api.rest.Get("/api/v2/nodes/" + nodeCriteria + "/assetRecord")
+	bytes, err := api.rest.Get("/api/v2/nodes/" + nodeCriteria)
 	if err != nil {
 		return nil, err
 	}
-	asset := &model.OnmsAssetRecord{}
-	if err = json.Unmarshal(bytes, asset); err != nil {
-		return nil, err
+	if bytes != nil && len(bytes) > 0 {
+		n := &model.OnmsNode{}
+		if err = json.Unmarshal(bytes, n); err != nil {
+			return nil, err
+		}
+		return n.AssetRecord, nil
 	}
-	return asset, nil
+	return nil, fmt.Errorf("Not Found")
 }
 
-func (api nodesAPI) SetAssetRecord(nodeCriteria string, record *model.OnmsAssetRecord) error {
-	jsonBytes, err := json.Marshal(record)
-	if err != nil {
-		return err
-	}
-	return api.rest.Post("/api/v2/nodes/"+nodeCriteria+"/assetRecord", jsonBytes)
+func (api nodesAPI) SetAssetField(nodeCriteria string, field string, value string) error {
+	data := url.Values{}
+	data.Set(field, value)
+	return api.rest.Put("/rest/nodes/"+nodeCriteria+"/assetRecord", []byte(data.Encode()), "application/x-www-form-urlencoded")
 }
 
 func (api nodesAPI) getMetadata(baseURL string) ([]model.MetaData, error) {
@@ -428,11 +447,9 @@ func (api nodesAPI) getMetadata(baseURL string) ([]model.MetaData, error) {
 	if err != nil {
 		return nil, err
 	}
-	list := make([]model.MetaData, 0)
-	if err = json.Unmarshal(bytes, &list); err != nil {
-		return nil, err
-	}
-	return list, nil
+	list := &model.MetaDataList{}
+	json.Unmarshal(bytes, &list)
+	return list.Metadata, nil
 }
 
 func (api nodesAPI) setMetadata(baseURL string, meta model.MetaData) error {
@@ -450,10 +467,16 @@ func (api nodesAPI) deleteMetadata(baseURL string, context string, key string) e
 	return api.rest.Delete(baseURL + "/metadata/" + context + "/" + key)
 }
 
-func (api nodesAPI) isValid(response *http.Response) error {
-	code := response.StatusCode
-	if code == http.StatusCreated || code == http.StatusNoContent {
-		return nil
+func (api nodesAPI) searchNodes(fiqlFilter string) (*model.OnmsNodeList, error) {
+	bytes, err := api.rest.Get("/api/v2/nodes?limit=0&_s=" + fiqlFilter)
+	if err != nil {
+		return nil, err
 	}
-	return fmt.Errorf("Invalid Response (%d): %s", response.StatusCode, response.Status)
+	list := &model.OnmsNodeList{}
+	if bytes != nil && len(bytes) > 0 {
+		if err = json.Unmarshal(bytes, list); err != nil {
+			return nil, err
+		}
+	}
+	return list, nil
 }
