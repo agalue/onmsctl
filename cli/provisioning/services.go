@@ -32,8 +32,8 @@ var ServicesCliCommand = cli.Command{
 			BashComplete: servicesBashComplete,
 			Flags: []cli.Flag{
 				cli.StringSliceFlag{
-					Name:  "metaData, m",
-					Usage: "A meta-data entry (e.x. --metaData 'foo=bar')",
+					Name:  "metadata, m",
+					Usage: "A metadata entry (e.x. --metadata 'foo=bar')",
 				},
 			},
 		},
@@ -48,26 +48,26 @@ var ServicesCliCommand = cli.Command{
 		{
 			Name:      "meta",
 			ShortName: "m",
-			Usage:     "Manage meta-data",
+			Usage:     "Manage metadata",
 			Subcommands: []cli.Command{
 				{
 					Name:         "list",
-					Usage:        "Gets all meta-data for a given service",
+					Usage:        "Gets all metadata for a given service",
 					ArgsUsage:    "<foreignSource> <foreignId> <ipAddress> <serviceName>",
 					Action:       svcListMetaData,
 					BashComplete: servicesBashComplete,
 				},
 				{
 					Name:         "set",
-					Usage:        "Adds or updates a meta-data entry for a given service",
-					ArgsUsage:    "<foreignSource> <foreignId> <ipAddress> <serviceName> <metaData-key> <metaData-value>",
+					Usage:        "Adds or updates a metadata entry for a given service",
+					ArgsUsage:    "<foreignSource> <foreignId> <ipAddress> <serviceName> <metadata-key> <metadata-value>",
 					Action:       svcSetMetaData,
 					BashComplete: servicesBashComplete,
 				},
 				{
 					Name:         "delete",
-					Usage:        "Deletes a meta-data entry from a given service",
-					ArgsUsage:    "<foreignSource> <foreignId> <ipAddress> <serviceName> <metaData-key>",
+					Usage:        "Deletes a metadata entry from a given service",
+					ArgsUsage:    "<foreignSource> <foreignId> <ipAddress> <serviceName> <metadata-key>",
 					Action:       svcDeleteMetaData,
 					BashComplete: servicesBashComplete,
 				},

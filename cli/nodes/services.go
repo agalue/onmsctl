@@ -50,16 +50,19 @@ var ServicesCliCommand = cli.Command{
 					ArgsUsage: "<nodeId|foreignSource:foreignID> <ipAddress> <serviceName>",
 					Flags: []cli.Flag{
 						cli.StringFlag{
-							Name:  "context, c",
-							Usage: "Metadata Context",
+							Name:     "context, c",
+							Usage:    "Metadata Context",
+							Required: true,
 						},
 						cli.StringFlag{
-							Name:  "key, k",
-							Usage: "Metadata Key",
+							Name:     "key, k",
+							Usage:    "Metadata Key",
+							Required: true,
 						},
 						cli.StringFlag{
-							Name:  "value, v",
-							Usage: "Metadata Value",
+							Name:     "value, v",
+							Usage:    "Metadata Value",
+							Required: true,
 						},
 					},
 				},
@@ -70,12 +73,14 @@ var ServicesCliCommand = cli.Command{
 					ArgsUsage: "<nodeId|foreignSource:foreignID> <ipAddress> <serviceName>",
 					Flags: []cli.Flag{
 						cli.StringFlag{
-							Name:  "context, c",
-							Usage: "Metadata Context",
+							Name:     "context, c",
+							Usage:    "Metadata Context",
+							Required: true,
 						},
 						cli.StringFlag{
-							Name:  "key, k",
-							Usage: "Metadata Key",
+							Name:     "key, k",
+							Usage:    "Metadata Key",
+							Required: true,
 						},
 					},
 				},
