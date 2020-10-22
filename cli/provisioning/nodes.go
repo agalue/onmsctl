@@ -69,8 +69,8 @@ var NodesCliCommand = cli.Command{
 					Usage: "Parent Node Label",
 				},
 				cli.StringSliceFlag{
-					Name:  "metaData, m",
-					Usage: "A meta-data entry (e.x. --metaData 'foo=bar')",
+					Name:  "metadata, m",
+					Usage: "A metadata entry (e.x. --metadata 'foo=bar')",
 				},
 			},
 		},
@@ -98,26 +98,26 @@ var NodesCliCommand = cli.Command{
 		{
 			Name:      "meta",
 			ShortName: "m",
-			Usage:     "Manage meta-data",
+			Usage:     "Manage metadata",
 			Subcommands: []cli.Command{
 				{
 					Name:         "list",
-					Usage:        "Gets all meta-data for a given node",
+					Usage:        "Gets all metadata for a given node",
 					ArgsUsage:    "<foreignSource> <foreignId>",
 					Action:       nodeListMetaData,
 					BashComplete: foreignIDBashComplete,
 				},
 				{
 					Name:         "set",
-					Usage:        "Adds or updates a meta-data entry for a given node",
-					ArgsUsage:    "<foreignSource> <foreignId> <metaData-key> <metaData-value>",
+					Usage:        "Adds or updates a metadata entry for a given node",
+					ArgsUsage:    "<foreignSource> <foreignId> <metadata-key> <metadata-value>",
 					Action:       nodeSetMetaData,
 					BashComplete: foreignIDBashComplete,
 				},
 				{
 					Name:         "delete",
-					Usage:        "Deletes a meta-data entry from a given node",
-					ArgsUsage:    "<foreignSource> <foreignId> <metaData-key>",
+					Usage:        "Deletes a metadata entry from a given node",
+					ArgsUsage:    "<foreignSource> <foreignId> <metadata-key>",
 					Action:       nodeDeleteMetaData,
 					BashComplete: foreignIDBashComplete,
 				},

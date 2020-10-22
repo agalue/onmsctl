@@ -21,9 +21,10 @@ var CliCommand = cli.Command{
 	Usage: "Search OpenNMS database",
 	Flags: []cli.Flag{
 		cli.GenericFlag{
-			Name:  "entity, e",
-			Value: Entities,
-			Usage: "The severity of the event: " + Entities.EnumAsString(),
+			Name:     "entity, e",
+			Value:    Entities,
+			Usage:    "The severity of the event: " + Entities.EnumAsString(),
+			Required: true,
 		},
 		cli.StringFlag{
 			Name:  "filter, f",

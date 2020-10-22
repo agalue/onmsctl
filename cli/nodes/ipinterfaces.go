@@ -28,8 +28,9 @@ var IPInterfacesCliCommand = cli.Command{
 			Action:    addIPInterface,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "ipAddr, i",
-					Usage: "IP Address",
+					Name:     "ipAddr, i",
+					Usage:    "IP Address",
+					Required: true,
 				},
 				cli.StringFlag{
 					Name:  "hostname, n",
@@ -72,16 +73,19 @@ var IPInterfacesCliCommand = cli.Command{
 					ArgsUsage: "<nodeId|foreignSource:foreignID> <ipAddress>",
 					Flags: []cli.Flag{
 						cli.StringFlag{
-							Name:  "context, c",
-							Usage: "Metadata Context",
+							Name:     "context, c",
+							Usage:    "Metadata Context",
+							Required: true,
 						},
 						cli.StringFlag{
-							Name:  "key, k",
-							Usage: "Metadata Key",
+							Name:     "key, k",
+							Usage:    "Metadata Key",
+							Required: true,
 						},
 						cli.StringFlag{
-							Name:  "value, v",
-							Usage: "Metadata Value",
+							Name:     "value, v",
+							Usage:    "Metadata Value",
+							Required: true,
 						},
 					},
 				},
@@ -92,12 +96,14 @@ var IPInterfacesCliCommand = cli.Command{
 					ArgsUsage: "<nodeId|foreignSource:foreignID> <ipAddress>",
 					Flags: []cli.Flag{
 						cli.StringFlag{
-							Name:  "context, c",
-							Usage: "Metadata Context",
+							Name:     "context, c",
+							Usage:    "Metadata Context",
+							Required: true,
 						},
 						cli.StringFlag{
-							Name:  "key, k",
-							Usage: "Metadata Key",
+							Name:     "key, k",
+							Usage:    "Metadata Key",
+							Required: true,
 						},
 					},
 				},

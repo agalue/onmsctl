@@ -29,16 +29,19 @@ var SnmpInterfacesCliCommand = cli.Command{
 			Action:    addSnmpInterface,
 			Flags: []cli.Flag{
 				cli.IntFlag{
-					Name:  "ifIndex, i",
-					Usage: "The IF-MIB::ifIndex",
+					Name:     "ifIndex, i",
+					Usage:    "The IF-MIB::ifIndex",
+					Required: true,
 				},
 				cli.IntFlag{
 					Name:  "ifOper, o",
 					Usage: "The IF-MIB::ifOperStatus (1:up, 2:down, 3:testing, 4:unknown, 5:dormant, 6:notPresent, 7:lowerLayerDown)",
+					Value: 1,
 				},
 				cli.IntFlag{
 					Name:  "ifAdmin, A",
 					Usage: "The IF-MIB::ifAdminStatus (1:up, 2:down, 3:testing)",
+					Value: 1,
 				},
 				cli.Int64Flag{
 					Name:  "ifSpeed, s",
@@ -49,8 +52,9 @@ var SnmpInterfacesCliCommand = cli.Command{
 					Usage: "The IF-MIB::ifType",
 				},
 				cli.StringFlag{
-					Name:  "ifName, n",
-					Usage: "The IF-MIB::ifName",
+					Name:     "ifName, n",
+					Usage:    "The IF-MIB::ifName",
+					Required: true,
 				},
 				cli.StringFlag{
 					Name:  "ifDescr, d",
@@ -97,9 +101,9 @@ func getSnmpInterfaces(c *cli.Context) error {
 		return nil
 	}
 	writer := common.NewTableWriter()
-	fmt.Fprintln(writer, "ID\tifIndex\tifDescr\tifName\tifAlias\tifType\tifOperStatus\tifAdminStatus")
+	fmt.Fprintln(writer, "ID\tifIndex\tifDescr\tifName\tifAlias\tifType\tifOperStatus\tifAdminStatus\tCollect\tPoll")
 	for _, n := range list.Interfaces {
-		fmt.Fprintf(writer, "%d\t%d\t%s\t%s\t%s\t%d\t%d\t%d\n", n.ID, n.IfIndex, n.IfDescr, n.IfName, n.IfAlias, n.IfType, n.IfOperStatus, n.IfAdminStatus)
+		fmt.Fprintf(writer, "%d\t%d\t%s\t%s\t%s\t%d\t%d\t%d\t%s\t%s\n", n.ID, n.IfIndex, n.IfDescr, n.IfName, n.IfAlias, n.IfType, n.IfOperStatus, n.IfAdminStatus, n.CollectFlag, n.PollFlag)
 	}
 	writer.Flush()
 	return nil
