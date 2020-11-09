@@ -15,19 +15,13 @@ The following features have been implemented:
 * Manually manage the inventory (bypassing the provisioning system), useful when it is not possible to use Provisioning or Auto-Discover.
 * Support for searching entities using [FIQL](https://fiql-parser.readthedocs.io/en/stable/usage.html) (work in progress)
 
-The reason for implementing a CLI in `Go` is that the generated binaries are self-contained, and for the first time, Windows users will be able to control OpenNMS from the command line. For example, `provision.pl` or `send-events.pl` rely on having Perl installed with some additional dependencies, which can be complicated on the environment where this is either hard or impossible to have.
+The reason for implementing a CLI in `Go` is that the generated binaries are self-contained, and for the first time, Windows users will be able to control OpenNMS from the command line. For example, `provision.pl` or `send-events.pl` rely on having Perl installed with some additional dependencies, which can be complicated in the environment where this is either hard or impossible to have.
 
 ## Compilation
 
-1. Make sure to have [GoLang](https://golang.org/dl/) installed on your system.
+Make sure to have [GoLang](https://golang.org/dl/) installed on your system. Recommended version: 1.15 or newer.
 
-2. Make sure to have `Go Modules` enabled (recommended version: 1.12 or newer)
-
-```bash
-export GO111MODULE=on
-```
-
-3. Compile the source code for your desired operating system
+To compile the source code for your desired operating system:
 
 For Linux:
 
@@ -47,7 +41,7 @@ For Windows:
 GOOS=windows GOARCH=amd64 go build -o onmsctl.exe onmsctl.go
 ```
 
-For your own operating system, there is no need to specify parameters, as `go build` will be sufficient. Also, you can build targets for any operating system from any operating system, and the generated binary will work on itself, there is no need to install anything on the target device, besides copying the generated binary file.
+There is no need to specify parameters for your own operating system, as `go build` will be sufficient. You can also build targets for any operating system from any operating system, and the generated binary will work on itself; there is no need to install anything on the target device besides copying the generated binary file.
 
 Alternatively, in case you don't want to install `Go` on your system, but you have [Docker](https://www.docker.com) installed, you can use it to compile it:
 
@@ -62,7 +56,35 @@ root@3854e5d2d67c:/app# exit
 
 The binary contains help for all commands and subcommands by using `-h` or `--help`. Everything should be self-explanatory.
 
-1. Build a requisition like you would do it with `provision.pl`:
+The following outlines several examples.
+
+1. Configure OpenNMS servers
+
+To configure the tool, or to avoid specifying the URL, username, and password for your OpenNMS server with each request, you can create a file with the following content on `$HOME/.onms/config.yaml` or add the file on any location and create an environment variable called `ONMSCONFIG` with the location of the file.
+
+To manipulate the content of the configuration file, please use the `onmsctl config` subcommand.
+
+> Make sure to protect the file, as the credentials are on plain text.
+
+2. Verify the installed version of OpenNMS
+
+```bash
+onmsctl info
+```
+
+The output would be something like this:
+
+```
+displayVersion: 26.2.2
+version: 26.2.2
+packageName: opennms
+packageDescription: OpenNMS
+datetimeFormat:
+  zoneId: America/New_York
+  format: yyyy-MM-dd'T'HH:mm:ssxxx
+```
+
+3. Build a requisition like you would do it with `provision.pl`:
 
 ```bash
 ➜ onmsctl inv req add Local
@@ -70,13 +92,18 @@ The binary contains help for all commands and subcommands by using `-h` or `--he
 ➜ onmsctl inv intf add Local srv01 10.0.0.1
 ➜ onmsctl inv svc add Local srv01 10.0.0.1 ICMP
 ➜ onmsctl inv cat add Local srv01 Servers
-➜ onmsctl inv assets set Local srv01 address1 home
+➜ onmsctl inv asset set Local srv01 address1 home
+```
+
+To visualize the content of the requisition:
+
+```bash
 ➜ onmsctl inv node get Local srv01
 nodeLabel: srv01
 foreignID: srv01
 interfaces:
 - ipAddress: 10.0.0.1
-  snmpPrimary: S
+  snmpPrimary: "N"
   status: 1
   services:
   - name: ICMP
@@ -85,12 +112,15 @@ categories:
 assets:
 - name: address1
   value: home
-
-➜ onmsctl inv req import Local
-Importing requisition Local (rescanExisting? true)...
 ```
 
-2. You can build requisitions in `YAML` and apply it like `kubernetes` workload with `kubectl`:
+To import the requisition:
+
+```bash
+➜ onmsctl inv req import Local
+```
+
+4. Build requisitions in `YAML` and apply it (similar to `kubernetes` workload with `kubectl`):
 
 ```bash
 ➜ cat <<EOF | onmsctl inv req apply -f -
@@ -114,23 +144,25 @@ EOF
 The above also works for individual nodes:
 
 ```bash
-➜ cat <<EOF | onmsctl inv node apply -f - Local
+➜ onmsctl inv node apply Local '
 foreignID: www.opennms.com
 interfaces:
 - ipAddress: www.opennms.com
 categories:
-- name: WebSites
-EOF
+- name: WebSites'
+```
 
-www.opennms.com translates to [34.194.50.139], using the first entry.
-Adding node www.opennms.com to requisition Local...
+> Note that an FQDN was used instead of an IP Address (more on this below).
 
+To get the actual content of the node:
+
+```bash
 ➜ onmsctl inv node get Local www.opennms.com
 nodeLabel: www.opennms.com
 foreignID: www.opennms.com
 interfaces:
 - ipAddress: 34.194.50.139
-  snmpPrimary: N
+  snmpPrimary: "N"
   status: 1
 categories:
 - name: WebSites
@@ -139,16 +171,6 @@ categories:
 As you can see, it is possible to specify FQDN instead of IP addresses, and they will be translated into IPs before sending the JSON payload to the ReST end-point for requisitions.
 
 Additionally, for convenience, if the `node-label` is not specified, the `foreign-id` will be used.
-
-To configure the tool, or to avoid specifying the URL, username and password for your OpenNMS server with each request, you can create a file with the following content on `$HOME/.onms/config.yaml` or add the file on any location and create an environment variable called `ONMSCONFIG` with the location of the file:
-
-```yaml
-url: demo.opennms.com
-username: demo
-password: demo
-```
-
-Make sure to protect the file, as the credentials are on plain text.
 
 ## Upcoming features
 
