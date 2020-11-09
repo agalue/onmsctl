@@ -172,6 +172,37 @@ As you can see, it is possible to specify FQDN instead of IP addresses, and they
 
 Additionally, for convenience, if the `node-label` is not specified, the `foreign-id` will be used.
 
+5. Configure SNMP credentials
+
+Obtain the current credentials for a given IP address:
+
+```bash
+➜ onmsctl snmp get 12.0.0.1
+```
+
+> For nodes behind Minions, you can specify the location as a command option.
+
+The output would be:
+
+```
+version: v2c
+port: 161
+retries: 1
+timeout: 1800
+community: public
+maxRequestSize: 65535
+maxRepetitions: 2
+maxVarsPerPdu: 10
+```
+
+Change the credentials for a given IP address:
+
+```
+➜ onmsctl snmp set -v v2c -r 3 -t 2000 -c c0mpl1x 12.0.0.1
+```
+
+> For nodes behind Minions, you can specify the location as a command option.
+
 ## Upcoming features
 
 * Visualize tabular data with pagination (nodes, events, alarms, outages, notifications).
