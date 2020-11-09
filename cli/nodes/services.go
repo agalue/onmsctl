@@ -13,7 +13,7 @@ import (
 // ServicesCliCommand the CLI command to manage nodes
 var ServicesCliCommand = cli.Command{
 	Name:  "services",
-	Usage: "Manage Monitores Services",
+	Usage: "Manage Monitored Services",
 	Subcommands: []cli.Command{
 		{
 			Name:      "list",
@@ -103,7 +103,7 @@ func getServices(c *cli.Context) error {
 		return err
 	}
 	if len(list.Services) == 0 {
-		fmt.Println("There are no monitores services")
+		fmt.Println("There are no monitored services")
 		return nil
 	}
 	writer := common.NewTableWriter()
