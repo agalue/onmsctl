@@ -11,8 +11,8 @@ import (
 	"github.com/urfave/cli"
 )
 
-// TableWriterOutput the default output for table writers
-var TableWriterOutput = os.Stdout
+var tableWriterOutput = os.Stdout
+var inputStream = os.Stdin
 
 // Reads YAML configuration from file and place it on a target object
 func init() {
@@ -21,7 +21,7 @@ func init() {
 
 // NewTableWriter creates a new table writer
 func NewTableWriter() *tabwriter.Writer {
-	return tabwriter.NewWriter(TableWriterOutput, 0, 8, 1, '\t', tabwriter.AlignRight)
+	return tabwriter.NewWriter(tableWriterOutput, 0, 8, 1, '\t', tabwriter.AlignRight)
 }
 
 // ReadInput reads data from a file specified on the CLI context
@@ -34,14 +34,11 @@ func ReadInput(c *cli.Context, dataIndex int) ([]byte, error) {
 		}
 		return []byte(arg), nil
 	} else if ymlFile == "-" { // TODO Does this work on Windows ?
-		fi, err := os.Stdin.Stat()
-		if err != nil {
-			return nil, err
-		}
-		if fi.Mode()&os.ModeNamedPipe == 0 {
+		stat, _ := inputStream.Stat()
+		if (stat.Mode() & os.ModeCharDevice) != 0 {
 			return nil, fmt.Errorf("There is no YAML content on STDIN pipe")
 		}
-		return ioutil.ReadAll(os.Stdin)
+		return ioutil.ReadAll(inputStream)
 	}
 	return ioutil.ReadFile(ymlFile)
 }
