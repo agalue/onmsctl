@@ -144,6 +144,18 @@ EOF
 The above also works for individual nodes:
 
 ```bash
+➜ cat <<EOF | onmsctl inv node apply -f=- Local
+ foreignID: www.opennms.com
+ interfaces:
+ - ipAddress: www.opennms.com
+ categories:
+ - name: WebSites
+EOF
+```
+
+Or,
+
+```bash
 ➜ onmsctl inv node apply Local '
 foreignID: www.opennms.com
 interfaces:
