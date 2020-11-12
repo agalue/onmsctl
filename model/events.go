@@ -77,7 +77,7 @@ type Event struct {
 	NodeID        int64        `json:"nodeid,omitempty" yaml:"nodeID,omitempty"`
 	Interface     string       `json:"interface,omitempty" yaml:"interface,omitempty"`
 	Service       string       `json:"service,omitempty" yaml:"service,omitempty"`
-	IfIndex       int          `json:"ifindex,omitempty" yaml:"ifIndex,omitempty"`
+	IfIndex       int          `json:"ifIndex,omitempty" yaml:"ifIndex,omitempty"`
 	SnmpHost      string       `json:"snmphost,omitempty" yaml:"snmpHost,omitempty"`
 	Parameters    []EventParam `json:"parms,omitempty" yaml:"parameters,omitempty"`
 	Description   string       `json:"descr,omitempty" yaml:"description,omitempty"`
