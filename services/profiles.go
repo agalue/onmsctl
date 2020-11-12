@@ -26,16 +26,12 @@ func (api profilesAPI) GetProfilesConfig() (*model.ProfilesConfig, error) {
 	cfg := &model.ProfilesConfig{}
 	if fileExists(configFile) {
 		data, _ := ioutil.ReadFile(configFile)
-		if err := yaml.Unmarshal(data, cfg); err == nil && !cfg.IsEmpty() {
-			updateRestInstance(cfg.GetDefaultProfile())
-		} else { // Assume old format
-			if err := yaml.Unmarshal(data, &rest.Instance); err != nil {
-				return nil, err
+		if err := yaml.Unmarshal(data, cfg); err == nil {
+			if !cfg.IsEmpty() {
+				updateRestInstance(cfg.GetDefaultProfile())
 			}
-			updateDefaultConfig(cfg)
-			if err = saveConfig(cfg); err == nil {
-				fmt.Println("Configuration migrated to use profiles.")
-			}
+		} else {
+			fmt.Println("Please use the config subcommand to configure your server profiles.")
 		}
 	}
 	return cfg, nil
@@ -93,18 +89,6 @@ func findProfileIndex(profileName string, cfg *model.ProfilesConfig) int {
 		}
 	}
 	return found
-}
-
-func updateDefaultConfig(cfg *model.ProfilesConfig) {
-	cfg.Default = "default"
-	cfg.Profiles = append(cfg.Profiles, model.Profile{
-		Name:     "default",
-		URL:      rest.Instance.URL,
-		Timeout:  rest.Instance.Timeout,
-		Username: rest.Instance.Username,
-		Password: rest.Instance.Password,
-		Insecure: rest.Instance.Insecure,
-	})
 }
 
 func updateRestInstance(profile *model.Profile) {
