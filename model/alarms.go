@@ -35,7 +35,8 @@ type OnmsAlarm struct {
 	Type                  int        `json:"type,omitempty" yaml:"type,omitempty"`
 	Count                 int        `json:"count,omitempty" yaml:"count,omitempty"`
 	TroubleTicketID       string     `json:"troubleTicket,omitempty" yaml:"troubleTicket,omitempty"`
-	TroubleTicketState    string     `json:"troubleTicketState,omitempty" yaml:"troubleTicketState,omitempty"`
+	TroubleTicketState    int        `json:"troubleTicketState" yaml:"troubleTicketState"`
+	TroubleTicketLink     string     `json:"troubleTicketLink,omitempty" yaml:"troubleTicketLink,omitempty"`
 	SuppressedUntil       *Time      `json:"suppressedUntil,omitempty" yaml:"suppressedUntil,omitempty"`
 	SuppressedBy          string     `json:"suppressedBy,omitempty" yaml:"suppressedBy,omitempty"`
 	SuppressedTime        *Time      `json:"suppressedTime,omitempty" yaml:"suppressedTime,omitempty"`
