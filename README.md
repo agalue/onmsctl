@@ -19,7 +19,7 @@ The reason for implementing a CLI in `Go` is that the generated binaries are sel
 
 ## Compilation
 
-Make sure to have [GoLang](https://golang.org/dl/) installed on your system. Recommended version: 1.15 or newer.
+Make sure to have [GoLang](https://golang.org/dl/) installed on your system. Recommended version: 1.16 or newer.
 
 To compile the source code for your desired operating system:
 
