@@ -272,6 +272,17 @@ func createMockSNMPList(total int, offset int) *model.OnmsSnmpInterfaceList {
 	return list
 }
 
+func TestCriteria(t *testing.T) {
+	var err error
+	api := nodesAPI{}
+	assert.NilError(t, api.isCriteriaValid("42"))
+	assert.NilError(t, api.isCriteriaValid("routers:r01"))
+	err = api.isCriteriaValid("routers:r01:b")
+	assert.Assert(t, err != nil)
+	err = api.isCriteriaValid("routers")
+	assert.Assert(t, err != nil)
+}
+
 func TestAddNode(t *testing.T) {
 	api := GetNodesAPI(&mockNodeRest{t})
 	err := api.AddNode(mockNode)

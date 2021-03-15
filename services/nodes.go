@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"regexp"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/OpenNMS/onmsctl/api"
@@ -69,6 +70,9 @@ func (api nodesAPI) GetNodes() (*model.OnmsNodeList, error) {
 }
 
 func (api nodesAPI) GetNode(nodeCriteria string) (*model.OnmsNode, error) {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return nil, err
+	}
 	bytes, err := api.rest.Get("/api/v2/nodes/" + nodeCriteria)
 	if err != nil {
 		return nil, err
@@ -142,22 +146,37 @@ func (api nodesAPI) AddNode(node *model.OnmsNode) error {
 }
 
 func (api nodesAPI) DeleteNode(nodeCriteria string) error {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return err
+	}
 	return api.rest.Delete("/api/v2/nodes/" + nodeCriteria)
 }
 
 func (api nodesAPI) GetNodeMetadata(nodeCriteria string) ([]model.MetaData, error) {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return nil, err
+	}
 	return api.getMetadata("/api/v2/nodes/" + nodeCriteria)
 }
 
 func (api nodesAPI) SetNodeMetadata(nodeCriteria string, meta model.MetaData) error {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return err
+	}
 	return api.setMetadata("/api/v2/nodes/"+nodeCriteria, meta)
 }
 
 func (api nodesAPI) DeleteNodeMetadata(nodeCriteria string, context string, key string) error {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return err
+	}
 	return api.deleteMetadata("/api/v2/nodes/"+nodeCriteria, context, key)
 }
 
 func (api nodesAPI) GetIPInterfaces(nodeCriteria string) (*model.OnmsIPInterfaceList, error) {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return nil, err
+	}
 	url := fmt.Sprintf("/api/v2/nodes/%s/ipinterfaces?limit=%d&offset=%d&orderBy=ipAddress", nodeCriteria, defaultLimit, 0)
 	bytes, err := api.rest.Get(url)
 	if err != nil {
@@ -202,6 +221,9 @@ func (api nodesAPI) GetIPInterfaces(nodeCriteria string) (*model.OnmsIPInterface
 }
 
 func (api nodesAPI) GetIPInterface(nodeCriteria string, ipAddress string) (*model.OnmsIPInterface, error) {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return nil, err
+	}
 	bytes, err := api.rest.Get("/api/v2/nodes/" + nodeCriteria + "/ipinterfaces/" + ipAddress)
 	if err != nil {
 		return nil, err
@@ -214,6 +236,9 @@ func (api nodesAPI) GetIPInterface(nodeCriteria string, ipAddress string) (*mode
 }
 
 func (api nodesAPI) SetIPInterface(nodeCriteria string, intf *model.OnmsIPInterface) error {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return err
+	}
 	if err := intf.Validate(); err != nil {
 		return err
 	}
@@ -250,22 +275,37 @@ func (api nodesAPI) SetIPInterface(nodeCriteria string, intf *model.OnmsIPInterf
 }
 
 func (api nodesAPI) DeleteIPInterface(nodeCriteria string, ipAddress string) error {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return err
+	}
 	return api.rest.Delete("/api/v2/nodes/" + nodeCriteria + "/ipinterfaces/" + ipAddress)
 }
 
 func (api nodesAPI) GetIPInterfaceMetadata(nodeCriteria string, ipAddress string) ([]model.MetaData, error) {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return nil, err
+	}
 	return api.getMetadata("/api/v2/nodes/" + nodeCriteria + "/ipinterfaces/" + ipAddress)
 }
 
 func (api nodesAPI) SetIPInterfaceMetadata(nodeCriteria string, ipAddress string, meta model.MetaData) error {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return err
+	}
 	return api.setMetadata("/api/v2/nodes/"+nodeCriteria+"/ipinterfaces/"+ipAddress, meta)
 }
 
 func (api nodesAPI) DeleteIPInterfaceMetadata(nodeCriteria string, ipAddress string, context string, key string) error {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return err
+	}
 	return api.deleteMetadata("/api/v2/nodes/"+nodeCriteria+"/ipinterfaces/"+ipAddress, context, key)
 }
 
 func (api nodesAPI) GetSnmpInterfaces(nodeCriteria string) (*model.OnmsSnmpInterfaceList, error) {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return nil, err
+	}
 	url := fmt.Sprintf("/api/v2/nodes/%s/snmpinterfaces?limit=%d&offset=%d&orderBy=ifName", nodeCriteria, defaultLimit, 0)
 	bytes, err := api.rest.Get(url)
 	if err != nil {
@@ -310,6 +350,9 @@ func (api nodesAPI) GetSnmpInterfaces(nodeCriteria string) (*model.OnmsSnmpInter
 }
 
 func (api nodesAPI) GetSnmpInterface(nodeCriteria string, ifIndex int) (*model.OnmsSnmpInterface, error) {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return nil, err
+	}
 	bytes, err := api.rest.Get("/api/v2/nodes/" + nodeCriteria + "/snmpinterfaces/" + strconv.Itoa(ifIndex))
 	if err != nil {
 		return nil, err
@@ -323,6 +366,9 @@ func (api nodesAPI) GetSnmpInterface(nodeCriteria string, ifIndex int) (*model.O
 
 // There are issues with the APIv2 which is why the APIv1 is used
 func (api nodesAPI) SetSnmpInterface(nodeCriteria string, intf *model.OnmsSnmpInterface) error {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return err
+	}
 	if err := intf.Validate(); err != nil {
 		return err
 	}
@@ -339,10 +385,16 @@ func (api nodesAPI) SetSnmpInterface(nodeCriteria string, intf *model.OnmsSnmpIn
 }
 
 func (api nodesAPI) DeleteSnmpInterface(nodeCriteria string, ifIndex int) error {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return err
+	}
 	return api.rest.Delete("/api/v2/nodes/" + nodeCriteria + "/snmpinterfaces/" + strconv.Itoa(ifIndex))
 }
 
 func (api nodesAPI) GetMonitoredServices(nodeCriteria string, ipAddress string) (*model.OnmsMonitoredServiceList, error) {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return nil, err
+	}
 	bytes, err := api.rest.Get("/api/v2/nodes/" + nodeCriteria + "/ipinterfaces/" + ipAddress + "/services?limit=0")
 	if err != nil {
 		return nil, err
@@ -357,6 +409,9 @@ func (api nodesAPI) GetMonitoredServices(nodeCriteria string, ipAddress string) 
 }
 
 func (api nodesAPI) GetMonitoredService(nodeCriteria string, ipAddress string, service string) (*model.OnmsMonitoredService, error) {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return nil, err
+	}
 	bytes, err := api.rest.Get("/api/v2/nodes/" + nodeCriteria + "/ipinterfaces/" + ipAddress + "/services/" + service)
 	if err != nil {
 		return nil, err
@@ -369,6 +424,9 @@ func (api nodesAPI) GetMonitoredService(nodeCriteria string, ipAddress string, s
 }
 
 func (api nodesAPI) SetMonitoredService(nodeCriteria string, ipAddress string, svc *model.OnmsMonitoredService) error {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return err
+	}
 	if err := svc.Validate(); err != nil {
 		return err
 	}
@@ -380,22 +438,37 @@ func (api nodesAPI) SetMonitoredService(nodeCriteria string, ipAddress string, s
 }
 
 func (api nodesAPI) DeleteMonitoredService(nodeCriteria string, ipAddress string, service string) error {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return err
+	}
 	return api.rest.Delete("/api/v2/nodes/" + nodeCriteria + "/ipinterfaces/" + ipAddress + "/services/" + service)
 }
 
 func (api nodesAPI) GetMonitoredServiceMetadata(nodeCriteria string, ipAddress string, service string) ([]model.MetaData, error) {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return nil, err
+	}
 	return api.getMetadata("/api/v2/nodes/" + nodeCriteria + "/ipinterfaces/" + ipAddress + "/services/" + service)
 }
 
 func (api nodesAPI) SetMonitoredServiceMetadata(nodeCriteria string, ipAddress string, service string, meta model.MetaData) error {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return err
+	}
 	return api.setMetadata("/api/v2/nodes/"+nodeCriteria+"/ipinterfaces/"+ipAddress+"/services/"+service, meta)
 }
 
 func (api nodesAPI) DeleteMonitoredServiceMetadata(nodeCriteria string, ipAddress string, service string, context string, key string) error {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return err
+	}
 	return api.deleteMetadata("/api/v2/nodes/"+nodeCriteria+"/ipinterfaces/"+ipAddress+"/services/"+service, context, key)
 }
 
 func (api nodesAPI) GetCategories(nodeCriteria string) ([]model.OnmsCategory, error) {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return nil, err
+	}
 	bytes, err := api.rest.Get("/api/v2/nodes/" + nodeCriteria + "/categories?limit=0")
 	if err != nil {
 		return nil, err
@@ -410,6 +483,9 @@ func (api nodesAPI) GetCategories(nodeCriteria string) ([]model.OnmsCategory, er
 }
 
 func (api nodesAPI) AddCategory(nodeCriteria string, category *model.OnmsCategory) error {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return err
+	}
 	jsonBytes, err := json.Marshal(category)
 	if err != nil {
 		return err
@@ -418,10 +494,16 @@ func (api nodesAPI) AddCategory(nodeCriteria string, category *model.OnmsCategor
 }
 
 func (api nodesAPI) DeleteCategory(nodeCriteria string, category string) error {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return err
+	}
 	return api.rest.Delete("/api/v2/nodes/" + nodeCriteria + "/categories/" + category)
 }
 
 func (api nodesAPI) GetAssetRecord(nodeCriteria string) (*model.OnmsAssetRecord, error) {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return nil, err
+	}
 	bytes, err := api.rest.Get("/api/v2/nodes/" + nodeCriteria)
 	if err != nil {
 		return nil, err
@@ -437,6 +519,9 @@ func (api nodesAPI) GetAssetRecord(nodeCriteria string) (*model.OnmsAssetRecord,
 }
 
 func (api nodesAPI) SetAssetField(nodeCriteria string, field string, value string) error {
+	if err := api.isCriteriaValid(nodeCriteria); err != nil {
+		return err
+	}
 	data := url.Values{}
 	data.Set(field, value)
 	return api.rest.Put("/rest/nodes/"+nodeCriteria+"/assetRecord", []byte(data.Encode()), "application/x-www-form-urlencoded")
@@ -479,4 +564,17 @@ func (api nodesAPI) searchNodes(fiqlFilter string) (*model.OnmsNodeList, error) 
 		}
 	}
 	return list, nil
+}
+
+func (api nodesAPI) isCriteriaValid(nodeCriteria string) error {
+	if _, err := strconv.Atoi(nodeCriteria); err == nil {
+		return nil
+	} else {
+		parts := strings.Split(nodeCriteria, ":")
+		if len(parts) == 2 {
+			return nil
+		}
+
+	}
+	return fmt.Errorf("Invalid node criteria. It should be either the node ID or the foreignSource:foreignID combination.")
 }
