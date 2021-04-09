@@ -44,6 +44,9 @@ func (api foreignSourcesAPI) SetForeignSourceDef(fs model.ForeignSourceDef) erro
 	if err != nil {
 		return err
 	}
+	if fs.Name != "default" && !api.utils.RequisitionExists(fs.Name) {
+		return fmt.Errorf("A requisition called '%s' must exist before creating the FS definition", fs.Name)
+	}
 	return api.rest.Post("/rest/foreignSources", jsonBytes)
 }
 
@@ -57,7 +60,7 @@ func (api foreignSourcesAPI) SetScanInterval(foreignSource string, scanInterval 
 	if !model.IsValidScanInterval(scanInterval) {
 		return fmt.Errorf("Invalid scan interval %s", scanInterval)
 	}
-	bytes := []byte("scan-interval=" + scanInterval)
+	bytes := []byte("scanInterval=" + scanInterval)
 	return api.rest.Put("/rest/foreignSources/"+foreignSource, bytes, "application/x-www-form-urlencoded")
 }
 

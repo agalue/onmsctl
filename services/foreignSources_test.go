@@ -110,7 +110,7 @@ func (api mockForeignSourcesRest) Delete(path string) error {
 func (api mockForeignSourcesRest) Put(path string, dataBytes []byte, contentType string) error {
 	switch path {
 	case "/rest/foreignSources/Example":
-		assert.Equal(api.t, "scan-interval=3d", string(dataBytes))
+		assert.Equal(api.t, "scanInterval=3d", string(dataBytes))
 		return nil
 	}
 	return fmt.Errorf("PUT: should not be called with %s", path)

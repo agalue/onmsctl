@@ -222,7 +222,7 @@ func createTestServer(t *testing.T) *httptest.Server {
 
 		case "/rest/foreignSources/Test":
 			if req.Method == http.MethodPut {
-				interval := req.FormValue("scan-interval")
+				interval := req.FormValue("scanInterval")
 				if interval == "" {
 					res.WriteHeader(http.StatusBadRequest)
 				}

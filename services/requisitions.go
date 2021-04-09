@@ -63,6 +63,9 @@ func (api requisitionsAPI) GetRequisition(foreignSource string) (*model.Requisit
 }
 
 func (api requisitionsAPI) SetRequisition(req model.Requisition) error {
+	if req.Name == "default" {
+		return fmt.Errorf("The requisition cannot be named 'default'.")
+	}
 	jsonBytes, err := json.Marshal(req)
 	if err != nil {
 		return err
