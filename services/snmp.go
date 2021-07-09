@@ -62,7 +62,7 @@ func (api snmpAPI) validateIPAddress(ipAddress string) (string, error) {
 	if ip == nil {
 		addresses, err := net.LookupIP(ipAddress)
 		if err != nil || len(addresses) == 0 {
-			return "", fmt.Errorf("Cannot parse address from %s (invalid IP or FQDN); %s", ipAddress, err)
+			return "", fmt.Errorf("cannot parse address from %s (invalid IP or FQDN); %s", ipAddress, err)
 		}
 		fmt.Printf("%s translates to %s\n", ipAddress, addresses[0].String())
 		ipAddress = addresses[0].String()

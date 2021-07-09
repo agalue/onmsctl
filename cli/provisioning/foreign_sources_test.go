@@ -16,7 +16,7 @@ func TestGetForeignSource(t *testing.T) {
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "fs", "get"})
-	assert.Error(t, err, "Requisition name required")
+	assert.Error(t, err, "requisition name required")
 
 	err = app.Run([]string{app.Name, "fs", "get", "Test"})
 	assert.NilError(t, err)
@@ -29,13 +29,13 @@ func TestSetScanInterval(t *testing.T) {
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "fs", "int"})
-	assert.Error(t, err, "Requisition name required")
+	assert.Error(t, err, "requisition name required")
 
 	err = app.Run([]string{app.Name, "fs", "int", "Test"})
-	assert.Error(t, err, "Scan interval required")
+	assert.Error(t, err, "scan interval required")
 
 	err = app.Run([]string{app.Name, "fs", "int", "Test", "5YEARS"})
-	assert.Error(t, err, "Invalid scan interval 5YEARS")
+	assert.Error(t, err, "invalid scan interval 5YEARS")
 
 	err = app.Run([]string{app.Name, "fs", "int", "Test", "1w"})
 	assert.NilError(t, err)
@@ -48,7 +48,7 @@ func TestDeleteForeignSource(t *testing.T) {
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "fs", "del"})
-	assert.Error(t, err, "Requisition name required")
+	assert.Error(t, err, "requisition name required")
 
 	err = app.Run([]string{app.Name, "fs", "del", "Local"})
 	assert.NilError(t, err)
@@ -61,7 +61,7 @@ func TestApplyForeignSource(t *testing.T) {
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "fs", "apply"})
-	assert.Error(t, err, "Content cannot be empty")
+	assert.Error(t, err, "content cannot be empty")
 
 	fsDef := &model.ForeignSourceDef{
 		Name:         "Local",

@@ -92,11 +92,11 @@ var ServicesCliCommand = cli.Command{
 func getServices(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	ipaddr := c.Args().Get(1)
 	if criteria == "" {
-		return fmt.Errorf("Interface IP Address is required")
+		return fmt.Errorf("interface IP address is required")
 	}
 	list, err := services.GetNodesAPI(rest.Instance).GetMonitoredServices(criteria, ipaddr)
 	if err != nil {
@@ -118,15 +118,15 @@ func getServices(c *cli.Context) error {
 func deleteService(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	ipaddr := c.Args().Get(1)
 	if criteria == "" {
-		return fmt.Errorf("Interface IP Address is required")
+		return fmt.Errorf("interface IP address is required")
 	}
 	svc := c.Args().Get(2)
 	if criteria == "" {
-		return fmt.Errorf("Monitored Service Name is required")
+		return fmt.Errorf("monitored Service Name is required")
 	}
 	return services.GetNodesAPI(rest.Instance).DeleteMonitoredService(criteria, ipaddr, svc)
 }
@@ -134,15 +134,15 @@ func deleteService(c *cli.Context) error {
 func addService(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	ipaddr := c.Args().Get(1)
 	if criteria == "" {
-		return fmt.Errorf("Interface IP Address is required")
+		return fmt.Errorf("interface IP address is required")
 	}
 	svc := c.Args().Get(2)
 	if criteria == "" {
-		return fmt.Errorf("Monitored Service Name is required")
+		return fmt.Errorf("monitored Service Name is required")
 	}
 	service := &model.OnmsMonitoredService{
 		ServiceType: &model.OnmsServiceType{
@@ -158,15 +158,15 @@ func addService(c *cli.Context) error {
 func listServiceMetadata(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	ipaddr := c.Args().Get(1)
 	if ipaddr == "" {
-		return fmt.Errorf("Interface IP Address is required")
+		return fmt.Errorf("interface IP Address is required")
 	}
 	svc := c.Args().Get(2)
 	if svc == "" {
-		return fmt.Errorf("Monitored Service Name is required")
+		return fmt.Errorf("monitored Service Name is required")
 	}
 	meta, err := services.GetNodesAPI(rest.Instance).GetMonitoredServiceMetadata(criteria, ipaddr, svc)
 	if err != nil {
@@ -188,15 +188,15 @@ func listServiceMetadata(c *cli.Context) error {
 func setServiceMetadata(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	ipaddr := c.Args().Get(1)
 	if ipaddr == "" {
-		return fmt.Errorf("Interface IP Address is required")
+		return fmt.Errorf("interface IP address is required")
 	}
 	svc := c.Args().Get(2)
 	if svc == "" {
-		return fmt.Errorf("Monitored Service Name is required")
+		return fmt.Errorf("monitored Service Name is required")
 	}
 	meta := model.MetaData{
 		Context: c.String("context"),
@@ -212,23 +212,23 @@ func setServiceMetadata(c *cli.Context) error {
 func deleteServiceMetadata(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	ipaddr := c.Args().Get(1)
 	if ipaddr == "" {
-		return fmt.Errorf("Interface IP Address is required")
+		return fmt.Errorf("interface IP address is required")
 	}
 	svc := c.Args().Get(2)
 	if svc == "" {
-		return fmt.Errorf("Monitored Service Name is required")
+		return fmt.Errorf("monitored Service Name is required")
 	}
 	ctx := c.String("context")
 	if ctx == "" {
-		return fmt.Errorf("Context is required")
+		return fmt.Errorf("context is required")
 	}
 	key := c.String("key")
 	if key == "" {
-		return fmt.Errorf("Key is required")
+		return fmt.Errorf("key is required")
 	}
 	return services.GetNodesAPI(rest.Instance).DeleteMonitoredServiceMetadata(criteria, ipaddr, svc, ctx, key)
 }

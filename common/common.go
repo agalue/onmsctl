@@ -30,13 +30,13 @@ func ReadInput(c *cli.Context, dataIndex int) ([]byte, error) {
 	if ymlFile == "" {
 		arg := c.Args().Get(dataIndex)
 		if arg == "" {
-			return nil, fmt.Errorf("Content cannot be empty")
+			return nil, fmt.Errorf("content cannot be empty")
 		}
 		return []byte(arg), nil
 	} else if ymlFile == "-" { // TODO Does this work on Windows ?
 		stat, _ := inputStream.Stat()
 		if (stat.Mode() & os.ModeCharDevice) != 0 {
-			return nil, fmt.Errorf("There is no YAML content on STDIN pipe")
+			return nil, fmt.Errorf("there is no YAML content on STDIN pipe")
 		}
 		return ioutil.ReadAll(inputStream)
 	}

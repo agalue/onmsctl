@@ -90,7 +90,7 @@ var SnmpInterfacesCliCommand = cli.Command{
 func getSnmpInterfaces(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	list, err := services.GetNodesAPI(rest.Instance).GetSnmpInterfaces(criteria)
 	if err != nil {
@@ -112,7 +112,7 @@ func getSnmpInterfaces(c *cli.Context) error {
 func deleteSnmpInterface(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	idx := c.Args().Get(1)
 	if idx == "" {
@@ -120,7 +120,7 @@ func deleteSnmpInterface(c *cli.Context) error {
 	}
 	ifIndex, err := strconv.Atoi(idx)
 	if err != nil {
-		return fmt.Errorf("Cannot parse ifIndex: %s", idx)
+		return fmt.Errorf("cannot parse ifIndex: %s", idx)
 	}
 	return services.GetNodesAPI(rest.Instance).DeleteSnmpInterface(criteria, ifIndex)
 }
@@ -128,7 +128,7 @@ func deleteSnmpInterface(c *cli.Context) error {
 func addSnmpInterface(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	snmp := &model.OnmsSnmpInterface{
 		IfIndex:       c.Int("ifIndex"),

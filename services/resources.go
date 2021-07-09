@@ -19,7 +19,7 @@ func GetResourcesAPI(rest api.RestAPI) api.ResourcesAPI {
 
 func (api resourcesAPI) GetResourceForNode(nodeCriteria string) (*model.Resource, error) {
 	if nodeCriteria == "" {
-		return nil, fmt.Errorf("Node ID or Foreign-Source:Foreign-ID combination required")
+		return nil, fmt.Errorf("node ID or foreignSource:foreignID combination required")
 	}
 	jsonInfo, err := api.rest.Get("/rest/resources/fornode/" + nodeCriteria)
 	if err != nil {
@@ -46,7 +46,7 @@ func (api resourcesAPI) GetResources() (*model.ResourceList, error) {
 
 func (api resourcesAPI) GetResource(resourceID string) (*model.Resource, error) {
 	if resourceID == "" {
-		return nil, fmt.Errorf("Resource ID required")
+		return nil, fmt.Errorf("resource ID required")
 	}
 	jsonInfo, err := api.rest.Get("/rest/resources/" + resourceID)
 	if err != nil {
@@ -61,7 +61,7 @@ func (api resourcesAPI) GetResource(resourceID string) (*model.Resource, error) 
 
 func (api resourcesAPI) DeleteResource(resourceID string) error {
 	if resourceID == "" {
-		return fmt.Errorf("Resource ID required")
+		return fmt.Errorf("resource ID required")
 	}
 	err := api.rest.Delete("/rest/resources/" + resourceID)
 	if err != nil {

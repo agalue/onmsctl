@@ -50,15 +50,15 @@ type SnmpInfo struct {
 func (s *SnmpInfo) Validate() error {
 	if s.Version != "" {
 		if err := SNMPVersions.Set(s.Version); err != nil {
-			return fmt.Errorf("Invalid SNMP Version. Allowed values: %s", SNMPVersions.EnumAsString())
+			return fmt.Errorf("invalid version; allowed values: %s", SNMPVersions.EnumAsString())
 		}
 	}
 	if s.Version != "v3" && s.Community == "" {
-		return fmt.Errorf("SNMP Community String cannot be null")
+		return fmt.Errorf("community string cannot be null")
 	}
 	if s.SecurityLevel != 0 {
 		if s.SecurityLevel < 0 || s.SecurityLevel > 3 {
-			return fmt.Errorf("Invalid Security Level. Allowed values: 1, 2, or 3")
+			return fmt.Errorf("invalid security level; allowed values: 1, 2, or 3")
 		}
 		if s.Version != "v3" {
 			s.SecurityLevel = 0
@@ -66,12 +66,12 @@ func (s *SnmpInfo) Validate() error {
 	}
 	if s.PrivProtocol != "" {
 		if err := SNMPPrivProtocols.Set(s.PrivProtocol); err != nil {
-			return fmt.Errorf("Invalid Priv Protocol. Allowed values: %s", SNMPPrivProtocols.EnumAsString())
+			return fmt.Errorf("invalid priv-protocol; allowed values: %s", SNMPPrivProtocols.EnumAsString())
 		}
 	}
 	if s.AuthProtocol != "" {
 		if err := SNMPAuthProtocols.Set(s.AuthProtocol); err != nil {
-			return fmt.Errorf("Invalid Auth Protocol. Allowed values: %s", SNMPAuthProtocols.EnumAsString())
+			return fmt.Errorf("invalid auth-protocol; allowed values: %s", SNMPAuthProtocols.EnumAsString())
 		}
 	}
 	return nil

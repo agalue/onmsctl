@@ -75,11 +75,11 @@ var CliCommand = cli.Command{
 
 func reloadDaemon(c *cli.Context) error {
 	if !c.Args().Present() {
-		return fmt.Errorf("Daemon name required")
+		return fmt.Errorf("daemon name required")
 	}
 	daemonName := c.Args().First()
 	if !isValidDaemon(daemonName) {
-		return fmt.Errorf("Invalid daemon name %s", daemonName)
+		return fmt.Errorf("invalid daemon name %s", daemonName)
 	}
 	event := model.Event{
 		UEI:    "uei.opennms.org/internal/reloadDaemonConfig",

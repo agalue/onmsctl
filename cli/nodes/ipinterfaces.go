@@ -116,7 +116,7 @@ var IPInterfacesCliCommand = cli.Command{
 func getIPInterfaces(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	list, err := services.GetNodesAPI(rest.Instance).GetIPInterfaces(criteria)
 	if err != nil {
@@ -138,11 +138,11 @@ func getIPInterfaces(c *cli.Context) error {
 func deleteIPInterface(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	ipaddr := c.Args().Get(1)
 	if ipaddr == "" {
-		return fmt.Errorf("Interface IP Address is required")
+		return fmt.Errorf("interface IP Address is required")
 	}
 	return services.GetNodesAPI(rest.Instance).DeleteIPInterface(criteria, ipaddr)
 }
@@ -150,7 +150,7 @@ func deleteIPInterface(c *cli.Context) error {
 func addIPInterface(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	ip := &model.OnmsIPInterface{
 		IPAddress:   c.String("ipAddr"),
@@ -168,11 +168,11 @@ func addIPInterface(c *cli.Context) error {
 func listInterfaceMetadata(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	ipaddr := c.Args().Get(1)
 	if criteria == "" {
-		return fmt.Errorf("Interface IP Address is required")
+		return fmt.Errorf("interface IP Address is required")
 	}
 	meta, err := services.GetNodesAPI(rest.Instance).GetIPInterfaceMetadata(criteria, ipaddr)
 	if err != nil {
@@ -194,11 +194,11 @@ func listInterfaceMetadata(c *cli.Context) error {
 func setInterfaceMetadata(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	ipaddr := c.Args().Get(1)
 	if ipaddr == "" {
-		return fmt.Errorf("Interface IP Address is required")
+		return fmt.Errorf("interface IP Address is required")
 	}
 	meta := model.MetaData{
 		Context: c.String("context"),
@@ -214,19 +214,19 @@ func setInterfaceMetadata(c *cli.Context) error {
 func deleteInterfaceMetadata(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	ipaddr := c.Args().Get(1)
 	if ipaddr == "" {
-		return fmt.Errorf("Interface IP Address is required")
+		return fmt.Errorf("interface IP Address is required")
 	}
 	ctx := c.String("context")
 	if ctx == "" {
-		return fmt.Errorf("Context is required")
+		return fmt.Errorf("context is required")
 	}
 	key := c.String("key")
 	if key == "" {
-		return fmt.Errorf("Key is required")
+		return fmt.Errorf("key is required")
 	}
 	return services.GetNodesAPI(rest.Instance).DeleteIPInterfaceMetadata(criteria, ipaddr, ctx, key)
 }

@@ -44,7 +44,7 @@ func TestForeignSourceObject(t *testing.T) {
 	var err error
 
 	fsDef.ScanInterval = "2YEARS" // This is wrong on purpose
-	assert.ErrorContains(t, fsDef.Validate(), "Invalid scan interval")
+	assert.ErrorContains(t, fsDef.Validate(), "invalid scan interval")
 
 	fsDef.ScanInterval = "2w 1d"
 	assert.NilError(t, fsDef.Validate())

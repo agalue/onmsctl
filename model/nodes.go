@@ -26,13 +26,13 @@ type MetaData struct {
 // Validate verify structure and apply defaults when needed
 func (obj *MetaData) Validate() error {
 	if obj.Key == "" {
-		return fmt.Errorf("Key cannot be empty")
+		return fmt.Errorf("key cannot be empty")
 	}
 	if obj.Value == "" {
-		return fmt.Errorf("Value cannot be empty")
+		return fmt.Errorf("value cannot be empty")
 	}
 	if obj.Context == "" {
-		return fmt.Errorf("Context cannot be empty")
+		return fmt.Errorf("context cannot be empty")
 	}
 	return nil
 }
@@ -164,7 +164,7 @@ type OnmsMonitoredService struct {
 // Validate verify structure and apply defaults when needed
 func (obj *OnmsMonitoredService) Validate() error {
 	if obj.ServiceType == nil || obj.ServiceType.Name == "" {
-		return fmt.Errorf("Service name cannot be empty")
+		return fmt.Errorf("service name cannot be empty")
 	}
 	if obj.Status == "" {
 		obj.Status = "A"
@@ -226,7 +226,7 @@ func (obj *OnmsIPInterface) Validate() error {
 	}
 	ip := net.ParseIP(obj.IPAddress)
 	if ip == nil {
-		return fmt.Errorf("Invalid IP Address: %s", obj.IPAddress)
+		return fmt.Errorf("invalid IP Address: %s", obj.IPAddress)
 	}
 	if obj.SnmpPrimary == "" {
 		obj.SnmpPrimary = "P"
@@ -328,7 +328,7 @@ func (obj *OnmsSnmpInterface) Validate() error {
 	if obj.PhysAddress != "" {
 		_, err := net.ParseMAC(obj.PhysAddress)
 		if err != nil {
-			return fmt.Errorf("Invalid Physical Address: %v", err)
+			return fmt.Errorf("invalid Physical Address: %v", err)
 		}
 	}
 	return nil
@@ -373,7 +373,7 @@ type OnmsNode struct {
 // Validate verify structure and apply defaults when needed
 func (obj *OnmsNode) Validate() error {
 	if obj.Label == "" {
-		return fmt.Errorf("Label cannot be empty")
+		return fmt.Errorf("label cannot be empty")
 	}
 	if obj.LabelSource == "" {
 		obj.LabelSource = "U"
@@ -382,10 +382,10 @@ func (obj *OnmsNode) Validate() error {
 		obj.Type = "A"
 	}
 	if obj.ForeignSource == "" && obj.ForeignID != "" {
-		return fmt.Errorf("Foreign Source is required")
+		return fmt.Errorf("foreign source is required")
 	}
 	if obj.ForeignSource != "" && obj.ForeignID == "" {
-		return fmt.Errorf("Foreign ID is required")
+		return fmt.Errorf("foreign ID is required")
 	}
 	for i := range obj.IPInterfaces {
 		intf := &obj.IPInterfaces[i]

@@ -55,7 +55,7 @@ func getFields(c *cli.Context) error {
 func getAssets(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	record, err := services.GetNodesAPI(rest.Instance).GetAssetRecord(criteria)
 	if err != nil {
@@ -69,7 +69,7 @@ func getAssets(c *cli.Context) error {
 func deleteAssetField(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	field := c.Args().Get(1)
 	if field == "" {
@@ -81,7 +81,7 @@ func deleteAssetField(c *cli.Context) error {
 func addAssetField(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	field := c.Args().Get(1)
 	if field == "" {
@@ -96,7 +96,7 @@ func addAssetField(c *cli.Context) error {
 
 func setAssetField(criteria string, field string, value string) error {
 	if !isValidField(field) {
-		return fmt.Errorf("Invalid field %s", field)
+		return fmt.Errorf("invalid field %s", field)
 	}
 	return services.GetNodesAPI(rest.Instance).SetAssetField(criteria, field, value)
 }

@@ -158,7 +158,7 @@ func getNodes(c *cli.Context) error {
 func deleteNode(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	return services.GetNodesAPI(rest.Instance).DeleteNode(criteria)
 }
@@ -202,7 +202,7 @@ func addNodes(c *cli.Context) error {
 func listNodeMetadata(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	meta, err := services.GetNodesAPI(rest.Instance).GetNodeMetadata(criteria)
 	if err != nil {
@@ -224,7 +224,7 @@ func listNodeMetadata(c *cli.Context) error {
 func setNodeMetadata(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	meta := model.MetaData{
 		Context: c.String("context"),
@@ -240,15 +240,15 @@ func setNodeMetadata(c *cli.Context) error {
 func deleteNodeMetadata(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	ctx := c.String("context")
 	if ctx == "" {
-		return fmt.Errorf("Context is required")
+		return fmt.Errorf("context is required")
 	}
 	key := c.String("key")
 	if key == "" {
-		return fmt.Errorf("Key is required")
+		return fmt.Errorf("key is required")
 	}
 	return services.GetNodesAPI(rest.Instance).DeleteNodeMetadata(criteria, ctx, key)
 }

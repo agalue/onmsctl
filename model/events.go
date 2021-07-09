@@ -55,7 +55,7 @@ type LogMsg struct {
 // Validate returns an error if the log message is invalid
 func (lm *LogMsg) Validate() error {
 	if lm.Message == "" {
-		return fmt.Errorf("Message cannot be null")
+		return fmt.Errorf("message cannot be null")
 	}
 	if lm.Destination == "" {
 		lm.Destination = "logndisplay"
@@ -66,9 +66,9 @@ func (lm *LogMsg) Validate() error {
 // Event an event object
 // Time uses a string format. Example: "Saturday, July 13, 2019 2:13:43 PM GMT"
 type Event struct {
-	SnmpMask      *Mask        `json:"mask,omitempty" json:"mask,omitempty"`
-	Snmp          *SNMP        `json:"snmp,omitempty" json:"snmp,omitempty"`
-	LogMessage    *LogMsg      `json:"logmsg,omitempty" json:"logmsg,omitempty"`
+	SnmpMask      *Mask        `json:"mask,omitempty" yaml:"mask,omitempty"`
+	Snmp          *SNMP        `json:"snmp,omitempty" yaml:"snmp,omitempty"`
+	LogMessage    *LogMsg      `json:"logmsg,omitempty" yaml:"logmsg,omitempty"`
 	UEI           string       `json:"uei" yaml:"uei"`
 	Source        string       `json:"source" yaml:"source"`
 	Time          string       `json:"time,omitempty" yaml:"time,omitempty"`
@@ -119,7 +119,7 @@ func (e Event) Validate() error {
 	if e.Interface != "" {
 		ip := net.ParseIP(e.Interface)
 		if ip == nil {
-			return fmt.Errorf("Invalid Interface: %s", e.Interface)
+			return fmt.Errorf("invalid Interface: %s", e.Interface)
 		}
 	}
 	if e.Severity != "" {

@@ -12,9 +12,9 @@ import (
 // AllowFqdnOnRequisitionedInterfaces when this is true, if the content of an IP Address is a FQDN it will be translated into a valid IPv4
 var AllowFqdnOnRequisitionedInterfaces = true
 
-// RequisitionMetaData a meta-data entry
+// RequisitionMetaData a metadata entry
 type RequisitionMetaData struct {
-	XMLName xml.Name `xml:"meta-data" json:"-" yaml:"-"`
+	XMLName xml.Name `xml:"metadata" json:"-" yaml:"-"`
 	Key     string   `xml:"key,attr" json:"key" yaml:"key"`
 	Value   string   `xml:"value,attr" json:"value" yaml:"value"`
 	Context string   `xml:"context,attr,omitempty" json:"context,omitempty" yaml:"context,omitempty"`
@@ -26,10 +26,10 @@ func (m *RequisitionMetaData) Validate() error {
 		m.Context = "requisition"
 	}
 	if m.Key == "" {
-		return fmt.Errorf("Meta-data key cannot be empty")
+		return fmt.Errorf("metadata key cannot be empty")
 	}
 	if m.Value == "" {
-		return fmt.Errorf("Meta-data value for key %s cannot be empty", m.Key)
+		return fmt.Errorf("metadata value for key %s cannot be empty", m.Key)
 	}
 	return nil
 }
@@ -38,15 +38,15 @@ func (m *RequisitionMetaData) Validate() error {
 type RequisitionMonitoredService struct {
 	XMLName  xml.Name              `xml:"monitored-service" json:"-" yaml:"-"`
 	Name     string                `xml:"service-name,attr" json:"service-name" yaml:"name"`
-	MetaData []RequisitionMetaData `xml:"meta-data,omitempty" json:"meta-data,omitempty" yaml:"metaData,omitempty"`
+	MetaData []RequisitionMetaData `xml:"metadata,omitempty" json:"metadata,omitempty" yaml:"metaData,omitempty"`
 }
 
-// AddMetaData adds a meta-data entry to the node
+// AddMetaData adds a metadata entry to the node
 func (s *RequisitionMonitoredService) AddMetaData(key string, value string) {
 	s.MetaData = append(s.MetaData, RequisitionMetaData{Context: "requisition", Key: key, Value: value})
 }
 
-// SetMetaData adds or updates an existing meta-data entry on the service
+// SetMetaData adds or updates an existing metadata entry on the service
 func (s *RequisitionMonitoredService) SetMetaData(key string, value string) {
 	var found *RequisitionMetaData
 	for i := range s.MetaData {
@@ -62,7 +62,7 @@ func (s *RequisitionMonitoredService) SetMetaData(key string, value string) {
 	}
 }
 
-// DeleteMetaData deletes an existing meta-data entry from the service
+// DeleteMetaData deletes an existing metadata entry from the service
 func (s *RequisitionMonitoredService) DeleteMetaData(key string) {
 	var found int
 	for i, m := range s.MetaData {
@@ -78,7 +78,7 @@ func (s *RequisitionMonitoredService) DeleteMetaData(key string) {
 // Validate returns an error if the service is invalid
 func (s RequisitionMonitoredService) Validate() error {
 	if s.Name == "" {
-		return fmt.Errorf("Service name cannot be empty")
+		return fmt.Errorf("service name cannot be empty")
 	}
 	if err := hasValidContent("Service Name", s.Name); err != nil {
 		return err
@@ -103,13 +103,13 @@ type RequisitionAsset struct {
 // Validate returns an error if asset field is invalid
 func (a RequisitionAsset) Validate() error {
 	if a.Name == "" {
-		return fmt.Errorf("Asset name cannot be empty")
+		return fmt.Errorf("asset name cannot be empty")
 	}
 	if err := hasValidContent("Asset Name", a.Name); err != nil {
 		return err
 	}
 	if a.Value == "" {
-		return fmt.Errorf("Asset value for %s cannot be empty", a.Name)
+		return fmt.Errorf("asset value for %s cannot be empty", a.Name)
 	}
 	return nil
 }
@@ -123,7 +123,7 @@ type RequisitionCategory struct {
 // Validate returns an error if the category is invalid
 func (c RequisitionCategory) Validate() error {
 	if c.Name == "" {
-		return fmt.Errorf("Category name cannot be empty")
+		return fmt.Errorf("category name cannot be empty")
 	}
 	if err := hasValidContent("Category Name", c.Name); err != nil {
 		return err
@@ -139,15 +139,15 @@ type RequisitionInterface struct {
 	SnmpPrimary string                        `xml:"snmp-primary,attr,omitempty" json:"snmp-primary" yaml:"snmpPrimary"`
 	Status      int                           `xml:"status,attr,omitempty" json:"status" yaml:"status"`
 	Services    []RequisitionMonitoredService `xml:"monitored-service,omitempty" json:"monitored-service,omitempty" yaml:"services,omitempty"`
-	MetaData    []RequisitionMetaData         `xml:"meta-data,omitempty" json:"meta-data,omitempty" yaml:"metaData,omitempty"`
+	MetaData    []RequisitionMetaData         `xml:"metadata,omitempty" json:"metadata,omitempty" yaml:"metaData,omitempty"`
 }
 
-// AddMetaData adds a meta-data entry to the interface
+// AddMetaData adds a metadata entry to the interface
 func (intf *RequisitionInterface) AddMetaData(key string, value string) {
 	intf.MetaData = append(intf.MetaData, RequisitionMetaData{Context: "requisition", Key: key, Value: value})
 }
 
-// SetMetaData adds or updates an existing meta-data entry on the IP interface
+// SetMetaData adds or updates an existing metadata entry on the IP interface
 func (intf *RequisitionInterface) SetMetaData(key string, value string) {
 	var found *RequisitionMetaData
 	for i := range intf.MetaData {
@@ -163,7 +163,7 @@ func (intf *RequisitionInterface) SetMetaData(key string, value string) {
 	}
 }
 
-// DeleteMetaData deletes an existing meta-data entry from the IP interface
+// DeleteMetaData deletes an existing metadata entry from the IP interface
 func (intf *RequisitionInterface) DeleteMetaData(key string) {
 	var found int
 	for i, m := range intf.MetaData {
@@ -202,13 +202,13 @@ func (intf *RequisitionInterface) Validate() error {
 		intf.Status = 1
 	}
 	if intf.Status != 1 && intf.Status != 3 {
-		return fmt.Errorf("Invalid status for interface %s: %d", intf.IPAddress, intf.Status)
+		return fmt.Errorf("invalid status for interface %s: %d", intf.IPAddress, intf.Status)
 	}
 	if intf.SnmpPrimary == "" { // Set a reasonable default when the primary flag is not initialized
 		intf.SnmpPrimary = "N"
 	}
 	if intf.SnmpPrimary != "P" && intf.SnmpPrimary != "S" && intf.SnmpPrimary != "N" {
-		return fmt.Errorf("Invalid snmp-primary for interface %s: %s", intf.IPAddress, intf.SnmpPrimary)
+		return fmt.Errorf("invalid snmp-primary for interface %s: %s", intf.IPAddress, intf.SnmpPrimary)
 	}
 	if err := intf.validateIP(); err != nil {
 		return err
@@ -236,7 +236,7 @@ func (intf *RequisitionInterface) validateIP() error {
 		if AllowFqdnOnRequisitionedInterfaces {
 			addresses, err := net.LookupIP(intf.IPAddress)
 			if err != nil || len(addresses) == 0 {
-				return fmt.Errorf("Cannot get address from %s (invalid IP or FQDN); %s", intf.IPAddress, err)
+				return fmt.Errorf("cannot get address from %s (invalid IP or FQDN); %s", intf.IPAddress, err)
 			}
 			fmt.Printf("%s translates to %s.\n", intf.IPAddress, addresses[0].String())
 			intf.IPAddress = addresses[0].String()
@@ -258,7 +258,7 @@ func (intf *RequisitionInterface) validateServices() error {
 	}
 	for service, count := range serviceMap {
 		if count > 1 {
-			return fmt.Errorf("Service %s is defined more than once on interface %s", service, intf.IPAddress)
+			return fmt.Errorf("service %s is defined more than once on interface %s", service, intf.IPAddress)
 		}
 	}
 	return nil
@@ -278,15 +278,15 @@ type RequisitionNode struct {
 	Interfaces          []RequisitionInterface `xml:"interface,omitempty" json:"interface,omitempty" yaml:"interfaces,omitempty"`
 	Categories          []RequisitionCategory  `xml:"category,omitempty" json:"category,omitempty" yaml:"categories,omitempty"`
 	Assets              []RequisitionAsset     `xml:"asset,omitempty" json:"asset,omitempty" yaml:"assets,omitempty"`
-	MetaData            []RequisitionMetaData  `xml:"meta-data,omitempty" json:"meta-data,omitempty" yaml:"metaData,omitempty"`
+	MetaData            []RequisitionMetaData  `xml:"metadata,omitempty" json:"metadata,omitempty" yaml:"metaData,omitempty"`
 }
 
-// AddMetaData adds a meta-data entry to the node
+// AddMetaData adds a metadata entry to the node
 func (n *RequisitionNode) AddMetaData(key string, value string) {
 	n.MetaData = append(n.MetaData, RequisitionMetaData{Context: "requisition", Key: key, Value: value})
 }
 
-// SetMetaData adds or updates an existing meta-data entry on the node
+// SetMetaData adds or updates an existing metadata entry on the node
 func (n *RequisitionNode) SetMetaData(key string, value string) {
 	var found *RequisitionMetaData
 	for i := range n.MetaData {
@@ -302,7 +302,7 @@ func (n *RequisitionNode) SetMetaData(key string, value string) {
 	}
 }
 
-// DeleteMetaData deletes an existing meta-data entry from the node
+// DeleteMetaData deletes an existing metadata entry from the node
 func (n *RequisitionNode) DeleteMetaData(key string) {
 	var found int
 	for i, m := range n.MetaData {
@@ -338,7 +338,7 @@ func (n *RequisitionNode) Merge(source RequisitionNode) error {
 // Validate returns an error if the node definition is invalid
 func (n *RequisitionNode) Validate() error {
 	if n.ForeignID == "" {
-		return fmt.Errorf("Foreign ID cannot be empty")
+		return fmt.Errorf("foreign ID cannot be empty")
 	}
 	if err := hasValidContent("Foreign ID", n.ForeignID); err != nil {
 		return err
@@ -347,13 +347,13 @@ func (n *RequisitionNode) Validate() error {
 		n.NodeLabel = n.ForeignID
 	}
 	if n.ParentForeignID != "" && n.ParentNodeLabel != "" {
-		return fmt.Errorf("Cannot set both parent foreign ID and parent node label on node %s, choose one", n.NodeLabel)
+		return fmt.Errorf("cannot set both parent foreign ID and parent node label on node %s, choose one", n.NodeLabel)
 	}
 	if n.ParentNodeLabel == n.NodeLabel {
-		return fmt.Errorf("The parent node cannot be the node itself. The parent-nodel-label has to be different than the node-label")
+		return fmt.Errorf("the parent node cannot be the node itself. The parent-nodel-label has to be different than the node-label")
 	}
 	if n.ParentForeignID == n.ForeignID {
-		return fmt.Errorf("The parent node cannot be the node itself. The parent-foreign-id has to be different than the foreign-id")
+		return fmt.Errorf("the parent node cannot be the node itself. The parent-foreign-id has to be different than the foreign-id")
 	}
 	if err := n.validateInterfaces(); err != nil {
 		return err
@@ -400,7 +400,7 @@ func (n *RequisitionNode) validateInterfaces() error {
 		}
 	}
 	if primaryCount > 1 {
-		return fmt.Errorf("Node %s cannot have more than one primary interface", n.NodeLabel)
+		return fmt.Errorf("node %s cannot have more than one primary interface", n.NodeLabel)
 	}
 	for ipAddr, count := range intfMap {
 		if count > 1 {
@@ -438,12 +438,12 @@ func (r *Requisition) Validate() error {
 		foreignIDs[n.ForeignID]++
 		err := n.Validate()
 		if err != nil {
-			return fmt.Errorf("Problem on node %s on requisition %s: %s", n.NodeLabel, r.Name, err.Error())
+			return fmt.Errorf("problem on node %s on requisition %s: %s", n.NodeLabel, r.Name, err.Error())
 		}
 	}
 	for id, count := range foreignIDs {
 		if count > 1 {
-			return fmt.Errorf("Duplicate Foreign ID %s on requisition %s", id, r.Name)
+			return fmt.Errorf("duplicate Foreign ID %s on requisition %s", id, r.Name)
 		}
 	}
 	return nil
@@ -481,7 +481,7 @@ func (stats RequisitionsStats) GetRequisitionStats(foreignSource string) Requisi
 
 func hasValidContent(kind string, field string) error {
 	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, field); matched {
-		return fmt.Errorf("Invalid characters on %s %s. Please avoid /, \\, ?, :, &, *, ', \"", kind, field)
+		return fmt.Errorf("invalid characters on %s %s. Please avoid /, \\, ?, :, &, *, ', \"", kind, field)
 	}
 	return nil
 }

@@ -160,7 +160,7 @@ func TestIsForeignSourceValid(t *testing.T) {
 			},
 		},
 	})
-	assert.ErrorContains(t, err, "Cannot find policy with class")
+	assert.ErrorContains(t, err, "cannot find policy with class")
 
 	err = api.IsForeignSourceValid(model.ForeignSourceDef{
 		Name:         "Example",
@@ -172,7 +172,7 @@ func TestIsForeignSourceValid(t *testing.T) {
 			},
 		},
 	})
-	assert.ErrorContains(t, err, "Cannot find detector with class")
+	assert.ErrorContains(t, err, "cannot find detector with class")
 }
 
 func TestIsPolicyValid(t *testing.T) {
@@ -184,7 +184,7 @@ func TestIsPolicyValid(t *testing.T) {
 		Name:  "Wrong",
 		Class: "org.opennms.netmgt.provision.persist.policies.WrongPolicy",
 	})
-	assert.ErrorContains(t, err, "Cannot find policy with class")
+	assert.ErrorContains(t, err, "cannot find policy with class")
 }
 
 func TestIsDetectorValid(t *testing.T) {
@@ -196,7 +196,7 @@ func TestIsDetectorValid(t *testing.T) {
 		Name:  "Wrong",
 		Class: "org.opennms.netmgt.provision.detector.mock.WrongDetector",
 	})
-	assert.ErrorContains(t, err, "Cannot find detector with class")
+	assert.ErrorContains(t, err, "cannot find detector with class")
 }
 
 func TestGetDetectorConfig(t *testing.T) {
@@ -212,8 +212,8 @@ func TestGetDetectorConfig(t *testing.T) {
 	assert.Equal(t, "ICMP", plugin.Name)
 	assert.Equal(t, 7, len(plugin.Parameters))
 
-	plugin, err = api.GetDetectorConfig("Wrong")
-	assert.ErrorContains(t, err, "Cannot find detector")
+	_, err = api.GetDetectorConfig("Wrong")
+	assert.ErrorContains(t, err, "cannot find detector")
 }
 
 func TestPolicyConfig(t *testing.T) {
@@ -229,8 +229,8 @@ func TestPolicyConfig(t *testing.T) {
 	assert.Equal(t, "Set Node Category", plugin.Name)
 	assert.Equal(t, 15, len(plugin.Parameters))
 
-	plugin, err = api.GetPolicyConfig("Wrong")
-	assert.ErrorContains(t, err, "Cannot find policy")
+	_, err = api.GetPolicyConfig("Wrong")
+	assert.ErrorContains(t, err, "cannot find policy")
 }
 
 func TestGetDetector(t *testing.T) {
@@ -238,8 +238,8 @@ func TestGetDetector(t *testing.T) {
 	detector, err := api.GetDetector("default", "ICMP")
 	assert.NilError(t, err)
 	assert.Equal(t, "ICMP", detector.Name)
-	detector, err = api.GetDetector("default", "Wrong")
-	assert.ErrorContains(t, err, "Cannot find detector")
+	_, err = api.GetDetector("default", "Wrong")
+	assert.ErrorContains(t, err, "cannot find detector")
 }
 
 func TestGetPolicy(t *testing.T) {
@@ -247,8 +247,8 @@ func TestGetPolicy(t *testing.T) {
 	policy, err := api.GetPolicy("default", "Production")
 	assert.NilError(t, err)
 	assert.Equal(t, "Production", policy.Name)
-	policy, err = api.GetPolicy("default", "Wrong")
-	assert.ErrorContains(t, err, "Cannot find policy")
+	_, err = api.GetPolicy("default", "Wrong")
+	assert.ErrorContains(t, err, "cannot find policy")
 }
 
 func TestSetDetector(t *testing.T) {

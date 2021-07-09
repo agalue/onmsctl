@@ -31,10 +31,10 @@ type Detector struct {
 // Validate returns an error if the detector is invalid
 func (p *Detector) Validate() error {
 	if p.Name == "" {
-		return fmt.Errorf("Detector name cannot be empty")
+		return fmt.Errorf("detector name cannot be empty")
 	}
 	if p.Class == "" {
-		return fmt.Errorf("Detector class cannot be empty")
+		return fmt.Errorf("detector class cannot be empty")
 	}
 	return nil
 }
@@ -50,10 +50,10 @@ type Policy struct {
 // Validate returns an error if the policy is invalid
 func (p *Policy) Validate() error {
 	if p.Name == "" {
-		return fmt.Errorf("Policy name cannot be empty")
+		return fmt.Errorf("policy name cannot be empty")
 	}
 	if p.Class == "" {
-		return fmt.Errorf("Policy class cannot be empty")
+		return fmt.Errorf("policy class cannot be empty")
 	}
 	return nil
 }
@@ -71,16 +71,16 @@ type ForeignSourceDef struct {
 // Validate returns an error if the node definition is invalid
 func (fs *ForeignSourceDef) Validate() error {
 	if fs.Name == "" {
-		return fmt.Errorf("The name of a Foreign Source definition cannot be empty")
+		return fmt.Errorf("the name of a Foreign Source definition cannot be empty")
 	}
 	if matched, _ := regexp.MatchString(`[/\\?:&*'"]`, fs.Name); matched {
-		return fmt.Errorf("Invalid characters on Foreign Source name %s:, /, \\, ?, &, *, ', \"", fs.Name)
+		return fmt.Errorf("invalid characters on Foreign Source name %s:, /, \\, ?, &, *, ', \"", fs.Name)
 	}
 	if fs.ScanInterval == "" {
-		return fmt.Errorf("The scan interval of a Foreign Source definition cannot be empty")
+		return fmt.Errorf("the scan interval of a Foreign Source definition cannot be empty")
 	}
 	for !IsValidScanInterval(fs.ScanInterval) {
-		return fmt.Errorf("Invalid scan interval %s", fs.ScanInterval)
+		return fmt.Errorf("invalid scan interval %s", fs.ScanInterval)
 	}
 	for _, d := range fs.Detectors {
 		err := d.Validate()
@@ -100,27 +100,27 @@ func (fs *ForeignSourceDef) Validate() error {
 // GetDetector gets a detector by its name or class
 func (fs ForeignSourceDef) GetDetector(detectorID string) (*Detector, error) {
 	if detectorID == "" {
-		return nil, fmt.Errorf("Detector name or class required")
+		return nil, fmt.Errorf("detector name or class required")
 	}
 	for _, detector := range fs.Detectors {
 		if detector.Class == detectorID || detector.Name == detectorID {
 			return &detector, nil
 		}
 	}
-	return nil, fmt.Errorf("Cannot find detector for %s", detectorID)
+	return nil, fmt.Errorf("cannot find detector for %s", detectorID)
 }
 
 // GetPolicy gets a policy by its name or class
 func (fs ForeignSourceDef) GetPolicy(policyID string) (*Policy, error) {
 	if policyID == "" {
-		return nil, fmt.Errorf("Policy name or class required")
+		return nil, fmt.Errorf("policy name or class required")
 	}
 	for _, policy := range fs.Policies {
 		if policy.Class == policyID || policy.Name == policyID {
 			return &policy, nil
 		}
 	}
-	return nil, fmt.Errorf("Cannot find policy for %s", policyID)
+	return nil, fmt.Errorf("cannot find policy for %s", policyID)
 }
 
 // Plugin a definition class for a detector or a policy
@@ -145,14 +145,14 @@ func (p Plugin) VerifyParameters(parameters []Parameter) error {
 	for _, param := range parameters {
 		config := p.FindParameter(param.Key)
 		if config == nil {
-			return fmt.Errorf("Invalid parameter %s for %s", param.Key, p.Class)
+			return fmt.Errorf("invalid parameter %s for %s", param.Key, p.Class)
 		}
 	}
 	for _, param := range p.Parameters {
 		if param.Required {
 			pa := FindParameter(parameters, param.Key)
 			if pa == nil {
-				return fmt.Errorf("Missing required parameter %s on %s", param.Key, p.Class)
+				return fmt.Errorf("missing required parameter %s on %s", param.Key, p.Class)
 			}
 			if len(param.Options) > 0 {
 				found := false
@@ -163,7 +163,7 @@ func (p Plugin) VerifyParameters(parameters []Parameter) error {
 					}
 				}
 				if !found {
-					return fmt.Errorf("Invalid parameter value %s on %s. Valid values are: %s", pa.Key, p.Class, param.Options)
+					return fmt.Errorf("invalid parameter value %s on %s. Valid values are: %s", pa.Key, p.Class, param.Options)
 				}
 			}
 		}
@@ -209,8 +209,9 @@ func IsValidScanInterval(scanInterval string) bool {
 	if scanInterval == "" {
 		return false
 	}
+	re, _ := regexp.Compile(`^[0-9]+(w|d|h|m|s|ms)$`)
 	for _, el := range strings.Split(scanInterval, " ") {
-		if matched, _ := regexp.MatchString(`^[0-9]+(w|d|h|m|s|ms)$`, el); !matched {
+		if !re.MatchString(el) {
 			return false
 		}
 	}

@@ -26,7 +26,7 @@ func TestGetRequisition(t *testing.T) {
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "req", "get"})
-	assert.Error(t, err, "Requisition name required")
+	assert.Error(t, err, "requisition name required")
 
 	err = app.Run([]string{app.Name, "req", "get", "Test"})
 	assert.NilError(t, err)
@@ -39,7 +39,7 @@ func TestImportRequisition(t *testing.T) {
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "req", "import"})
-	assert.Error(t, err, "Requisition name required")
+	assert.Error(t, err, "requisition name required")
 
 	err = app.Run([]string{app.Name, "req", "import", "Local"})
 	assert.NilError(t, err)
@@ -62,7 +62,7 @@ func TestAddRequisition(t *testing.T) {
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "req", "add"})
-	assert.Error(t, err, "Requisition name required")
+	assert.Error(t, err, "requisition name required")
 
 	err = app.Run([]string{app.Name, "req", "add", "Go"})
 	assert.NilError(t, err)
@@ -75,7 +75,7 @@ func TestDeleteRequisition(t *testing.T) {
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "req", "delete"})
-	assert.Error(t, err, "Requisition name required")
+	assert.Error(t, err, "requisition name required")
 
 	err = app.Run([]string{app.Name, "req", "delete", "Local"})
 	assert.NilError(t, err)
@@ -88,7 +88,7 @@ func TestApplyRequisition(t *testing.T) {
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "req", "apply"})
-	assert.Error(t, err, "Content cannot be empty")
+	assert.Error(t, err, "content cannot be empty")
 
 	var testReq = model.Requisition{
 		Name: "WebSites",

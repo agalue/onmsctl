@@ -20,7 +20,7 @@ func GetProvisioningUtilsAPI(rest api.RestAPI) api.ProvisioningUtilsAPI {
 func (api provisioningUtilsAPI) GetRequisitionNames() (*model.RequisitionsList, error) {
 	jsonRequisitions, err := api.rest.Get("/rest/requisitionNames")
 	if err != nil {
-		return nil, fmt.Errorf("Cannot retrieve requisition names: %s", err)
+		return nil, fmt.Errorf("cannot retrieve requisition names: %s", err)
 	}
 	requisitions := &model.RequisitionsList{}
 	if err := json.Unmarshal(jsonRequisitions, requisitions); err != nil {
@@ -48,7 +48,7 @@ func (api provisioningUtilsAPI) GetAvailableAssets() (*model.ElementList, error)
 	assets := &model.ElementList{}
 	jsonAssets, err := api.rest.Get("/rest/foreignSourcesConfig/assets")
 	if err != nil {
-		return nil, fmt.Errorf("Cannot retrieve asset names list")
+		return nil, fmt.Errorf("cannot retrieve asset names list")
 	}
 	if err := json.Unmarshal(jsonAssets, assets); err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func (api provisioningUtilsAPI) GetAvailableDetectors() (*model.PluginList, erro
 	detectors := &model.PluginList{}
 	jsonData, err := api.rest.Get("/rest/foreignSourcesConfig/detectors")
 	if err != nil {
-		return nil, fmt.Errorf("Cannot retrieve detector list")
+		return nil, fmt.Errorf("cannot retrieve detector list")
 	}
 	if err := json.Unmarshal(jsonData, detectors); err != nil {
 		return nil, err
@@ -72,7 +72,7 @@ func (api provisioningUtilsAPI) GetAvailablePolicies() (*model.PluginList, error
 	policies := &model.PluginList{}
 	jsonData, err := api.rest.Get("/rest/foreignSourcesConfig/policies")
 	if err != nil {
-		return nil, fmt.Errorf("Cannot retrieve policy list")
+		return nil, fmt.Errorf("cannot retrieve policy list")
 	}
 	if err := json.Unmarshal(jsonData, policies); err != nil {
 		return nil, err

@@ -62,7 +62,7 @@ func TestGetSnmp(t *testing.T) {
 	assert.Error(t, err, "IP Address or FQDN required")
 
 	err = app.Run([]string{app.Name, "snmp", "get", "10.0.0.500"})
-	assert.ErrorContains(t, err, "Cannot parse address from 10.0.0.500")
+	assert.ErrorContains(t, err, "cannot parse address from 10.0.0.500")
 
 	err = app.Run([]string{app.Name, "snmp", "get", "10.0.0.1"})
 	assert.NilError(t, err)

@@ -39,7 +39,7 @@ var CategoriesCliCommand = cli.Command{
 func getCategories(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	list, err := services.GetNodesAPI(rest.Instance).GetCategories(criteria)
 	if err != nil {
@@ -61,7 +61,7 @@ func getCategories(c *cli.Context) error {
 func deleteCategory(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	name := c.Args().Get(1)
 	if name == "" {
@@ -73,7 +73,7 @@ func deleteCategory(c *cli.Context) error {
 func addCategory(c *cli.Context) error {
 	criteria := c.Args().Get(0)
 	if criteria == "" {
-		return fmt.Errorf("Either the nodeID or the foreignSource:foreignID combination is required")
+		return fmt.Errorf("either the nodeID or the foreignSource:foreignID combination is required")
 	}
 	name := c.Args().Get(1)
 	if name == "" {

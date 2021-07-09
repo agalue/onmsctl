@@ -26,7 +26,7 @@ func TestDescribeDetector(t *testing.T) {
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "detector", "desc"})
-	assert.Error(t, err, "Detector name or class required")
+	assert.Error(t, err, "detector name or class required")
 
 	err = app.Run([]string{app.Name, "detector", "desc", "ICMP"})
 	assert.NilError(t, err)
@@ -39,7 +39,7 @@ func TestListDetectors(t *testing.T) {
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "detector", "list"})
-	assert.Error(t, err, "Requisition name required")
+	assert.Error(t, err, "requisition name required")
 
 	err = app.Run([]string{app.Name, "detector", "list", "Test"})
 	assert.NilError(t, err)
@@ -52,10 +52,10 @@ func TestGetDetector(t *testing.T) {
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "detector", "get"})
-	assert.Error(t, err, "Requisition name required")
+	assert.Error(t, err, "requisition name required")
 
 	err = app.Run([]string{app.Name, "detector", "get", "Test"})
-	assert.Error(t, err, "Detector name or class required")
+	assert.Error(t, err, "detector name or class required")
 
 	err = app.Run([]string{app.Name, "detector", "get", "Test", "ICMP"})
 	assert.NilError(t, err)
@@ -68,10 +68,10 @@ func TestDeleteDetector(t *testing.T) {
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "detector", "del"})
-	assert.Error(t, err, "Requisition name required")
+	assert.Error(t, err, "requisition name required")
 
 	err = app.Run([]string{app.Name, "detector", "del", "Test"})
-	assert.Error(t, err, "Detector name required")
+	assert.Error(t, err, "detector name required")
 
 	err = app.Run([]string{app.Name, "detector", "del", "Test", "HTTP"})
 	assert.NilError(t, err)
@@ -84,10 +84,10 @@ func TestApplyDetector(t *testing.T) {
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "detector", "apply"})
-	assert.Error(t, err, "Content cannot be empty")
+	assert.Error(t, err, "content cannot be empty")
 
 	err = app.Run([]string{app.Name, "detector", "apply", "Test"})
-	assert.Error(t, err, "Content cannot be empty")
+	assert.Error(t, err, "content cannot be empty")
 
 	var testDetector = model.Detector{
 		Name:  "HTTP",
@@ -95,7 +95,7 @@ func TestApplyDetector(t *testing.T) {
 	}
 	nodeYaml, _ := yaml.Marshal(testDetector)
 	err = app.Run([]string{app.Name, "detector", "apply", "Test", string(nodeYaml)})
-	assert.Error(t, err, "Cannot find detector with class org.opennms.netmgt.provision.detector.http.HttpDetector")
+	assert.Error(t, err, "cannot find detector with class org.opennms.netmgt.provision.detector.http.HttpDetector")
 
 	testDetector = model.Detector{
 		Name:  "ICMP",
@@ -113,13 +113,13 @@ func TestSetDetector(t *testing.T) {
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "detector", "set"})
-	assert.Error(t, err, "Requisition name required")
+	assert.Error(t, err, "requisition name required")
 
 	err = app.Run([]string{app.Name, "detector", "set", "Test"})
-	assert.Error(t, err, "Detector name cannot be empty")
+	assert.Error(t, err, "detector name cannot be empty")
 
 	err = app.Run([]string{app.Name, "detector", "set", "Test", "ICMP"})
-	assert.Error(t, err, "Detector class cannot be empty")
+	assert.Error(t, err, "detector class cannot be empty")
 
 	err = app.Run([]string{app.Name, "detector", "set", "Test", "ICMP", "org.opennms.netmgt.provision.detector.icmp.IcmpDetector"})
 	assert.NilError(t, err)

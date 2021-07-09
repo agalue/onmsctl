@@ -8,11 +8,11 @@ import (
 
 func TestIsValid(t *testing.T) {
 	so := ScheduledOutage{}
-	assert.ErrorContains(t, so.IsValid(), "Name")
+	assert.ErrorContains(t, so.IsValid(), "name")
 	so.Name = "Test"
-	assert.ErrorContains(t, so.IsValid(), "Type")
+	assert.ErrorContains(t, so.IsValid(), "type")
 	so.Type = "wrong"
-	assert.ErrorContains(t, so.IsValid(), "Invalid scheduled type")
+	assert.ErrorContains(t, so.IsValid(), "invalid scheduled type")
 }
 
 func TestHours(t *testing.T) {
@@ -23,11 +23,11 @@ func TestHours(t *testing.T) {
 	assert.NilError(t, st.IsValid("daily"))
 	// Validate Begin
 	st.Begins = "3:01pm"
-	assert.ErrorContains(t, st.IsValid("daily"), "Invalid begin hour")
+	assert.ErrorContains(t, st.IsValid("daily"), "invalid begin hour")
 	// Validate End
 	st.Begins = "00:00:00"
 	st.Ends = "5:01am"
-	assert.ErrorContains(t, st.IsValid("daily"), "Invalid end hour")
+	assert.ErrorContains(t, st.IsValid("daily"), "invalid end hour")
 }
 
 func TestIsSpecificValid(t *testing.T) {
@@ -58,7 +58,7 @@ func TestIsDailyValid(t *testing.T) {
 	assert.NilError(t, so.IsValid())
 	// Force error
 	so.Times[0].Day = "1"
-	assert.ErrorContains(t, so.IsValid(), "Daily schedule")
+	assert.ErrorContains(t, so.IsValid(), "daily schedule")
 }
 
 func TestIsWeeklyValid(t *testing.T) {
@@ -76,7 +76,7 @@ func TestIsWeeklyValid(t *testing.T) {
 	assert.NilError(t, so.IsValid())
 	// Force error
 	so.Times[0].Day = "1"
-	assert.ErrorContains(t, so.IsValid(), "Invalid day")
+	assert.ErrorContains(t, so.IsValid(), "invalid day")
 }
 
 func TestIsMonthlyValid(t *testing.T) {
@@ -94,5 +94,5 @@ func TestIsMonthlyValid(t *testing.T) {
 	assert.NilError(t, so.IsValid())
 	// Force error
 	so.Times[0].Day = "monday"
-	assert.ErrorContains(t, so.IsValid(), "Invalid monthly day")
+	assert.ErrorContains(t, so.IsValid(), "invalid monthly day")
 }

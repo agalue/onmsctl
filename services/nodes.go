@@ -32,7 +32,7 @@ func (api nodesAPI) GetNodes() (*model.OnmsNodeList, error) {
 		return nil, err
 	}
 	list := &model.OnmsNodeList{}
-	if bytes != nil && len(bytes) > 0 {
+	if len(bytes) > 0 {
 		if err = json.Unmarshal(bytes, list); err != nil {
 			return nil, err
 		}
@@ -53,7 +53,7 @@ func (api nodesAPI) GetNodes() (*model.OnmsNodeList, error) {
 					return
 				}
 				temp := &model.OnmsNodeList{}
-				if bytes != nil && len(bytes) > 0 {
+				if len(bytes) > 0 {
 					if err = json.Unmarshal(bytes, temp); err != nil {
 						return
 					}
@@ -96,10 +96,10 @@ func (api nodesAPI) AddNode(node *model.OnmsNode) error {
 	}
 	list, err := api.searchNodes(filter)
 	if err != nil {
-		return fmt.Errorf("Cannot search for existing nodes: %v", err)
+		return fmt.Errorf("cannot search for existing nodes: %v", err)
 	}
 	if len(list.Nodes) > 0 {
-		return fmt.Errorf("Cannot add node because found one with ID %s that matches either the Label or ForeignSource/ForeignID combination", list.Nodes[0].ID)
+		return fmt.Errorf("cannot add node because found one with ID %s that matches either the Label or ForeignSource/ForeignID combination", list.Nodes[0].ID)
 	}
 	// Create node
 	jsonBytes, err := json.Marshal(node.ExtractBasic())
@@ -183,7 +183,7 @@ func (api nodesAPI) GetIPInterfaces(nodeCriteria string) (*model.OnmsIPInterface
 		return nil, err
 	}
 	list := &model.OnmsIPInterfaceList{}
-	if bytes != nil && len(bytes) > 0 {
+	if len(bytes) > 0 {
 		if err = json.Unmarshal(bytes, &list); err != nil {
 			return nil, err
 		}
@@ -204,7 +204,7 @@ func (api nodesAPI) GetIPInterfaces(nodeCriteria string) (*model.OnmsIPInterface
 					return
 				}
 				temp := &model.OnmsIPInterfaceList{}
-				if bytes != nil && len(bytes) > 0 {
+				if len(bytes) > 0 {
 					if err = json.Unmarshal(bytes, temp); err != nil {
 						return
 					}
@@ -246,7 +246,7 @@ func (api nodesAPI) SetIPInterface(nodeCriteria string, intf *model.OnmsIPInterf
 	if intf.IfIndex > 0 {
 		snmp, err := api.GetSnmpInterface(nodeCriteria, intf.IfIndex)
 		if err != nil {
-			return fmt.Errorf("Cannot find SNMP Interface with ifIndex %d on Node %s", intf.IfIndex, nodeCriteria)
+			return fmt.Errorf("cannot find SNMP Interface with ifIndex %d on Node %s", intf.IfIndex, nodeCriteria)
 		}
 		log.Printf("Associating SNMP interface with ID %d and ifIndex %d to %s", snmp.ID, snmp.IfIndex, ip.IPAddress)
 		ip.SNMPInterface = snmp.ExtractBasic()
@@ -312,7 +312,7 @@ func (api nodesAPI) GetSnmpInterfaces(nodeCriteria string) (*model.OnmsSnmpInter
 		return nil, err
 	}
 	list := &model.OnmsSnmpInterfaceList{}
-	if bytes != nil && len(bytes) > 0 {
+	if len(bytes) > 0 {
 		if err = json.Unmarshal(bytes, &list); err != nil {
 			return nil, err
 		}
@@ -333,7 +333,7 @@ func (api nodesAPI) GetSnmpInterfaces(nodeCriteria string) (*model.OnmsSnmpInter
 					return
 				}
 				temp := &model.OnmsSnmpInterfaceList{}
-				if bytes != nil && len(bytes) > 0 {
+				if len(bytes) > 0 {
 					if err = json.Unmarshal(bytes, temp); err != nil {
 						return
 					}
@@ -400,7 +400,7 @@ func (api nodesAPI) GetMonitoredServices(nodeCriteria string, ipAddress string) 
 		return nil, err
 	}
 	list := &model.OnmsMonitoredServiceList{}
-	if bytes != nil && len(bytes) > 0 {
+	if len(bytes) > 0 {
 		if err = json.Unmarshal(bytes, &list); err != nil {
 			return nil, err
 		}
@@ -474,7 +474,7 @@ func (api nodesAPI) GetCategories(nodeCriteria string) ([]model.OnmsCategory, er
 		return nil, err
 	}
 	list := &model.OnmsCategoryList{}
-	if bytes != nil && len(bytes) > 0 {
+	if len(bytes) > 0 {
 		if err = json.Unmarshal(bytes, &list); err != nil {
 			return nil, err
 		}
@@ -508,14 +508,14 @@ func (api nodesAPI) GetAssetRecord(nodeCriteria string) (*model.OnmsAssetRecord,
 	if err != nil {
 		return nil, err
 	}
-	if bytes != nil && len(bytes) > 0 {
+	if len(bytes) > 0 {
 		n := &model.OnmsNode{}
 		if err = json.Unmarshal(bytes, n); err != nil {
 			return nil, err
 		}
 		return n.AssetRecord, nil
 	}
-	return nil, fmt.Errorf("Not Found")
+	return nil, fmt.Errorf("not found")
 }
 
 func (api nodesAPI) SetAssetField(nodeCriteria string, field string, value string) error {
@@ -558,7 +558,7 @@ func (api nodesAPI) searchNodes(fiqlFilter string) (*model.OnmsNodeList, error) 
 		return nil, err
 	}
 	list := &model.OnmsNodeList{}
-	if bytes != nil && len(bytes) > 0 {
+	if len(bytes) > 0 {
 		if err = json.Unmarshal(bytes, list); err != nil {
 			return nil, err
 		}
@@ -576,5 +576,5 @@ func (api nodesAPI) isCriteriaValid(nodeCriteria string) error {
 		}
 
 	}
-	return fmt.Errorf("Invalid node criteria. It should be either the node ID or the foreignSource:foreignID combination.")
+	return fmt.Errorf("invalid node criteria; it should be either the node ID or the foreignSource:foreignID combination")
 }

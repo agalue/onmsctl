@@ -59,10 +59,10 @@ func TestReloadDaemon(t *testing.T) {
 	defer server.Close()
 
 	err = app.Run([]string{app.Name, "daemon", "reload"})
-	assert.Error(t, err, "Daemon name required")
+	assert.Error(t, err, "daemon name required")
 
 	err = app.Run([]string{app.Name, "daemon", "reload", "Weird"})
-	assert.Error(t, err, "Invalid daemon name Weird")
+	assert.Error(t, err, "invalid daemon name Weird")
 
 	err = app.Run([]string{app.Name, "daemon", "reload", "pollerd"})
 	assert.NilError(t, err)
