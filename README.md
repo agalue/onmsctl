@@ -64,6 +64,26 @@ To configure the tool, or to avoid specifying the URL, username, and password fo
 
 To manipulate the content of the configuration file, please use the `onmsctl config` subcommand.
 
+For instance, to add a new configuration entry and make it the default:
+
+```bash
+➜  onmsctl config set --name M2021 --url http://192.168.205.200:8980/opennms --user admin --passwd admin
+➜  onmsctl config default M2021
+➜  onmsctl config list
+Default	Name		User	URL
+*	M2021		admin	http://192.168.205.200:8980/opennms
+	local		admin	http://localhost:8980/opennms
+
+➜  onmsctl info
+displayVersion: 2021.1.1
+version: 2021.1.1
+packageName: meridian
+packageDescription: OpenNMS Meridian
+datetimeFormat:
+  zoneId: America/New_York
+  format: yyyy-MM-dd'T'HH:mm:ssxxx
+```
+
 > Make sure to protect the file, as the credentials are on plain text.
 
 2. Verify the installed version of OpenNMS
