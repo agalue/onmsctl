@@ -2,6 +2,7 @@ package services
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/OpenNMS/onmsctl/model"
@@ -19,13 +20,15 @@ func TestGetConfigFile(t *testing.T) {
 	os.Setenv("ONMSCONFIG", "/opt/opennms/etc/onmsctl.yaml")
 	file = getConfigFile()
 	assert.Equal(t, "/opt/opennms/etc/onmsctl.yaml", file)
+}
 
+func TestFileExists(t *testing.T) {
 	assert.Equal(t, true, fileExists("/etc/hosts"))
 	assert.Equal(t, false, fileExists("/_unknown"))
 }
 
 func TestProfiles(t *testing.T) {
-	fileName := "/tmp/_onms_config.yaml"
+	fileName := "/tmp/_onms/config.yaml"
 	os.Setenv("ONMSCONFIG", fileName)
 	api := GetProfilesAPI(rest.Instance)
 
@@ -83,5 +86,5 @@ func TestProfiles(t *testing.T) {
 	assert.Equal(t, 2, len(cfg.Profiles))
 
 	// Remove temporary file
-	os.Remove(fileName)
+	os.RemoveAll(filepath.Dir(fileName))
 }

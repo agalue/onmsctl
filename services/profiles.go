@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"sort"
 
 	"github.com/OpenNMS/onmsctl/api"
@@ -46,7 +47,7 @@ func (api profilesAPI) SetDefault(profileName string) error {
 		cfg.Default = profileName
 		return saveConfig(cfg)
 	}
-	return fmt.Errorf("Cannot find profile %s", profileName)
+	return fmt.Errorf("cannot find profile %s", profileName)
 }
 
 func (api profilesAPI) SetProfile(profile model.Profile) error {
@@ -77,7 +78,7 @@ func (api profilesAPI) DeleteProfile(profileName string) error {
 		cfg.Profiles = append(cfg.Profiles[:idx], cfg.Profiles[idx+1:]...)
 		return saveConfig(cfg)
 	}
-	return fmt.Errorf("Cannot find profile %s", profileName)
+	return fmt.Errorf("cannot find profile %s", profileName)
 }
 
 func findProfileIndex(profileName string, cfg *model.ProfilesConfig) int {
@@ -129,7 +130,11 @@ func saveConfig(cfg *model.ProfilesConfig) error {
 		return cfg.Profiles[i].Name < cfg.Profiles[j].Name
 	})
 	if data, err := yaml.Marshal(cfg); err == nil {
-		ioutil.WriteFile(getConfigFile(), data, 0644)
+		filename := getConfigFile()
+		if err := os.MkdirAll(filepath.Dir(filename), 0755); err != nil {
+			return err
+		}
+		return ioutil.WriteFile(filename, data, 0644)
 	}
 	return nil
 }
