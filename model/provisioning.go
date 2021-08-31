@@ -14,7 +14,7 @@ var AllowFqdnOnRequisitionedInterfaces = true
 
 // RequisitionMetaData a metadata entry
 type RequisitionMetaData struct {
-	XMLName xml.Name `xml:"metadata" json:"-" yaml:"-"`
+	XMLName xml.Name `xml:"meta-data" json:"-" yaml:"-"`
 	Key     string   `xml:"key,attr" json:"key" yaml:"key"`
 	Value   string   `xml:"value,attr" json:"value" yaml:"value"`
 	Context string   `xml:"context,attr,omitempty" json:"context,omitempty" yaml:"context,omitempty"`
@@ -38,7 +38,7 @@ func (m *RequisitionMetaData) Validate() error {
 type RequisitionMonitoredService struct {
 	XMLName  xml.Name              `xml:"monitored-service" json:"-" yaml:"-"`
 	Name     string                `xml:"service-name,attr" json:"service-name" yaml:"name"`
-	MetaData []RequisitionMetaData `xml:"metadata,omitempty" json:"metadata,omitempty" yaml:"metaData,omitempty"`
+	MetaData []RequisitionMetaData `xml:"meta-data,omitempty" json:"meta-data,omitempty" yaml:"metadata,omitempty"`
 }
 
 // AddMetaData adds a metadata entry to the node
@@ -139,7 +139,7 @@ type RequisitionInterface struct {
 	SnmpPrimary string                        `xml:"snmp-primary,attr,omitempty" json:"snmp-primary" yaml:"snmpPrimary"`
 	Status      int                           `xml:"status,attr,omitempty" json:"status" yaml:"status"`
 	Services    []RequisitionMonitoredService `xml:"monitored-service,omitempty" json:"monitored-service,omitempty" yaml:"services,omitempty"`
-	MetaData    []RequisitionMetaData         `xml:"metadata,omitempty" json:"metadata,omitempty" yaml:"metaData,omitempty"`
+	MetaData    []RequisitionMetaData         `xml:"meta-data,omitempty" json:"meta-data,omitempty" yaml:"metadata,omitempty"`
 }
 
 // AddMetaData adds a metadata entry to the interface
@@ -278,7 +278,7 @@ type RequisitionNode struct {
 	Interfaces          []RequisitionInterface `xml:"interface,omitempty" json:"interface,omitempty" yaml:"interfaces,omitempty"`
 	Categories          []RequisitionCategory  `xml:"category,omitempty" json:"category,omitempty" yaml:"categories,omitempty"`
 	Assets              []RequisitionAsset     `xml:"asset,omitempty" json:"asset,omitempty" yaml:"assets,omitempty"`
-	MetaData            []RequisitionMetaData  `xml:"metadata,omitempty" json:"metadata,omitempty" yaml:"metaData,omitempty"`
+	MetaData            []RequisitionMetaData  `xml:"meta-data,omitempty" json:"meta-data,omitempty" yaml:"metadata,omitempty"`
 }
 
 // AddMetaData adds a metadata entry to the node
