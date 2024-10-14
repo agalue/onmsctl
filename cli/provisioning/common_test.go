@@ -3,7 +3,8 @@ package provisioning
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -15,8 +16,6 @@ import (
 	"github.com/OpenNMS/onmsctl/test"
 	"gotest.tools/assert"
 )
-
-const publicIP = "34.194.50.139"
 
 var testNode = model.RequisitionNode{
 	ForeignID: "n1",
@@ -123,7 +122,7 @@ func createTestServer(t *testing.T) *httptest.Server {
 		case "/rest/requisitions":
 			assert.Equal(t, http.MethodPost, req.Method)
 			var r model.Requisition
-			bytes, err := ioutil.ReadAll(req.Body)
+			bytes, err := io.ReadAll(req.Body)
 			assert.NilError(t, err)
 			err = json.Unmarshal(bytes, &r)
 			assert.NilError(t, err)
@@ -131,7 +130,7 @@ func createTestServer(t *testing.T) *httptest.Server {
 				node := r.Nodes[0]
 				assert.Equal(t, "opennms.com", node.ForeignID)
 				assert.Equal(t, "opennms.com", node.NodeLabel)
-				assert.Equal(t, publicIP, node.Interfaces[0].IPAddress)
+				assert.Assert(t, net.ParseIP(node.Interfaces[0].IPAddress) != nil)
 			}
 
 		case "/rest/requisitions/Local/import":
@@ -159,7 +158,7 @@ func createTestServer(t *testing.T) *httptest.Server {
 		case "/rest/requisitions/Test/nodes":
 			assert.Equal(t, http.MethodPost, req.Method)
 			var node model.RequisitionNode
-			bytes, err := ioutil.ReadAll(req.Body)
+			bytes, err := io.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &node)
 			if node.ForeignID == "n2" {
@@ -167,7 +166,7 @@ func createTestServer(t *testing.T) *httptest.Server {
 			}
 			if node.ForeignID == "opennms.com" {
 				assert.Equal(t, "opennms.com", node.NodeLabel)
-				assert.Equal(t, publicIP, node.Interfaces[0].IPAddress)
+				assert.Assert(t, net.ParseIP(node.Interfaces[0].IPAddress) != nil)
 			}
 
 		case "/rest/requisitions/Test/nodes/n2":
@@ -176,7 +175,7 @@ func createTestServer(t *testing.T) *httptest.Server {
 		case "/rest/requisitions/Test/nodes/n1/interfaces":
 			assert.Equal(t, http.MethodPost, req.Method)
 			var intf model.RequisitionInterface
-			bytes, err := ioutil.ReadAll(req.Body)
+			bytes, err := io.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &intf)
 			assert.Assert(t, strings.HasPrefix(intf.IPAddress, "10.0.0.1"))
@@ -200,7 +199,7 @@ func createTestServer(t *testing.T) *httptest.Server {
 		case "/rest/requisitions/Test/nodes/n1/assets":
 			assert.Equal(t, http.MethodPost, req.Method)
 			var asset model.RequisitionAsset
-			bytes, err := ioutil.ReadAll(req.Body)
+			bytes, err := io.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &asset)
 			assert.Equal(t, "state", asset.Name)
@@ -212,7 +211,7 @@ func createTestServer(t *testing.T) *httptest.Server {
 		case "/rest/requisitions/Test/nodes/n1/categories":
 			assert.Equal(t, http.MethodPost, req.Method)
 			var cat model.RequisitionCategory
-			bytes, err := ioutil.ReadAll(req.Body)
+			bytes, err := io.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &cat)
 			assert.Equal(t, "Production", cat.Name)
@@ -234,7 +233,7 @@ func createTestServer(t *testing.T) *httptest.Server {
 		case "/rest/foreignSources":
 			assert.Equal(t, http.MethodPost, req.Method)
 			var fs model.ForeignSourceDef
-			bytes, err := ioutil.ReadAll(req.Body)
+			bytes, err := io.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &fs)
 			assert.Equal(t, "Local", fs.Name)
@@ -242,7 +241,7 @@ func createTestServer(t *testing.T) *httptest.Server {
 		case "/rest/foreignSources/Test/detectors":
 			assert.Equal(t, http.MethodPost, req.Method)
 			var detector model.Detector
-			bytes, err := ioutil.ReadAll(req.Body)
+			bytes, err := io.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &detector)
 			assert.Equal(t, "ICMP", detector.Name)
@@ -253,7 +252,7 @@ func createTestServer(t *testing.T) *httptest.Server {
 		case "/rest/foreignSources/Test/policies":
 			assert.Equal(t, http.MethodPost, req.Method)
 			var policy model.Policy
-			bytes, err := ioutil.ReadAll(req.Body)
+			bytes, err := io.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, &policy)
 			assert.Equal(t, "Switches", policy.Name)

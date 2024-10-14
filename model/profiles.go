@@ -37,7 +37,7 @@ type ProfilesConfig struct {
 
 // IsEmpty checks if configuration is empty
 func (cfg ProfilesConfig) IsEmpty() bool {
-	return cfg.Default == "" && (cfg.Profiles == nil || len(cfg.Profiles) == 0)
+	return cfg.Default == "" && len(cfg.Profiles) == 0
 }
 
 // GetDefaultProfile gets the default profile

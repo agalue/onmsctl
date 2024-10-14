@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"net"
 	"testing"
 	"time"
 
@@ -65,7 +66,7 @@ func TestRequisitionObject(t *testing.T) {
 
 	assert.NilError(t, req.Validate())
 	assert.Equal(t, req.Nodes[0].NodeLabel, req.Nodes[0].ForeignID)
-	assert.Equal(t, req.Nodes[0].Interfaces[0].IPAddress, "34.194.50.139")
+	assert.Assert(t, net.ParseIP(req.Nodes[0].Interfaces[0].IPAddress) != nil)
 
 	bytes, err := json.MarshalIndent(req, "", "  ")
 	assert.NilError(t, err)

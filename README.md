@@ -58,6 +58,35 @@ The binary contains help for all commands and subcommands by using `-h` or `--he
 
 The following outlines several examples.
 
+0. Deploy OpenNMS
+
+There are several ways to do that, and I'm going to use Kind and Helm:
+
+```bash
+kind create cluster --name onms
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo add opennms https://opennms.github.io/helm-charts
+helm install onms-db bitnami/postgresql --version 15.5.38 \
+  --set global.postgresql.auth.postgresPassword=P0stgr3s
+kubectl rollout status sts/onms-db-postgresql
+helm install onms opennms/horizon \
+  --set domain=test.local \
+  --set dependencies.postgresql.hostname=onms-db-postgresql.default.svc \
+  --set dependencies.postgresql.sslmode=disable
+kubectl rollout status sts/onms-core
+kubectl port-forward svc/onms-core 8980
+```
+
+> That will take a few minutes to be ready.
+
+Your OpenNMS server would be reachable at `http://localhost:8980/opennms`.
+
+Once you're done, use `ctrl+c` to stop the port forward and then remove the cluster:
+
+```bash
+kind delete cluster -n onms
+```
+
 1. Configure OpenNMS servers
 
 To configure the tool, or to avoid specifying the URL, username, and password for your OpenNMS server with each request, you can create a file with the following content on `$HOME/.onms/config.yaml` or add the file on any location and create an environment variable called `ONMSCONFIG` with the location of the file.
@@ -193,7 +222,7 @@ To get the actual content of the node:
 nodeLabel: www.opennms.com
 foreignID: www.opennms.com
 interfaces:
-- ipAddress: 34.194.50.139
+- ipAddress: 141.193.213.20
   snmpPrimary: "N"
   status: 1
 categories:

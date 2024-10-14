@@ -157,7 +157,7 @@ func getMonitoredService(c *cli.Context) (*model.RequisitionMonitoredService, er
 	}
 	service := intf.GetService(c.Args().Get(3))
 	if service == nil {
-		return nil, fmt.Errorf("The service doesn't exist on the interface")
+		return nil, fmt.Errorf("the service doesn't exist on the interface")
 	}
 	return service, nil
 }

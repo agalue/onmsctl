@@ -6,7 +6,7 @@ import (
 	"net"
 	"regexp"
 
-	"github.com/imdario/mergo"
+	"dario.cat/mergo"
 )
 
 // AllowFqdnOnRequisitionedInterfaces when this is true, if the content of an IP Address is a FQDN it will be translated into a valid IPv4
