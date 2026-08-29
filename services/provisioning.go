@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"slices"
 
 	"github.com/OpenNMS/onmsctl/api"
 	"github.com/OpenNMS/onmsctl/model"
@@ -35,11 +36,8 @@ func (api provisioningUtilsAPI) RequisitionExists(foreignSource string) bool {
 		return false
 	}
 	var found = false
-	for _, fs := range requisitions.ForeignSources {
-		if fs == foreignSource {
-			found = true
-			break
-		}
+	if slices.Contains(requisitions.ForeignSources, foreignSource) {
+		found = true
 	}
 	return found
 }

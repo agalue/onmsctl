@@ -5,7 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"io"
-	"io/ioutil"
+
 	"log"
 	"net/http"
 	"net/http/httptrace"
@@ -55,7 +55,7 @@ func (cli Client) Get(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	data, err := ioutil.ReadAll(response.Body)
+	data, err := io.ReadAll(response.Body)
 	if cli.Debug && err == nil {
 		log.Printf("GET, Data: %s", string(data))
 	}

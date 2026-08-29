@@ -2,7 +2,8 @@ package rest
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
+
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -41,7 +42,7 @@ func TestPost(t *testing.T) {
 		assert.Equal(t, "/user", req.URL.Path)
 		assert.Equal(t, http.MethodPost, req.Method)
 		var user User
-		bytes, err := ioutil.ReadAll(req.Body)
+		bytes, err := io.ReadAll(req.Body)
 		if err != nil {
 			res.WriteHeader(http.StatusForbidden)
 			return

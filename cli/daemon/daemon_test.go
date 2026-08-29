@@ -2,7 +2,8 @@ package daemon
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
+
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -49,7 +50,7 @@ func TestReloadDaemon(t *testing.T) {
 		assert.Assert(t, strings.HasPrefix(req.URL.Path, "/rest/events"))
 		assert.Equal(t, http.MethodPost, req.Method)
 		event := &model.Event{}
-		bytes, err := ioutil.ReadAll(req.Body)
+		bytes, err := io.ReadAll(req.Body)
 		assert.NilError(t, err)
 		json.Unmarshal(bytes, event)
 		assert.Assert(t, cmp.Equal(mockData, event))

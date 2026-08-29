@@ -2,7 +2,7 @@ package common
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"text/tabwriter"
 
@@ -38,7 +38,7 @@ func ReadInput(c *cli.Context, dataIndex int) ([]byte, error) {
 		if (stat.Mode() & os.ModeCharDevice) != 0 {
 			return nil, fmt.Errorf("there is no YAML content on STDIN pipe")
 		}
-		return ioutil.ReadAll(inputStream)
+		return io.ReadAll(inputStream)
 	}
-	return ioutil.ReadFile(ymlFile)
+	return os.ReadFile(ymlFile)
 }

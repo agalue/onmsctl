@@ -1,7 +1,6 @@
 package common
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -12,9 +11,9 @@ import (
 func TestReadInput(t *testing.T) {
 	text, expected := "This is a test", ""
 
-	file, err := ioutil.TempFile("/tmp", "test-")
+	file, err := os.CreateTemp("/tmp", "test-")
 	assert.NilError(t, err)
-	ioutil.WriteFile(file.Name(), []byte(text), 0644)
+	os.WriteFile(file.Name(), []byte(text), 0644)
 	inputStream = file // To emulate os.Stdin
 	defer os.Remove(file.Name())
 

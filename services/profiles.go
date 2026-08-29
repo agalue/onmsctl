@@ -2,7 +2,6 @@ package services
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -26,7 +25,7 @@ func (api profilesAPI) GetProfilesConfig() (*model.ProfilesConfig, error) {
 	configFile := getConfigFile()
 	cfg := &model.ProfilesConfig{}
 	if fileExists(configFile) {
-		data, _ := ioutil.ReadFile(configFile)
+		data, _ := os.ReadFile(configFile)
 		if err := yaml.Unmarshal(data, cfg); err == nil {
 			if !cfg.IsEmpty() {
 				updateRestInstance(cfg.GetDefaultProfile())
@@ -134,7 +133,7 @@ func saveConfig(cfg *model.ProfilesConfig) error {
 		if err := os.MkdirAll(filepath.Dir(filename), 0755); err != nil {
 			return err
 		}
-		return ioutil.WriteFile(filename, data, 0644)
+		return os.WriteFile(filename, data, 0644)
 	}
 	return nil
 }

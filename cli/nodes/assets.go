@@ -2,6 +2,7 @@ package nodes
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/OpenNMS/onmsctl/rest"
 	"github.com/OpenNMS/onmsctl/services"
@@ -114,10 +115,5 @@ func getAvailableFields() []string {
 }
 
 func isValidField(field string) bool {
-	for _, f := range getAvailableFields() {
-		if f == field {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(getAvailableFields(), field)
 }

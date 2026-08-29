@@ -59,7 +59,7 @@ var CliCommand = cli.Command{
 			fmt.Printf("There is no data for %s\n", entity)
 			return nil
 		}
-		var data interface{}
+		var data any
 		switch entity {
 		case "nodes":
 			data = &model.OnmsNodeList{}

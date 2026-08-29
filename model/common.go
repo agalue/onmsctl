@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -19,11 +20,9 @@ type EnumValue struct {
 
 // Set sets a value of the enum
 func (e *EnumValue) Set(value string) error {
-	for _, enum := range e.Enum {
-		if enum == value {
-			e.selected = value
-			return nil
-		}
+	if slices.Contains(e.Enum, value) {
+		e.selected = value
+		return nil
 	}
 	return fmt.Errorf("allowed values are %s", strings.Join(e.Enum, ", "))
 }

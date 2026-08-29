@@ -270,7 +270,7 @@ func createTestServer(t *testing.T) *httptest.Server {
 	return server
 }
 
-func sendData(res http.ResponseWriter, data interface{}) {
+func sendData(res http.ResponseWriter, data any) {
 	bytes, _ := json.Marshal(data)
 	res.WriteHeader(http.StatusOK)
 	res.Write(bytes)

@@ -14,7 +14,7 @@ type OnmsAlarm struct {
 	NodeID               int              `json:"nodeId,omitempty" yaml:"nodeId,omitempty"`
 	NodeLabel            string           `json:"nodeLabel,omitempty" yaml:"nodeLabel,omitempty"`
 	IPAddress            string           `json:"ipAddress,omitempty" yaml:"ipAddress,omitempty"`
-	ServiceType          OnmsServiceType  `json:"serviceType,omitempty" yaml:"serviceType,omitempty"`
+	ServiceType          OnmsServiceType  `json:"serviceType" yaml:"serviceType,omitempty"`
 	IfIndex              int              `json:"ifIndex,omitempty" yaml:"ifIndex,omitempty"`
 	Severity             string           `json:"severity,omitempty" yaml:"severity,omitempty"`
 	Log                  string           `json:"log,omitempty" yaml:"log,omitempty"`

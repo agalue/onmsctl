@@ -78,7 +78,8 @@ func servicesBashComplete(c *cli.Context) {
 }
 
 // TODO Bash or ZSH don't like spaces when doing auto-complete
-//      The characters '.' and ':' are escaped as they have a special meaning
+//
+//	The characters '.' and ':' are escaped as they have a special meaning
 func zshNormalize(src string) string {
 	dst := strings.ReplaceAll(src, ":", "\\:")
 	return strings.ReplaceAll(dst, ".", "\\.")

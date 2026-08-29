@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"regexp"
+	"slices"
 	"strings"
 )
 
@@ -155,13 +156,7 @@ func (p Plugin) VerifyParameters(parameters []Parameter) error {
 				return fmt.Errorf("missing required parameter %s on %s", param.Key, p.Class)
 			}
 			if len(param.Options) > 0 {
-				found := false
-				for _, opt := range param.Options {
-					if opt == pa.Value {
-						found = true
-						break
-					}
-				}
+				found := slices.Contains(param.Options, pa.Value)
 				if !found {
 					return fmt.Errorf("invalid parameter value %s on %s. Valid values are: %s", pa.Key, p.Class, param.Options)
 				}
@@ -210,7 +205,7 @@ func IsValidScanInterval(scanInterval string) bool {
 		return false
 	}
 	re, _ := regexp.Compile(`^[0-9]+(w|d|h|m|s|ms)$`)
-	for _, el := range strings.Split(scanInterval, " ") {
+	for el := range strings.SplitSeq(scanInterval, " ") {
 		if !re.MatchString(el) {
 			return false
 		}

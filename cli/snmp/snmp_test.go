@@ -3,7 +3,8 @@ package snmp
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
+
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -39,7 +40,7 @@ func createMockServer(t *testing.T) *httptest.Server {
 			res.Write(bytes)
 		case http.MethodPut:
 			snmp := &model.SnmpInfo{}
-			bytes, err := ioutil.ReadAll(req.Body)
+			bytes, err := io.ReadAll(req.Body)
 			assert.NilError(t, err)
 			json.Unmarshal(bytes, snmp)
 			assert.Assert(t, cmp.Equal(mockData, snmp))

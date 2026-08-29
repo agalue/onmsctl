@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"slices"
 
 	"github.com/OpenNMS/onmsctl/api"
 	"github.com/OpenNMS/onmsctl/model"
@@ -329,11 +330,8 @@ func (api requisitionsAPI) SetAsset(foreignSource string, foreignID string, asse
 		return err
 	}
 	var found = false
-	for _, a := range assets.Element {
-		if a == asset.Name {
-			found = true
-			break
-		}
+	if slices.Contains(assets.Element, asset.Name) {
+		found = true
 	}
 	if !found {
 		return fmt.Errorf("invalid Asset Field: %s", asset.Name)
